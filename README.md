@@ -6,10 +6,9 @@ Tiny-Pytorch is a deep learning system that is similar in nature to **Pytorch**.
 
 The main learning and critical part of this project is building everything from the ground up:
 ```mermaid
-graph LR
-    Flat Array;
-    N-Dimensional Array;
-    Tensor;
+graph BT;
+    A[Flat Array] --> B[N-Dimensional Array];
+    B[N-Dimensional Array] --> C[Tensor];
 ```
 
 ## Learning Objectives
