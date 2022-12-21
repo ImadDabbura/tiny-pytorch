@@ -24,17 +24,17 @@ class Tensor:
     ) -> None:
         """Construct a Tensor with no autograd history by copying `array`."""
         if isinstance(array, Tensor):
-            device = array.device if device else device
-            dtype = array.dtype if dtype else dtype
+            device = array.device if not device else device
+            dtype = array.dtype if not dtype else dtype
             if device == array.device and dtype == array.dtype:
-                cached_data = array.realize_cached_data()
+                cached_data = array._realize_cached_data()
             else:
                 # Use numpy as brige
-                cached_data = Tensor._from_numpy_array(
+                cached_data = self._from_numpy_array(
                     array.numpy(), device=device, dtype=dtype
                 )
         else:
-            device = cpu() if device else device
+            device = cpu() if not device else device
             cached_data = self._from_numpy_array(
                 array, device=device, dtype=dtype
             )
@@ -45,15 +45,15 @@ class Tensor:
         inputs: list[Tensor] | None = None,
         op: Op | None = None,
         *,
-        cached_data: list[object],
+        cached_data: list[object] | None = None,
         requires_grad: bool | None = None,
     ):
-        if requires_grad is None:
-            # If any of the input Tensors have requires_grad -> output will requires_grad
-            requires_grad = any([x.requires_grad for x in inputs])
         self.inputs = listify(inputs)
         self.op = op
         self.cached_data = cached_data
+        if requires_grad is None:
+            # If any of the input Tensors have requires_grad -> output will requires_grad
+            requires_grad = any([x.requires_grad for x in self.inputs])
         self.requires_grad = requires_grad
 
     def _from_numpy_array(self, array, device, dtype):
@@ -61,12 +61,12 @@ class Tensor:
             return np.array(array, dtype=dtype)
         return array_api.array(array, device=device, dtype=dtype)
 
-    def realize_cached_data(self):
+    def _realize_cached_data(self):
         """Run computation to get the output if the LAZY MODE is on, else return cached data."""
         if self.cached_data is not None:
             return self.cached_data
         self.cached_data = self.op.compute(
-            [x.realize_cached_data() for x in self.inputs]
+            *[x._realize_cached_data() for x in self.inputs]
         )
         return self.cached_data
 
@@ -82,21 +82,21 @@ class Tensor:
 
     @property
     def shape(self):
-        return self.realize_cached_data().shape
+        return self._realize_cached_data().shape
 
     @property
     def ndim(self):
-        return self.realize_cached_data().ndim
+        return self._realize_cached_data().ndim
 
     @property
     def dtype(self):
-        return self.realize_cached_data().dtype
+        return self._realize_cached_data().dtype
 
     @property
     def device(self):
         if array_api is np:
             return cpu()
-        return self.realize_cached_data().device
+        return self._realize_cached_data().device
 
     @property
     def data(self):
@@ -105,16 +105,21 @@ class Tensor:
 
     @data.setter
     def data(self, data):
-        assert isinstance(data, Tensor), "data must be of type `Tensor`"
-        assert self.dtype == data.dtype, "data must be of the the same type"
-        self.cached_data = data.realize_cached_data()
+        assert isinstance(
+            data, Tensor
+        ), f"data must be of type `Tensor`, {type(data)} is given"
+        assert self.dtype == data.dtype, (
+            f"data must be of the same type as `Tensor`, "
+            f"{self.dtype} != {data.dtype}"
+        )
 
     @staticmethod
     def from_constant(data, requires_grad: bool = False):
         """Creates a leaf node Tensor from the given `data`."""
         tensor = Tensor.__new__(Tensor)
         tensor._init(
-            cached_data=data.realize_cached_data(), requires_grad=False
+            cached_data=data._realize_cached_data(),
+            requires_grad=requires_grad,
         )
         return tensor
 
@@ -125,3 +130,17 @@ class Tensor:
         original one.
         """
         return Tensor.from_constant(self)
+
+    def is_leaf(self):
+        """
+        All Tensors that have `requires_grad` set to `False` OR they were
+        created by the user and were not the result of an operation are
+        considered leaf Tensors.
+        """
+        return self.op is None
+
+    def __repr__(self):
+        return f"tiny_pytorch.Tensor({str(self._realize_cached_data())})"
+
+    def __str__(self):
+        return str(self._realize_cached_data())
