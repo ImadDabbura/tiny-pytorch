@@ -45,7 +45,7 @@ class Tensor:
         inputs: list[Tensor] | None = None,
         op: Op | None = None,
         *,
-        cached_data: list[object],
+        cached_data: list[object] | None = None,
         requires_grad: bool | None = None,
     ):
         self.inputs = listify(inputs)
@@ -66,7 +66,7 @@ class Tensor:
         if self.cached_data is not None:
             return self.cached_data
         self.cached_data = self.op.compute(
-            [x._realize_cached_data() for x in self.inputs]
+            *[x._realize_cached_data() for x in self.inputs]
         )
         return self.cached_data
 
@@ -140,7 +140,7 @@ class Tensor:
         return self.op is None
 
     def __repr__(self):
-        return f"tiny_pytorch.Tensor({str(self.realize_cached_data())})"
+        return f"tiny_pytorch.Tensor({str(self._realize_cached_data())})"
 
     def __str__(self):
-        return str(self.realize_cached_data())
+        return str(self._realize_cached_data())
