@@ -1,3 +1,6 @@
+r"""
+Core data structures for multi-dimensional tensors.
+"""
 from __future__ import annotations
 
 import numpy as np
@@ -19,6 +22,7 @@ class Tensor:
         dtype: str | None = None,
         requires_grad: bool = False,
     ) -> None:
+        """Construct a Tensor with no autograd history by copying `array`."""
         if isinstance(array, Tensor):
             device = array.device if device else device
             dtype = array.dtype if dtype else dtype
@@ -66,6 +70,16 @@ class Tensor:
         )
         return self.cached_data
 
+    def numpy(self):
+        """
+        Returns `Tensor` as Numpy ndarray. The underlying data will be shared
+        between Tensor and the Numpy ndarray.
+        """
+        data = self._realize_cached_data()
+        if array_api is np:
+            return data
+        return data.numpy()
+
     @property
     def shape(self):
         return self.realize_cached_data().shape
@@ -86,6 +100,7 @@ class Tensor:
 
     @property
     def data(self):
+        """Returns a detached Tensor with the original data."""
         return self.detach()
 
     @data.setter
@@ -96,6 +111,7 @@ class Tensor:
 
     @staticmethod
     def from_constant(data, requires_grad: bool = False):
+        """Creates a leaf node Tensor from the given `data`."""
         tensor = Tensor.__new__(Tensor)
         tensor._init(
             cached_data=data.realize_cached_data(), requires_grad=False
@@ -103,4 +119,9 @@ class Tensor:
         return tensor
 
     def detach(self):
+        """
+        Returns a new Tensor with no history (detached from the computation
+        graph). The returned Tensor will share the same data with the
+        original one.
+        """
         return Tensor.from_constant(self)
