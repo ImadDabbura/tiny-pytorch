@@ -35,3 +35,22 @@ class EWiseAdd(Op):
 
     def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
         return out_grad, out_grad
+
+
+class ScalarMul(Op):
+    def __init__(self, scalar):
+        self.scalar = scalar
+
+    def compute(self, x: NDArray):
+        return self.scalar * x
+
+    def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
+        return out_grad * self.scalar
+
+
+class EWiseMul(Op):
+    def compute(self, x: NDArray, y: NDArray):
+        return x * y
+
+    def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
+        return out_grad * out_node.inputs[1], out_grad * out_node.inputs[0]
