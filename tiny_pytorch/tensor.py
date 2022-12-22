@@ -6,11 +6,13 @@ from __future__ import annotations
 import numpy as np
 import numpy as array_api
 
+from . import ops
 from .device import CPUDevice, Device, cpu
 from .ops import Op
 from .utils import listify
 
 NDArray = array_api.ndarray
+LAZY_MODE = False  # Default mode is eager mode
 
 
 class Tensor:
@@ -123,6 +125,20 @@ class Tensor:
         )
         return tensor
 
+    @staticmethod
+    def from_operation(op: Op, inputs: tuple[Tensor]):
+        """
+        Creates a node Tensor by applying the `op` operation on the `inputs`
+        Tensors.
+        """
+        tensor = Tensor.__new__(Tensor)
+        tensor._init(inputs, op)
+        if not LAZY_MODE:
+            if not tensor.requires_grad:
+                return tensor.detach()
+            return tensor._realize_cached_data()
+        return tensor
+
     def detach(self):
         """
         Returns a new Tensor with no history (detached from the computation
@@ -144,3 +160,10 @@ class Tensor:
 
     def __str__(self):
         return str(self._realize_cached_data())
+
+    def __add__(self, other):
+        if isinstance(other, Tensor):
+            return ops.EWiseAdd()(self, other)
+        return ops.ScalarAdd(other)(self)
+
+    __radd__ = __add__
