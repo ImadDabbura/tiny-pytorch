@@ -166,10 +166,19 @@ class Tensor:
             return ops.EWiseAdd()(self, other)
         return ops.ScalarAdd(other)(self)
 
+    def __neg__(self):
+        return ops.Negate()(self)
+
+    def __sub__(self, other):
+        if isinstance(other, Tensor):
+            return ops.EWiseAdd()(self, -other)
+        return ops.ScalarAdd(-other)(self)
+
     def __mul__(self, other):
         if isinstance(other, Tensor):
             return ops.EWiseMul()(self, other)
         return ops.ScalarMul(other)(self)
 
     __radd__ = __add__
+    __rsub__ = __sub__
     __rmul__ = __mul__

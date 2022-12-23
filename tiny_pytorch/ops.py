@@ -54,3 +54,11 @@ class EWiseMul(Op):
 
     def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
         return out_grad * out_node.inputs[1], out_grad * out_node.inputs[0]
+
+
+class Negate(Op):
+    def compute(self, x: NDArray):
+        return array_api.negative(x)
+
+    def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
+        return -out_grad
