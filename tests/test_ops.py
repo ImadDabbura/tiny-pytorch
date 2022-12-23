@@ -37,3 +37,9 @@ class TestForward:
             (Tensor([[3.0, 2.0]]) * Tensor([[0.0, 9.0]])).numpy(),
             np.array([[0.0, 18.0]]),
         )
+
+    def test_negate(self):
+        np.testing.assert_equal((-Tensor([1, 2])).numpy(), np.array([-1, -2]))
+        np.testing.assert_equal(
+            (-Tensor([[-3.0, 10.0]])).numpy(), np.array([[3.0, -10.0]])
+        )
