@@ -8,6 +8,7 @@ packages = [{include = "tiny_pytorch"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+numpy = "^1.24.0"
 
 
 [tool.poetry.group.dev.dependencies]
