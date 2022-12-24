@@ -43,3 +43,20 @@ class TestForward:
         np.testing.assert_equal(
             (-Tensor([[-3.0, 10.0]])).numpy(), np.array([[3.0, -10.0]])
         )
+
+    def test_scalar_power(self):
+        np.testing.assert_allclose(
+            (Tensor([1, 2]) ** 2).numpy(), np.array([1, 4])
+        )
+        np.testing.assert_allclose(
+            (Tensor([[3.0, 2.0]]) ** 0).numpy(), np.array([[1.0, 1.0]])
+        )
+
+    def test_ewise_power(self):
+        np.testing.assert_allclose(
+            (Tensor([1, 2]) ** Tensor([1, 2])).numpy(), np.array([1, 4])
+        )
+        np.testing.assert_allclose(
+            (Tensor([[3.0, 2.0]]) ** Tensor([[0.0, 9.0]])).numpy(),
+            np.array([[1.0, 512.0]]),
+        )
