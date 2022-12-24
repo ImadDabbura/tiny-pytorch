@@ -60,3 +60,21 @@ class TestForward:
             (Tensor([[3.0, 2.0]]) ** Tensor([[0.0, 9.0]])).numpy(),
             np.array([[1.0, 512.0]]),
         )
+
+    def test_scalar_divide(self):
+        np.testing.assert_allclose(
+            (Tensor([10, 2]) / 2).numpy(), np.array([5, 1])
+        )
+        np.testing.assert_allclose(
+            (Tensor([[3.0, 2.0]]) / 7).numpy(),
+            np.array([[0.42857142857142855, 0.2857142857142857]]),
+        )
+
+    def test_ewise_divide(self):
+        np.testing.assert_allclose(
+            (Tensor([10, 22]) / Tensor([1, 2])).numpy(), np.array([10.0, 11.0])
+        )
+        np.testing.assert_allclose(
+            (Tensor([[3.0, 2.0]]) / Tensor([[2.0, 9.0]])).numpy(),
+            np.array([[1.5, 0.222222222]]),
+        )

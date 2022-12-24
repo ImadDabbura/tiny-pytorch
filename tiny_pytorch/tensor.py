@@ -184,6 +184,12 @@ class Tensor:
             return ops.EWisePower()(self, other)
         return ops.ScalarPower(other)(self)
 
+    def __truediv__(self, other):
+        print(type(other))
+        if isinstance(other, Tensor):
+            return ops.EWiseDivide()(self, other)
+        return ops.ScalarDivide(other)(self)
+
     __radd__ = __add__
     __rsub__ = __sub__
     __rmul__ = __mul__

@@ -85,3 +85,24 @@ class EWisePower(Op):
             * out_node.inputs[1]
             * out_node.inputs[0] ** (out_node.inputs[1] - 1)
         )
+
+
+class ScalarDivide(Op):
+    def __init__(self, scalar):
+        self.scalar = scalar
+
+    def compute(self, x: NDArray):
+        return x / self.scalar
+
+    def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
+        return out_grad / self.scalar
+
+
+class EWiseDivide(Op):
+    def compute(self, x: NDArray, y: NDArray):
+        return x / y
+
+    def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
+        return out_grad / out_node.inputs[1], out_grad * (
+            -out_node.inputs[0] / out_node.inputs[1] ** 2
+        )
