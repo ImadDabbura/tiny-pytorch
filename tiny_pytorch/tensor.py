@@ -190,6 +190,9 @@ class Tensor:
             return ops.EWiseDivide()(self, other)
         return ops.ScalarDivide(other)(self)
 
+    def reshape(self, shape):
+        return ops.Reshape(shape)(self)
+
     __radd__ = __add__
     __rsub__ = __sub__
     __rmul__ = __mul__

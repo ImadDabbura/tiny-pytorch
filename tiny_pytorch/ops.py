@@ -106,3 +106,14 @@ class EWiseDivide(Op):
         return out_grad / out_node.inputs[1], out_grad * (
             -out_node.inputs[0] / out_node.inputs[1] ** 2
         )
+
+
+class Reshape(Op):
+    def __init__(self, shape):
+        self.shape = shape
+
+    def compute(self, x: NDArray):
+        return array_api.reshape(x, self.shape)
+
+    def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
+        return array_api.reshape(out_grad, out_node.inputs[0])
