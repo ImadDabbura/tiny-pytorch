@@ -144,6 +144,19 @@ class BroadcastTo(Op):
         return out
 
 
+class Transpose(Op):
+    def __init__(self, axes: tuple | None = None):
+        self.axes = axes
+
+    def compute(self, a):
+        if self.axes is None:
+            self.axes = list(range(len(a.shape)))[-2:]
+        return array_api.swapaxes(a, *self.axes)
+
+    def gradient(self, out_grad, node):
+        return Transpose(self.axes[::-1])(out_grad)
+
+
 class Log(Op):
     def compute(self, x: NDArray):
         return array_api.log(x)

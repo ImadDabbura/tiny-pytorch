@@ -208,6 +208,9 @@ class Tensor:
     def broadcast_to(self, shape):
         return ops.BroadcastTo(shape)(self)
 
+    def transpose(self, axes=None):
+        return ops.Transpose(axes)(self)
+
     __radd__ = __add__
     __rsub__ = __sub__
     __rmul__ = __mul__
