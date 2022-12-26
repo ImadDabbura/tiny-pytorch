@@ -8,11 +8,21 @@ import numpy as array_api
 
 from . import ops
 from .device import CPUDevice, Device, cpu
-from .ops import Op
 from .utils import listify
 
 NDArray = array_api.ndarray
 LAZY_MODE = False  # Default mode is eager mode
+
+
+class Op:
+    def __call__(self, *args):
+        return Tensor.from_operation(self, args)
+
+    def compute(self, *args: tuple[NDArray]):
+        raise NotImplementedError()
+
+    def gradient(self, out_grad, out_node):
+        raise NotImplementedError()
 
 
 class Tensor:
