@@ -122,3 +122,11 @@ class Exp(Op):
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad * Exp()(out_node.inputs[0])
+
+
+class ReLU(Op):
+    def compute(self, x: NDArray):
+        return array_api.maximum(0, x)
+
+    def gradient(self, out_grad: Tensor, out_node: Tensor):
+        return out_grad * (out_node.realize_cached_data() > 0)
