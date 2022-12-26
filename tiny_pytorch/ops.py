@@ -117,3 +117,11 @@ class Reshape(Op):
 
     def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
         return array_api.reshape(out_grad, out_node.inputs[0])
+
+
+class Log(Op):
+    def compute(self, x: NDArray):
+        return array_api.log(x)
+
+    def gradient(self, out_grad: tensor.Tensor, out_node: tensor.Tensor):
+        return out_grad / out_node.inputs[0]

@@ -1,5 +1,6 @@
 import numpy as np
 
+from tiny_pytorch import ops
 from tiny_pytorch.tensor import Tensor
 
 
@@ -138,5 +139,7 @@ class TestForward:
             ),
         )
 
-        # def test_log_forward(self):
-        #     n
+    def test_log_forward(self):
+        np.testing.assert_allclose(
+            ops.Log()(Tensor([50])).numpy(), np.array([3.912023])
+        )
