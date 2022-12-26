@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from itertools import zip_longest
+
 import numpy as array_api
 
 from .tensor import Op, Tensor
@@ -106,6 +108,40 @@ class Reshape(Op):
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return array_api.reshape(out_grad, out_node.inputs[0])
+
+
+class Summation(Op):
+    def __init__(self, axes: tuple | None = None):
+        self.axes = axes
+
+    def compute(self, a):
+        return array_api.sum(a, self.axes)
+
+    def gradient(self, out_grad, node):
+        input_shape = node.inputs[0].shape
+        axes = self.axes if self.axes else tuple(range(len(input_shape)))
+        tmp_shape = [1 if i in axes else x for i, x in enumerate(input_shape)]
+        tmp_out = Reshape(tuple(tmp_shape))(out_grad)
+        return BroadcastTo(input_shape)(tmp_out)
+
+
+class BroadcastTo(Op):
+    def __init__(self, shape):
+        self.shape = shape
+
+    def compute(self, a):
+        return array_api.broadcast_to(a, self.shape)
+
+    def gradient(self, out_grad, node):
+        input_shape = node.inputs[0].shape
+        axes = [
+            i
+            for i, x in enumerate(zip_longest(input_shape, out_grad.shape))
+            if x[0] == 1 or not x[0]
+        ]
+        out = Summation(tuple(axes))(out_grad)
+        out = Reshape(input_shape)(out)
+        return out
 
 
 class Log(Op):
