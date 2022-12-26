@@ -195,13 +195,18 @@ class Tensor:
         return ops.ScalarPower(other)(self)
 
     def __truediv__(self, other):
-        print(type(other))
         if isinstance(other, Tensor):
             return ops.EWiseDivide()(self, other)
         return ops.ScalarDivide(other)(self)
 
+    def sum(self, axes=None):
+        return ops.Summation(axes)(self)
+
     def reshape(self, shape):
         return ops.Reshape(shape)(self)
+
+    def broadcast_to(self, shape):
+        return ops.BroadcastTo(shape)(self)
 
     __radd__ = __add__
     __rsub__ = __sub__
