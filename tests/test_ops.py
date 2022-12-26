@@ -143,3 +143,8 @@ class TestForward:
         np.testing.assert_allclose(
             ops.Log()(Tensor([50])).numpy(), np.array([3.912023])
         )
+
+    def test_exp_forward(self):
+        np.testing.assert_allclose(
+            ops.Exp()(Tensor([15])).numpy(), np.array([3269017.37247])
+        )

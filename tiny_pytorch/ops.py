@@ -114,3 +114,11 @@ class Log(Op):
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad / out_node.inputs[0]
+
+
+class Exp(Op):
+    def compute(self, x: NDArray):
+        return array_api.exp(x)
+
+    def gradient(self, out_grad: Tensor, out_node: Tensor):
+        return out_grad * Exp()(out_node.inputs[0])
