@@ -32,12 +32,12 @@ will move on to build `NDArray` and different backends that can be used to do
 the computation.
 
 - **Phase I**:
-    - [ ] `Tensor`: A multi-dimensional array that includes elements of the same
+    - [x] `Tensor`: A multi-dimensional array that includes elements of the same
       type. It is the main component in our automatic differentiation because it
       will include: operation that created it, input data used in the operation,
       the output data, etc. In the case it was a leaf or deteched `Tensor`,
       everything will be `None`.
-    - [ ] `Op`: Operations on `Tensor`s. Each operation should implement forward
+    - [x] `Op`: Operations on `Tensor`s. Each operation should implement forward
       and backward pass and returns a new `Tensor`.
     - [ ] `Automatic Differentiation`: The method we will be using to build the
       automatic differentiation framework is called **Reverse Mode Automatic
@@ -60,5 +60,14 @@ the computation.
     - [ ] Cuda backend
     - TBD
 
+## Limitations
+
+- Broadcasting has to be done explicitly for all element-wise operations if
+  both ndarrays/tensors are not of the same shape. For example, if we have two
+  tensors `x` & `y` that have `(10,)` and `(20, 10)` shapes respectively. We
+  can add them together as follows:
+  ```python
+  x.reshape((1, 10)).broadcast_to((20, 10)) + y
+  ```
 ## License
 Tiny-PyTorch has Apache License, as found in the [LICENCE](LICENSE) file.
