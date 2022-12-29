@@ -211,6 +211,13 @@ class Tensor:
     def transpose(self, axes=None):
         return ops.Transpose(axes)(self)
 
+    def backward(self, out_grad: Tensor | None = None):
+        out_grad = out_grad if out_grad else self.device.ones(self.shape)
+        self._compute_gradients(out_grad)
+
+    def _compute_gradients(self, out_grad):
+        pass
+
     __radd__ = __add__
     __rsub__ = __sub__
     __rmul__ = __mul__
