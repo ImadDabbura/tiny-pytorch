@@ -6,7 +6,8 @@ from __future__ import annotations
 import numpy as np
 import numpy as array_api
 
-from . import ops
+import tiny_pytorch
+
 from .device import CPUDevice, Device, cpu
 from .utils import listify
 
@@ -173,43 +174,46 @@ class Tensor:
 
     def __add__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWiseAdd()(self, other)
-        return ops.ScalarAdd(other)(self)
+            return tiny_pytorch.ops.EWiseAdd()(self, other)
+        return tiny_pytorch.ops.ScalarAdd(other)(self)
 
     def __neg__(self):
-        return ops.Negate()(self)
+        return tiny_pytorch.ops.Negate()(self)
 
     def __sub__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWiseAdd()(self, -other)
-        return ops.ScalarAdd(-other)(self)
+            return tiny_pytorch.ops.EWiseAdd()(self, -other)
+        return tiny_pytorch.ops.ScalarAdd(-other)(self)
 
     def __mul__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWiseMul()(self, other)
-        return ops.ScalarMul(other)(self)
+            return tiny_pytorch.ops.EWiseMul()(self, other)
+        return tiny_pytorch.ops.ScalarMul(other)(self)
 
     def __pow__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWisePower()(self, other)
-        return ops.ScalarPower(other)(self)
+            return tiny_pytorch.ops.EWisePower()(self, other)
+        return tiny_pytorch.ops.ScalarPower(other)(self)
 
     def __truediv__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWiseDivide()(self, other)
-        return ops.ScalarDivide(other)(self)
+            return tiny_pytorch.ops.EWiseDivide()(self, other)
+        return tiny_pytorch.ops.ScalarDivide(other)(self)
+
+    def __matmul__(self, other):
+        return tiny_pytorch.ops.MatMul()(self, self, other)
 
     def sum(self, axes=None):
-        return ops.Summation(axes)(self)
+        return tiny_pytorch.ops.Summation(axes)(self)
 
     def reshape(self, shape):
-        return ops.Reshape(shape)(self)
+        return tiny_pytorch.ops.Reshape(shape)(self)
 
     def broadcast_to(self, shape):
-        return ops.BroadcastTo(shape)(self)
+        return tiny_pytorch.ops.BroadcastTo(shape)(self)
 
     def transpose(self, axes=None):
-        return ops.Transpose(axes)(self)
+        return tiny_pytorch.ops.Transpose(axes)(self)
 
     def backward(self, out_grad: Tensor | None = None):
         out_grad = out_grad if out_grad else self.device.ones(self.shape)
@@ -221,3 +225,4 @@ class Tensor:
     __radd__ = __add__
     __rsub__ = __sub__
     __rmul__ = __mul__
+    __rmatmul__ = __matmul__

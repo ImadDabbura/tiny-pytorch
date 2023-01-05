@@ -1,7 +1,6 @@
 import numpy as np
 
-from tiny_pytorch import ops
-from tiny_pytorch.tensor import Tensor
+from tiny_pytorch import Tensor, ops
 
 
 class TestForward:
