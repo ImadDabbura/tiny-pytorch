@@ -145,9 +145,7 @@ class Tensor:
         tensor = Tensor.__new__(Tensor)
         tensor._init(inputs, op)
         if not LAZY_MODE:
-            if not tensor.requires_grad:
-                return tensor.detach()
-            return tensor._realize_cached_data()
+            tensor._realize_cached_data()
         return tensor
 
     def detach(self):
