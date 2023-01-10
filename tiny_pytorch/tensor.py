@@ -215,7 +215,7 @@ class Tensor:
 
     def backward(self, out_grad: Tensor | None = None):
         out_grad = out_grad if out_grad else self.device.ones(self.shape)
-        _compute_gradients(self, out_grad)
+        compute_gradients(self, out_grad)
 
     def _compute_gradients(self, out_grad):
         pass
@@ -226,7 +226,7 @@ class Tensor:
     __rmatmul__ = __matmul__
 
 
-def _compute_gradients(out_tensor, out_grad):
+def compute_gradients(out_tensor, out_grad):
     """
     Take gradient of output node with respect to each node in node_list.
     Store the computed result in the grad field of each Variable.
@@ -237,7 +237,7 @@ def _compute_gradients(out_tensor, out_grad):
 
     # Traverse graph in reverse topological order given
     # the output_node that we are taking gradient wrt.
-    reverse_topo_order = _find_topo_sort([out_tensor])[::-1]
+    reverse_topo_order = find_topo_sort([out_tensor])[::-1]
 
     for out_tensor in reverse_topo_order:
         out_grad = sum(node_to_output_grads_list[out_tensor])
@@ -254,7 +254,7 @@ def _compute_gradients(out_tensor, out_grad):
                 )
 
 
-def _find_topo_sort(node_list: list[Tensor]) -> list[Tensor]:
+def find_topo_sort(node_list: list[Tensor]) -> list[Tensor]:
     """
     Given a list of nodes, return a topological sort list of nodes ending in them.
 
