@@ -224,3 +224,30 @@ class Tensor:
     __rsub__ = __sub__
     __rmul__ = __mul__
     __rmatmul__ = __matmul__
+
+
+def _find_topo_sort(node_list: list[Tensor]) -> list[Tensor]:
+    """
+    Given a list of nodes, return a topological sort list of nodes ending in them.
+
+    A simple algorithm is to do a post-order DFS traversal on the given nodes,
+    going backwards based on input edges. Since a node is added to the ordering
+    after all its predecessors are traversed due to post-order DFS, we get a topological
+    sort.
+    """
+    visited = []
+    topo_list = []
+    for output_node in node_list:
+        for input_node in _topo_sort_dfs(output_node, visited, topo_list):
+            topo_list.append(input_node)
+    return topo_list
+
+
+def _topo_sort_dfs(node, visited, topo_list):
+    """Post-order DFS."""
+    for input_node in node.inputs:
+        if input_node not in visited:
+            yield from _topo_sort_dfs(input_node, visited, topo_list)
+    visited.append(node)
+    if node not in topo_list:
+        yield node
