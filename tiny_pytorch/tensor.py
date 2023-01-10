@@ -9,7 +9,7 @@ import numpy as array_api
 import tiny_pytorch
 
 from .device import CPUDevice, Device, cpu
-from .utils import listify
+from .utils import listify, tuplify
 
 NDArray = array_api.ndarray
 LAZY_MODE = False  # Default mode is eager mode
@@ -215,7 +215,7 @@ class Tensor:
 
     def backward(self, out_grad: Tensor | None = None):
         out_grad = out_grad if out_grad else self.device.ones(self.shape)
-        self._compute_gradients(out_grad)
+        _compute_gradients(self, out_grad)
 
     def _compute_gradients(self, out_grad):
         pass
@@ -224,6 +224,34 @@ class Tensor:
     __rsub__ = __sub__
     __rmul__ = __mul__
     __rmatmul__ = __matmul__
+
+
+def _compute_gradients(out_tensor, out_grad):
+    """
+    Take gradient of output node with respect to each node in node_list.
+    Store the computed result in the grad field of each Variable.
+    """
+    # a map from node to a list of gradient contributions from each output node
+    node_to_output_grads_list: dict[Tensor, list[Tensor]] = {}
+    node_to_output_grads_list[out_tensor] = [out_grad]
+
+    # Traverse graph in reverse topological order given
+    # the output_node that we are taking gradient wrt.
+    reverse_topo_order = _find_topo_sort([out_tensor])[::-1]
+
+    for out_tensor in reverse_topo_order:
+        out_grad = sum(node_to_output_grads_list[out_tensor])
+        out_tensor.grad = out_grad
+        if out_tensor.op:
+            partial_adjoints = tuplify(
+                out_tensor.op.gradient(out_grad, out_tensor)
+            )
+            for input_node, partial_adjoint in zip(
+                out_tensor.inputs, partial_adjoints
+            ):
+                node_to_output_grads_list.setdefault(input_node, []).append(
+                    partial_adjoint
+                )
 
 
 def _find_topo_sort(node_list: list[Tensor]) -> list[Tensor]:
