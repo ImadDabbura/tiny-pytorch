@@ -199,7 +199,7 @@ class Tensor:
         return tiny_pytorch.ops.ScalarDivide(other)(self)
 
     def __matmul__(self, other):
-        return tiny_pytorch.ops.MatMul()(self, self, other)
+        return tiny_pytorch.ops.MatMul()(self, other)
 
     def sum(self, axes=None):
         return tiny_pytorch.ops.Summation(axes)(self)
