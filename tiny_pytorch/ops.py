@@ -107,7 +107,7 @@ class Reshape(Op):
         return array_api.reshape(x, self.shape)
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
-        return array_api.reshape(out_grad, out_node.inputs[0])
+        return Reshape(out_node.inputs[0].shape)(out_grad)
 
 
 class Summation(Op):
