@@ -107,7 +107,7 @@ class Reshape(Op):
         return array_api.reshape(x, self.shape)
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
-        return array_api.reshape(out_grad, out_node.inputs[0])
+        return Reshape(out_node.inputs[0].shape)(out_grad)
 
 
 class Summation(Op):
@@ -155,6 +155,25 @@ class Transpose(Op):
 
     def gradient(self, out_grad, node):
         return Transpose(self.axes[::-1])(out_grad)
+
+
+class MatMul(Op):
+    def compute(self, x: NDArray, y: NDArray):
+        return x @ y
+
+    def gradient(self, out_grad: Tensor, out_node: Tensor):
+        x, y = out_node.inputs
+        lhs = out_grad @ Transpose()(y)
+        rhs = Transpose()(x) @ out_grad
+        if lhs.shape != x.shape:
+            print("lhs")
+            lhs_sum_axis = len(lhs.shape) - len(x.shape)
+            lhs = Summation(axes=tuple(range(lhs_sum_axis)))(lhs)
+        if rhs.shape != y.shape:
+            print("rhs")
+            rhs_sum_axis = len(rhs.shape) - len(y.shape)
+            rhs = Summation(axes=tuple(range(rhs_sum_axis)))(rhs)
+        return lhs, rhs
 
 
 class Log(Op):

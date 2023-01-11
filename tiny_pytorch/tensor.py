@@ -6,9 +6,10 @@ from __future__ import annotations
 import numpy as np
 import numpy as array_api
 
-from . import ops
+import tiny_pytorch
+
 from .device import CPUDevice, Device, cpu
-from .utils import listify
+from .utils import listify, tuplify
 
 NDArray = array_api.ndarray
 LAZY_MODE = False  # Default mode is eager mode
@@ -144,9 +145,7 @@ class Tensor:
         tensor = Tensor.__new__(Tensor)
         tensor._init(inputs, op)
         if not LAZY_MODE:
-            if not tensor.requires_grad:
-                return tensor.detach()
-            return tensor._realize_cached_data()
+            tensor._realize_cached_data()
         return tensor
 
     def detach(self):
@@ -173,44 +172,110 @@ class Tensor:
 
     def __add__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWiseAdd()(self, other)
-        return ops.ScalarAdd(other)(self)
+            return tiny_pytorch.ops.EWiseAdd()(self, other)
+        return tiny_pytorch.ops.ScalarAdd(other)(self)
 
     def __neg__(self):
-        return ops.Negate()(self)
+        return tiny_pytorch.ops.Negate()(self)
 
     def __sub__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWiseAdd()(self, -other)
-        return ops.ScalarAdd(-other)(self)
+            return tiny_pytorch.ops.EWiseAdd()(self, -other)
+        return tiny_pytorch.ops.ScalarAdd(-other)(self)
 
     def __mul__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWiseMul()(self, other)
-        return ops.ScalarMul(other)(self)
+            return tiny_pytorch.ops.EWiseMul()(self, other)
+        return tiny_pytorch.ops.ScalarMul(other)(self)
 
     def __pow__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWisePower()(self, other)
-        return ops.ScalarPower(other)(self)
+            return tiny_pytorch.ops.EWisePower()(self, other)
+        return tiny_pytorch.ops.ScalarPower(other)(self)
 
     def __truediv__(self, other):
         if isinstance(other, Tensor):
-            return ops.EWiseDivide()(self, other)
-        return ops.ScalarDivide(other)(self)
+            return tiny_pytorch.ops.EWiseDivide()(self, other)
+        return tiny_pytorch.ops.ScalarDivide(other)(self)
+
+    def __matmul__(self, other):
+        return tiny_pytorch.ops.MatMul()(self, other)
 
     def sum(self, axes=None):
-        return ops.Summation(axes)(self)
+        return tiny_pytorch.ops.Summation(axes)(self)
 
     def reshape(self, shape):
-        return ops.Reshape(shape)(self)
+        return tiny_pytorch.ops.Reshape(shape)(self)
 
     def broadcast_to(self, shape):
-        return ops.BroadcastTo(shape)(self)
+        return tiny_pytorch.ops.BroadcastTo(shape)(self)
 
     def transpose(self, axes=None):
-        return ops.Transpose(axes)(self)
+        return tiny_pytorch.ops.Transpose(axes)(self)
+
+    def backward(self, out_grad: Tensor | None = None):
+        out_grad = out_grad if out_grad else self.device.ones(self.shape)
+        compute_gradients(self, out_grad)
+
+    def _compute_gradients(self, out_grad):
+        pass
 
     __radd__ = __add__
     __rsub__ = __sub__
     __rmul__ = __mul__
+    __rmatmul__ = __matmul__
+
+
+def compute_gradients(out_tensor, out_grad):
+    """
+    Take gradient of output node with respect to each node in node_list.
+    Store the computed result in the grad field of each Variable.
+    """
+    # a map from node to a list of gradient contributions from each output node
+    node_to_output_grads_list: dict[Tensor, list[Tensor]] = {}
+    node_to_output_grads_list[out_tensor] = [out_grad]
+
+    # Traverse graph in reverse topological order given
+    # the output_node that we are taking gradient wrt.
+    reverse_topo_order = find_topo_sort([out_tensor])[::-1]
+
+    for out_tensor in reverse_topo_order:
+        out_grad = sum(node_to_output_grads_list[out_tensor])
+        out_tensor.grad = out_grad
+        if out_tensor.op:
+            partial_adjoints = tuplify(
+                out_tensor.op.gradient(out_grad, out_tensor)
+            )
+            for input_node, partial_adjoint in zip(
+                out_tensor.inputs, partial_adjoints
+            ):
+                node_to_output_grads_list.setdefault(input_node, []).append(
+                    partial_adjoint
+                )
+
+
+def find_topo_sort(node_list: list[Tensor]) -> list[Tensor]:
+    """
+    Given a list of nodes, return a topological sort list of nodes ending in them.
+
+    A simple algorithm is to do a post-order DFS traversal on the given nodes,
+    going backwards based on input edges. Since a node is added to the ordering
+    after all its predecessors are traversed due to post-order DFS, we get a topological
+    sort.
+    """
+    visited = []
+    topo_list = []
+    for output_node in node_list:
+        for input_node in _topo_sort_dfs(output_node, visited, topo_list):
+            topo_list.append(input_node)
+    return topo_list
+
+
+def _topo_sort_dfs(node, visited, topo_list):
+    """Post-order DFS."""
+    for input_node in node.inputs:
+        if input_node not in visited:
+            yield from _topo_sort_dfs(input_node, visited, topo_list)
+    visited.append(node)
+    if node not in topo_list:
+        yield node
