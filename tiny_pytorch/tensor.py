@@ -1,6 +1,7 @@
 r"""
 Core data structures for multi-dimensional tensors.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -40,7 +41,7 @@ class Tensor:
             device = array.device if not device else device
             dtype = array.dtype if not dtype else dtype
             if device == array.device and dtype == array.dtype:
-                cached_data = array._realize_cached_data()
+                cached_data = array.realize_cached_data()
             else:
                 # Use numpy as brige
                 cached_data = self._from_numpy_array(
@@ -74,12 +75,12 @@ class Tensor:
             return np.array(array, dtype=dtype)
         return array_api.array(array, device=device, dtype=dtype)
 
-    def _realize_cached_data(self):
+    def realize_cached_data(self):
         """Run computation to get the output if the LAZY MODE is on, else return cached data."""
         if self.cached_data is not None:
             return self.cached_data
         self.cached_data = self.op.compute(
-            *[x._realize_cached_data() for x in self.inputs]
+            *[x.realize_cached_data() for x in self.inputs]
         )
         return self.cached_data
 
@@ -88,28 +89,28 @@ class Tensor:
         Returns `Tensor` as Numpy ndarray. The underlying data will be shared
         between Tensor and the Numpy ndarray.
         """
-        data = self._realize_cached_data()
+        data = self.realize_cached_data()
         if array_api is np:
             return data
         return data.numpy()
 
     @property
     def shape(self):
-        return self._realize_cached_data().shape
+        return self.realize_cached_data().shape
 
     @property
     def ndim(self):
-        return self._realize_cached_data().ndim
+        return self.realize_cached_data().ndim
 
     @property
     def dtype(self):
-        return self._realize_cached_data().dtype
+        return self.realize_cached_data().dtype
 
     @property
     def device(self):
         if array_api is np:
             return cpu()
-        return self._realize_cached_data().device
+        return self.realize_cached_data().device
 
     @property
     def data(self):
@@ -131,7 +132,7 @@ class Tensor:
         """Creates a leaf node Tensor from the given `data`."""
         tensor = Tensor.__new__(Tensor)
         tensor._init(
-            cached_data=data._realize_cached_data(),
+            cached_data=data.realize_cached_data(),
             requires_grad=requires_grad,
         )
         return tensor
@@ -145,7 +146,7 @@ class Tensor:
         tensor = Tensor.__new__(Tensor)
         tensor._init(inputs, op)
         if not LAZY_MODE:
-            tensor._realize_cached_data()
+            tensor.realize_cached_data()
         return tensor
 
     def detach(self):
@@ -165,10 +166,10 @@ class Tensor:
         return self.op is None
 
     def __repr__(self):
-        return f"tiny_pytorch.Tensor({str(self._realize_cached_data())})"
+        return f"tiny_pytorch.Tensor({str(self.realize_cached_data())})"
 
     def __str__(self):
-        return str(self._realize_cached_data())
+        return str(self.realize_cached_data())
 
     def __add__(self, other):
         if isinstance(other, Tensor):
