@@ -17,7 +17,7 @@ class ScalarAdd(Op):
         return self.scalar + x
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
-        return out_grad * self.scalar
+        return out_grad
 
 
 class EWiseAdd(Op):
