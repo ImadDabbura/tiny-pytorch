@@ -71,11 +71,12 @@ class EWisePower(Op):
         return x**y
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
-        return (
-            out_grad
-            * out_node.inputs[1]
-            * out_node.inputs[0] ** (out_node.inputs[1] - 1)
-        )
+        raise NotImplementedError()
+        # return (
+        #     out_grad
+        #     * out_node.inputs[1]
+        #     * out_node.inputs[0] ** (out_node.inputs[1] - 1)
+        # )
 
 
 class ScalarDivide(Op):
@@ -166,11 +167,9 @@ class MatMul(Op):
         lhs = out_grad @ Transpose()(y)
         rhs = Transpose()(x) @ out_grad
         if lhs.shape != x.shape:
-            print("lhs")
             lhs_sum_axis = len(lhs.shape) - len(x.shape)
             lhs = Summation(axes=tuple(range(lhs_sum_axis)))(lhs)
         if rhs.shape != y.shape:
-            print("rhs")
             rhs_sum_axis = len(rhs.shape) - len(y.shape)
             rhs = Summation(axes=tuple(range(rhs_sum_axis)))(rhs)
         return lhs, rhs
