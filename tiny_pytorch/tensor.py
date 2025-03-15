@@ -126,6 +126,7 @@ class Tensor:
             f"data must be of the same type as `Tensor`, "
             f"{self.dtype} != {data.dtype}"
         )
+        self.cached_data = data.realize_cached_data()
 
     @staticmethod
     def from_constant(data, requires_grad: bool = False):
