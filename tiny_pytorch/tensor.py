@@ -215,7 +215,9 @@ class Tensor:
         return tiny_pytorch.ops.Transpose(axes)(self)
 
     def backward(self, out_grad: Tensor | None = None):
-        out_grad = out_grad if out_grad else self.device.ones(self.shape)
+        out_grad = (
+            out_grad if out_grad else Tensor(self.device.ones(self.shape))
+        )
         compute_gradients(self, out_grad)
 
     def _compute_gradients(self, out_grad):
