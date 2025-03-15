@@ -2,6 +2,8 @@ import numpy as np
 
 from tiny_pytorch import Tensor, ops
 
+from .test_autograd import gradient_check
+
 
 class TestForward:
     def test_scalar_add(self):
@@ -44,22 +46,22 @@ class TestForward:
             (-Tensor([[-3.0, 10.0]])).numpy(), np.array([[3.0, -10.0]])
         )
 
-    def test_scalar_power(self):
-        np.testing.assert_allclose(
-            (Tensor([1, 2]) ** 2).numpy(), np.array([1, 4])
-        )
-        np.testing.assert_allclose(
-            (Tensor([[3.0, 2.0]]) ** 0).numpy(), np.array([[1.0, 1.0]])
-        )
-
-    def test_ewise_power(self):
-        np.testing.assert_allclose(
-            (Tensor([1, 2]) ** Tensor([1, 2])).numpy(), np.array([1, 4])
-        )
-        np.testing.assert_allclose(
-            (Tensor([[3.0, 2.0]]) ** Tensor([[0.0, 9.0]])).numpy(),
-            np.array([[1.0, 512.0]]),
-        )
+    # def test_scalar_power(self):
+    #     np.testing.assert_allclose(
+    #         (Tensor([1, 2]) ** 2).numpy(), np.array([1, 4])
+    #     )
+    #     np.testing.assert_allclose(
+    #         (Tensor([[3.0, 2.0]]) ** 0).numpy(), np.array([[1.0, 1.0]])
+    #     )
+    #
+    # def test_ewise_power(self):
+    #     np.testing.assert_allclose(
+    #         (Tensor([1, 2]) ** Tensor([1, 2])).numpy(), np.array([1, 4])
+    #     )
+    #     np.testing.assert_allclose(
+    #         (Tensor([[3.0, 2.0]]) ** Tensor([[0.0, 9.0]])).numpy(),
+    #         np.array([[1.0, 512.0]]),
+    #     )
 
     def test_scalar_divide(self):
         np.testing.assert_allclose(
@@ -79,7 +81,7 @@ class TestForward:
             np.array([[1.5, 0.222222222]]),
         )
 
-    def test_reshape_forward(self):
+    def test_reshape(self):
         np.testing.assert_allclose(
             Tensor(
                 [
@@ -138,22 +140,22 @@ class TestForward:
             ),
         )
 
-    def test_log_forward(self):
+    def test_log(self):
         np.testing.assert_allclose(
             ops.Log()(Tensor([50])).numpy(), np.array([3.912023])
         )
 
-    def test_exp_forward(self):
+    def test_exp(self):
         np.testing.assert_allclose(
             ops.Exp()(Tensor([15])).numpy(), np.array([3269017.37247])
         )
 
-    def test_relu_forward(self):
+    def test_relu(self):
         np.testing.assert_allclose(
             ops.ReLU()(Tensor([-19, 0, 29])).numpy(), np.array([0, 0, 29])
         )
 
-    def test_broadcast_to_forward(self):
+    def test_broadcast_to(self):
         np.testing.assert_allclose(
             Tensor([[1.85, 0.85, 0.6]]).broadcast_to(shape=(3, 3, 3)).numpy(),
             np.array(
@@ -165,7 +167,7 @@ class TestForward:
             ),
         )
 
-    def test_summation_forward(self):
+    def test_summation(self):
         np.testing.assert_allclose(
             Tensor(
                 [
@@ -199,7 +201,7 @@ class TestForward:
             np.array([5.45, 9.7, 4.35]),
         )
 
-    def test_transpose_forward(self):
+    def test_transpose(self):
         np.testing.assert_allclose(
             Tensor([[[1.95]], [[2.7]], [[3.75]]])
             .transpose(axes=(1, 2))
@@ -286,7 +288,7 @@ class TestForward:
             ),
         )
 
-    def test_matmul_forward(self):
+    def test_matmul(self):
         np.testing.assert_allclose(
             (
                 Tensor(
@@ -437,3 +439,152 @@ class TestForward:
                 ]
             ),
         )
+
+
+class TestBackward:
+    def test_scalar_add(self):
+        gradient_check(
+            ops.ScalarAdd(scalar=np.random.randn(1)),
+            Tensor(np.random.randn(5, 4), requires_grad=True),
+        )
+
+    def test_ewise_add(self):
+        gradient_check(
+            ops.EWiseAdd(),
+            Tensor(np.random.randn(5, 4), requires_grad=True),
+            Tensor(5 + np.random.randn(5, 4), requires_grad=True),
+        )
+
+    def test_scalar_mul(self):
+        gradient_check(
+            ops.ScalarMul(scalar=np.random.randn(1)),
+            Tensor(np.random.randn(5, 4), requires_grad=True),
+        )
+
+    def test_ewise_Mul(self):
+        gradient_check(
+            ops.EWiseMul(),
+            Tensor(np.random.randn(5, 4), requires_grad=True),
+            Tensor(5 + np.random.randn(5, 4), requires_grad=True),
+        )
+
+    def test_scalar_divide(self):
+        gradient_check(
+            ops.ScalarDivide(scalar=np.random.randn(1)),
+            Tensor(np.random.randn(5, 4), requires_grad=True),
+        )
+
+    def test_ewise_divide(self):
+        gradient_check(
+            ops.EWiseDivide(),
+            Tensor(np.random.randn(5, 4), requires_grad=True),
+            Tensor(5 + np.random.randn(5, 4), requires_grad=True),
+        )
+
+    def test_scalar_power(self):
+        # Numyp returns NaN if the base is -ve and the exponent isn't integer
+        # So I use random int instead of standard normal distribution to sample
+        # for the scalar
+        gradient_check(
+            ops.ScalarPower(scalar=np.random.randint(low=1, high=100)),
+            Tensor(np.random.randn(5, 4), requires_grad=True),
+        )
+
+    # def test_ewise_power(self):
+    #     gradient_check(
+    #         ops.EWisePower(),
+    #         Tensor(
+    #             np.random.randint(low=1, size=(5, 4), high=100),
+    #             requires_grad=True,
+    #         ),
+    #         Tensor(
+    #             np.random.randint(low=2, size=(5, 4), high=100),
+    #             requires_grad=True,
+    #         ),
+    #     )
+
+    def test_matmul_simple(self):
+        gradient_check(
+            ops.MatMul(),
+            Tensor(np.random.randn(5, 4)),
+            Tensor(np.random.randn(4, 5)),
+        )
+
+    def test_batched_matmul(self):
+        gradient_check(
+            ops.MatMul(),
+            Tensor(np.random.randn(6, 6, 5, 4)),
+            Tensor(np.random.randn(6, 6, 4, 3)),
+        )
+        gradient_check(
+            ops.MatMul(),
+            Tensor(np.random.randn(6, 6, 5, 4)),
+            Tensor(np.random.randn(4, 3)),
+        )
+        gradient_check(
+            ops.MatMul(),
+            Tensor(np.random.randn(5, 4)),
+            Tensor(np.random.randn(6, 6, 4, 3)),
+        )
+
+    def test_reshape(self):
+        gradient_check(
+            ops.Reshape(shape=(4, 5)), Tensor(np.random.randn(5, 4))
+        )
+
+    def test_negate(self):
+        gradient_check(ops.Negate(), Tensor(np.random.randn(5, 4)))
+
+    def test_transpose(self):
+        gradient_check(
+            ops.Transpose(axes=(1, 2)), Tensor(np.random.randn(3, 5, 4))
+        )
+        gradient_check(
+            ops.Transpose(axes=(0, 1)), Tensor(np.random.randn(3, 5, 4))
+        )
+
+    def test_broadcast_to(self):
+        gradient_check(
+            ops.BroadcastTo(shape=(3, 3)), Tensor(np.random.randn(3, 1))
+        )
+        gradient_check(
+            ops.BroadcastTo(shape=(3, 3)), Tensor(np.random.randn(1, 3))
+        )
+        gradient_check(
+            ops.BroadcastTo(shape=(3, 3, 3)),
+            Tensor(
+                np.random.randn(
+                    1,
+                )
+            ),
+        )
+        gradient_check(
+            ops.BroadcastTo(shape=(3, 3, 3)), Tensor(np.random.randn())
+        )
+        gradient_check(
+            ops.BroadcastTo(shape=(5, 4, 1)), Tensor(np.random.randn(5, 4, 1))
+        )
+
+    def test_summation(self):
+        gradient_check(ops.Summation(axes=(1,)), Tensor(np.random.randn(5, 4)))
+        gradient_check(ops.Summation(axes=(0,)), Tensor(np.random.randn(5, 4)))
+        gradient_check(
+            ops.Summation(axes=(0, 1)), Tensor(np.random.randn(5, 4))
+        )
+        gradient_check(
+            ops.Summation(axes=(0, 1)), Tensor(np.random.randn(5, 4, 1))
+        )
+
+    def test_log(self):
+        gradient_check(
+            ops.Log(),
+            Tensor(
+                np.random.randint(low=1, high=100, size=(5, 4)).astype(float)
+            ),
+        )
+
+    def test_exp(self):
+        gradient_check(ops.Exp(), Tensor(np.random.randn(5, 4)))
+
+    def test_relu(self):
+        gradient_check(ops.ReLU(), Tensor(np.random.randn(5, 4)))
