@@ -1,7 +1,8 @@
 import numpy as np
 
-from tiny_pytorch import Tensor
+from tiny_pytorch import Tensor, ops
 from tiny_pytorch.tensor import find_topo_sort
+from tiny_pytorch.utils import tuplify
 
 
 class TestTopoSort:
@@ -91,3 +92,83 @@ class TestTopoSort:
 
         assert len(soln) == len(topo_order)
         np.testing.assert_allclose(topo_order, soln, rtol=1e-06, atol=1e-06)
+
+
+def gradient_check(func, *args, eps=1e-7, tol=1e-5, backward=False, **kwargs):
+    numerical_grads = [np.zeros(a.shape) for a in args]
+    for i in range(len(args)):
+        for j in range(args[i].realize_cached_data().size):
+            args[i].realize_cached_data().flat[j] += eps
+            f1 = float(func(*args, **kwargs).numpy().sum())
+            args[i].realize_cached_data().flat[j] -= 2 * eps
+            f2 = float(func(*args, **kwargs).numpy().sum())
+            args[i].realize_cached_data().flat[j] += eps
+            numerical_grads[i].flat[j] = (f1 - f2) / (2 * eps)
+    if not backward:
+        out = func(*args, **kwargs)
+        computed_grads = [
+            x.numpy()
+            for x in tuplify(out.op.gradient(Tensor(np.ones(out.shape)), out))
+        ]
+    else:
+        out = func(*args, **kwargs).sum()
+        out.backward()
+        computed_grads = [a.grad.numpy() for a in args]
+    error = sum(
+        np.linalg.norm(computed_grads[i] - numerical_grads[i])
+        / (
+            np.linalg.norm(numerical_grads[i])
+            + np.linalg.norm(computed_grads[i])
+        )
+        for i in range(len(args))
+    )
+    assert error < tol
+    return computed_grads
+
+
+class TestComputeGradient:
+    def test_compute_gradient(self):
+        gradient_check(
+            lambda A, B, C: ops.Summation(axes=None)((A @ B + C) * (A @ B)),
+            Tensor(np.random.randn(10, 9)),
+            Tensor(np.random.randn(9, 8)),
+            Tensor(np.random.randn(10, 8)),
+            backward=True,
+        )
+        gradient_check(
+            lambda A, B: ops.Summation(axes=None)(
+                ops.BroadcastTo(shape=(10, 9))(A) * B
+            ),
+            Tensor(np.random.randn(10, 1)),
+            Tensor(np.random.randn(10, 9)),
+            backward=True,
+        )
+        gradient_check(
+            lambda A, B, C: ops.Summation(axes=None)(
+                ops.Reshape(shape=(10, 10))(A) @ B / 5 + C
+            ),
+            Tensor(np.random.randn(100)),
+            Tensor(np.random.randn(10, 5)),
+            Tensor(np.random.randn(10, 5)),
+            backward=True,
+        )
+
+    def test_gradient_of_gradient(self):
+        # check gradient of gradient
+        x2 = Tensor([6])
+        x3 = Tensor([0])
+        y = x2 * x2 + x2 * x3
+        y.backward()
+        grad_x2 = x2.grad
+        grad_x3 = x3.grad
+        # gradient of gradient
+        grad_x2.backward()
+        grad_x2_x2 = x2.grad
+        grad_x2_x3 = x3.grad
+        x2_val = x2.numpy()
+        x3_val = x3.numpy()
+        assert y.numpy() == x2_val * x2_val + x2_val * x3_val
+        assert grad_x2.numpy() == 2 * x2_val + x3_val
+        assert grad_x3.numpy() == x2_val
+        assert grad_x2_x2.numpy() == 2
+        assert grad_x2_x3.numpy() == 1
