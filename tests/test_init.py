@@ -20,6 +20,23 @@ def test_init_kaiming_uniform():
     )
 
 
+def test_init_kaiming_normal():
+    np.random.seed(42)
+    np.testing.assert_allclose(
+        init.kaiming_normal(3, 5).numpy(),
+        np.array(
+            [
+                [0.4055654, -0.11289233, 0.5288355, 1.2435486, -0.19118543],
+                [-0.19117202, 1.2894219, 0.62660784, -0.38332424, 0.4429984],
+                [-0.37837896, -0.38026676, 0.19756137, -1.5621868, -1.4083896],
+            ],
+            dtype=np.float32,
+        ),
+        rtol=1e-4,
+        atol=1e-4,
+    )
+
+
 def test_init_xavier_uniform():
     np.random.seed(42)
     np.testing.assert_allclose(
