@@ -87,3 +87,8 @@ def one_hot(k, n, device=None, dtype="float32", requires_grad=False):
         device=device,
         requires_grad=requires_grad,
     )
+
+
+def xavier_uniform(fan_in, fan_out, gain=1.0, **kwargs):
+    a = gain * ((6 / (fan_in + fan_out)) ** 0.5)
+    return rand(fan_in, fan_out, low=-a, high=a, **kwargs)
