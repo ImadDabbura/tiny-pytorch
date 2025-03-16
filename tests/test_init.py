@@ -3,6 +3,23 @@ import numpy as np
 from tiny_pytorch import init
 
 
+def test_init_kaiming_uniform():
+    np.random.seed(42)
+    np.testing.assert_allclose(
+        init.kaiming_uniform(3, 5).numpy(),
+        np.array(
+            [
+                [-0.35485414, 1.2748126, 0.65617794, 0.27904832, -0.9729262],
+                [-0.97299445, -1.2499284, 1.0357026, 0.28599644, 0.58851814],
+                [-1.3559918, 1.3291057, 0.9402898, -0.81362784, -0.8999349],
+            ],
+            dtype=np.float32,
+        ),
+        rtol=1e-4,
+        atol=1e-4,
+    )
+
+
 def test_init_xavier_uniform():
     np.random.seed(42)
     np.testing.assert_allclose(
