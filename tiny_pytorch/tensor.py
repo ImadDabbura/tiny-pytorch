@@ -34,9 +34,9 @@ class Tensor:
         *,
         device: Device | None = None,
         dtype: str | None = None,
-        requires_grad: bool = False,
+        requires_grad: bool = True,
     ) -> None:
-        """Construct a Tensor with no autograd history by copying `array`."""
+        """Construct a Tensor by copying `array`."""
         if isinstance(array, Tensor):
             device = array.device if not device else device
             dtype = array.dtype if not dtype else dtype
@@ -147,6 +147,8 @@ class Tensor:
         tensor = Tensor.__new__(Tensor)
         tensor._init(inputs, op)
         if not LAZY_MODE:
+            if not tensor.requires_grad:
+                return tensor.detach()
             tensor.realize_cached_data()
         return tensor
 
