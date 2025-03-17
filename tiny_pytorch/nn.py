@@ -117,3 +117,14 @@ class Linear(Module):
 class ReLU(Module):
     def forward(self, x: Tensor) -> Tensor:
         return ops.ReLU()(x)
+
+
+class Sequential(Module):
+    def __init__(self, *modules):
+        super().__init__()
+        self.modules = modules
+
+    def forward(self, x: Tensor) -> Tensor:
+        for module in self.modules:
+            x = module(x)
+        return x
