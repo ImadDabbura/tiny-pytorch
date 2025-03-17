@@ -1,6 +1,7 @@
 import numpy as np
 
 import tiny_pytorch.nn as nn
+import tiny_pytorch.ops as ops
 from tiny_pytorch.tensor import Tensor
 
 
@@ -326,6 +327,157 @@ def test_nn_sequential_backward_1():
                 [0.802697, -1.0971, 0.120842, 0.033051, 0.241105],
             ],
             dtype=np.float32,
+        ),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def logsumexp_forward(shape, axes):
+    x = get_tensor(*shape)
+    return (ops.LogSumExp(axes=axes)(x)).cached_data
+
+
+def logsumexp_backward(shape, axes):
+    x = get_tensor(*shape)
+    y = (ops.LogSumExp(axes=axes)(x) ** 2).sum()
+    y.backward()
+    return x.grad.cached_data
+
+
+def test_op_logsumexp_forward_1():
+    np.testing.assert_allclose(
+        logsumexp_forward((3, 3, 3), (1, 2)),
+        np.array([5.366029, 4.9753823, 6.208126], dtype=np.float32),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_op_logsumexp_forward_2():
+    np.testing.assert_allclose(
+        logsumexp_forward((3, 3, 3), None),
+        np.array([6.7517853], dtype=np.float32),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_op_logsumexp_forward_3():
+    np.testing.assert_allclose(
+        logsumexp_forward((1, 2, 3, 4), (0, 2)),
+        np.array(
+            [
+                [5.276974, 5.047317, 3.778802, 5.0103745],
+                [5.087831, 4.391712, 5.025037, 2.0214698],
+            ],
+            dtype=np.float32,
+        ),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_op_logsumexp_forward_4():
+    np.testing.assert_allclose(
+        logsumexp_forward((3, 10), (1,)),
+        np.array([5.705309, 5.976375, 5.696459], dtype=np.float32),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_op_logsumexp_forward_5():
+    test_data = ops.LogSumExp((0,))(
+        Tensor(np.array([[1e10, 1e9, 1e8, -10], [1e-10, 1e9, 1e8, -10]])),
+    ).numpy()
+    np.testing.assert_allclose(
+        test_data,
+        np.array(
+            [1.00000000e10, 1.00000000e09, 1.00000001e08, -9.30685282e00]
+        ),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_op_logsumexp_backward_1():
+    np.testing.assert_allclose(
+        logsumexp_backward((3, 1), (1,)),
+        np.array([[1.0], [7.3], [9.9]], dtype=np.float32),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_op_logsumexp_backward_2():
+    np.testing.assert_allclose(
+        logsumexp_backward((3, 3, 3), (1, 2)),
+        np.array(
+            [
+                [
+                    [1.4293308, 1.2933122, 0.82465225],
+                    [0.50017685, 2.1323113, 2.1323113],
+                    [1.4293308, 0.58112264, 0.40951014],
+                ],
+                [
+                    [0.3578173, 0.07983983, 4.359107],
+                    [1.1300558, 0.561169, 0.1132981],
+                    [0.9252113, 0.65198547, 1.7722803],
+                ],
+                [
+                    [0.2755132, 2.365242, 2.888913],
+                    [0.05291228, 1.1745441, 0.02627547],
+                    [2.748018, 0.13681579, 2.748018],
+                ],
+            ],
+            dtype=np.float32,
+        ),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_op_logsumexp_backward_3():
+    np.testing.assert_allclose(
+        logsumexp_backward((3, 3, 3), (0, 2)),
+        np.array(
+            [
+                [
+                    [0.92824626, 0.839912, 0.5355515],
+                    [0.59857905, 2.551811, 2.551811],
+                    [1.0213376, 0.41524494, 0.29261813],
+                ],
+                [
+                    [0.16957533, 0.03783737, 2.0658503],
+                    [0.98689, 0.49007502, 0.09894446],
+                    [0.48244575, 0.3399738, 0.9241446],
+                ],
+                [
+                    [0.358991, 3.081887, 3.764224],
+                    [0.12704718, 2.820187, 0.06308978],
+                    [3.9397335, 0.19614778, 3.9397335],
+                ],
+            ],
+            dtype=np.float32,
+        ),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_op_logsumexp_backward_5():
+    grad_compare = Tensor(
+        np.array([[1e10, 1e9, 1e8, -10], [1e-10, 1e9, 1e8, -10]])
+    )
+    _ = (ops.LogSumExp((0,))(grad_compare) ** 2).sum().backward()
+    np.testing.assert_allclose(
+        grad_compare.grad.cached_data,
+        np.array(
+            [
+                [2.00000000e10, 9.99999999e08, 1.00000001e08, -9.30685282e00],
+                [0.00000000e00, 9.99999999e08, 1.00000001e08, -9.30685282e00],
+            ]
         ),
         rtol=1e-5,
         atol=1e-5,

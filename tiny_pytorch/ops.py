@@ -197,3 +197,37 @@ class ReLU(Op):
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad * (out_node.realize_cached_data() > 0)
+
+
+class LogSumExp(Op):
+    def __init__(self, axes: tuple | None = None):
+        self.axes = axes
+
+    def compute(self, Z):
+        self.max = array_api.max(Z, axis=self.axes)
+        if self.axes is None:
+            axes = tuple(range(len(Z.shape)))
+            self.max = array_api.array([self.max], dtype=Z.dtype)
+        else:
+            axes = self.axes
+        self.tmp_shape = [1 if i in axes else x for i, x in enumerate(Z.shape)]
+        tmp_max = array_api.reshape(self.max, tuple(self.tmp_shape))
+        self.broadcasted_max = array_api.broadcast_to(tmp_max, Z.shape)
+        return (
+            array_api.log(
+                array_api.sum(
+                    array_api.exp(Z - self.broadcasted_max), self.axes
+                )
+            )
+            + self.max
+        )
+
+    def gradient(self, out_grad, node):
+        Z = node.inputs[0] - Tensor(self.broadcasted_max)
+        log_sum_exp = BroadcastTo(Z.shape)(
+            Reshape(tuple(self.tmp_shape))(Tensor(LogSumExp(self.axes)(Z)))
+        )
+        log_softmax = Z - log_sum_exp
+        return BroadcastTo(Z.shape)(
+            Reshape(tuple(self.tmp_shape))(out_grad)
+        ) * (Exp()(log_softmax))
