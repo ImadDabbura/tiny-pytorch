@@ -112,3 +112,8 @@ class Linear(Module):
             )
             out += bias
         return out
+
+
+class ReLU(Module):
+    def forward(self, x: Tensor) -> Tensor:
+        return ops.ReLU()(x)
