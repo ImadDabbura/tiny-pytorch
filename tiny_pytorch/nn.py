@@ -128,3 +128,14 @@ class Sequential(Module):
         for module in self.modules:
             x = module(x)
         return x
+
+
+class SoftmaxLoss(Module):
+    def forward(self, logits: Tensor, y: Tensor):
+        m, k = logits.shape
+        y_one_hot = init.one_hot(k, y.numpy().tolist())
+        log_sum_exp = ops.BroadcastTo((m, k))(
+            ops.Reshape((m, 1))(ops.LogSumExp((1,))(logits))
+        )
+        log_softmax = logits - log_sum_exp
+        return -ops.Summation()(log_softmax * y_one_hot) / m
