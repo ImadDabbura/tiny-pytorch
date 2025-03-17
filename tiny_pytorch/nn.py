@@ -62,3 +62,53 @@ class Module:
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
+
+
+# TODO: Both weight and biases are initialized with Kaiming uniform
+class Linear(Module):
+    def __init__(
+        self,
+        in_features,
+        out_features,
+        bias=True,
+        device=None,
+        dtype="float32",
+    ):
+        super().__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+
+        self.weight = Parameter(
+            init.kaiming_uniform(
+                in_features,
+                out_features,
+                device=device,
+                dtype=dtype,
+                requires_grad=True,
+            )
+        )
+        if bias:
+            # TODO: bias should be 1D vector and initialized to zero
+            self.bias = Parameter(
+                ops.Reshape((1, out_features))(
+                    init.kaiming_uniform(
+                        out_features,
+                        1,
+                        device=device,
+                        dtype=dtype,
+                        requires_grad=True,
+                    )
+                )
+            )
+
+    def forward(self, X: Tensor) -> Tensor:
+        out = X @ self.weight
+        if self.bias:
+            bias = ops.Reshape(
+                ((1,) * len(X.shape[:-1])) + (self.out_features,)
+            )(self.bias)
+            bias = ops.BroadcastTo(tuple(X.shape[:-1]) + (self.out_features,))(
+                bias
+            )
+            out += bias
+        return out
