@@ -20,12 +20,20 @@ class ScalarAdd(Op):
         return out_grad
 
 
+def add_scalar(a, scalar):
+    return ScalarAdd(scalar)(a)
+
+
 class EWiseAdd(Op):
     def compute(self, x: NDArray, y: NDArray):
         return x + y
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad, out_grad
+
+
+def add(a, b):
+    return EWiseAdd()(a, b)
 
 
 class ScalarMul(Op):
@@ -39,6 +47,10 @@ class ScalarMul(Op):
         return out_grad * self.scalar
 
 
+def mul_scalar(a, scalar):
+    return ScalarMul(scalar)(a)
+
+
 class EWiseMul(Op):
     def compute(self, x: NDArray, y: NDArray):
         return x * y
@@ -47,12 +59,20 @@ class EWiseMul(Op):
         return out_grad * out_node.inputs[1], out_grad * out_node.inputs[0]
 
 
+def multiply(a, b):
+    return EWiseMul()(a, b)
+
+
 class Negate(Op):
     def compute(self, x: NDArray):
         return array_api.negative(x)
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return -out_grad
+
+
+def negate(a):
+    return Negate()(a)
 
 
 class ScalarPower(Op):
@@ -64,6 +84,10 @@ class ScalarPower(Op):
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad * self.scalar * out_node.inputs[0] ** (self.scalar - 1)
+
+
+def power_scalar(a, scalar):
+    return ScalarPower(scalar)(a)
 
 
 class EWisePower(Op):
@@ -79,6 +103,10 @@ class EWisePower(Op):
         # )
 
 
+def power(a, b):
+    return EWisePower()(a, b)
+
+
 class ScalarDivide(Op):
     def __init__(self, scalar):
         self.scalar = scalar
@@ -88,6 +116,10 @@ class ScalarDivide(Op):
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad / self.scalar
+
+
+def divide_scalar(a, scalar):
+    return ScalarDivide(scalar)(a)
 
 
 class EWiseDivide(Op):
@@ -100,6 +132,10 @@ class EWiseDivide(Op):
         )
 
 
+def divide(a, b):
+    return EWiseDivide()(a, b)
+
+
 class Reshape(Op):
     def __init__(self, shape):
         self.shape = shape
@@ -109,6 +145,10 @@ class Reshape(Op):
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return Reshape(out_node.inputs[0].shape)(out_grad)
+
+
+def reshape(a, shape):
+    return Reshape(shape)(a)
 
 
 class Summation(Op):
@@ -124,6 +164,10 @@ class Summation(Op):
         tmp_shape = [1 if i in axes else x for i, x in enumerate(input_shape)]
         tmp_out = Reshape(tuple(tmp_shape))(out_grad)
         return BroadcastTo(input_shape)(tmp_out)
+
+
+def summation(a, axes=None):
+    return Summation(axes)(a)
 
 
 class BroadcastTo(Op):
@@ -145,6 +189,10 @@ class BroadcastTo(Op):
         return out
 
 
+def broadcast_to(a, shape):
+    return BroadcastTo(shape)(a)
+
+
 class Transpose(Op):
     def __init__(self, axes: tuple | None = None):
         self.axes = axes
@@ -156,6 +204,10 @@ class Transpose(Op):
 
     def gradient(self, out_grad, node):
         return Transpose(self.axes[::-1])(out_grad)
+
+
+def transpose(a, axes=None):
+    return Transpose(axes)(a)
 
 
 class MatMul(Op):
@@ -175,12 +227,20 @@ class MatMul(Op):
         return lhs, rhs
 
 
+def matmul(a, b):
+    return MatMul()(a, b)
+
+
 class Log(Op):
     def compute(self, x: NDArray):
         return array_api.log(x)
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad / out_node.inputs[0]
+
+
+def log(a):
+    return Log()(a)
 
 
 class Exp(Op):
@@ -191,12 +251,20 @@ class Exp(Op):
         return out_grad * Exp()(out_node.inputs[0])
 
 
+def exp(a):
+    return Exp()(a)
+
+
 class ReLU(Op):
     def compute(self, x: NDArray):
         return array_api.maximum(0, x)
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad * (out_node.realize_cached_data() > 0)
+
+
+def relu(a):
+    return ReLU()(a)
 
 
 class LogSumExp(Op):
@@ -231,3 +299,7 @@ class LogSumExp(Op):
         return BroadcastTo(Z.shape)(
             Reshape(tuple(self.tmp_shape))(out_grad)
         ) * (Exp()(log_softmax))
+
+
+def logsumexp(a, axes=None):
+    return LogSumExp(axes=axes)(a)
