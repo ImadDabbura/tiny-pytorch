@@ -1150,3 +1150,43 @@ def test_nn_flatten_backward_5():
         rtol=1e-5,
         atol=1e-5,
     )
+
+
+def dropout_forward(shape, prob=0.5):
+    np.random.seed(3)
+    x = get_tensor(*shape)
+    f = nn.Dropout(prob)
+    return f(x).cached_data
+
+
+def dropout_backward(shape, prob=0.5):
+    np.random.seed(3)
+    x = get_tensor(*shape)
+    f = nn.Dropout(prob)
+    y = f(x).sum()
+    y.backward()
+    return x.grad.cached_data
+
+
+def test_nn_dropout_forward_1():
+    np.testing.assert_allclose(
+        dropout_forward((2, 3), prob=0.45),
+        np.array(
+            [[6.818182, 0.0, 0.0], [0.18181819, 0.0, 6.090909]],
+            dtype=np.float32,
+        ),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_nn_dropout_backward_1():
+    np.testing.assert_allclose(
+        dropout_backward((2, 3), prob=0.26),
+        np.array(
+            [[1.3513514, 0.0, 0.0], [1.3513514, 0.0, 1.3513514]],
+            dtype=np.float32,
+        ),
+        rtol=1e-5,
+        atol=1e-5,
+    )

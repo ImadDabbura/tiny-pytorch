@@ -173,3 +173,15 @@ class Flatten(Module):
     def forward(self, X):
         shape = X.shape
         return ops.Reshape((shape[0], reduce(mul, shape[1:])))(X)
+
+
+class Dropout(Module):
+    def __init__(self, p=0.5):
+        super().__init__()
+        self.p = p
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.training:
+            mask = init.randb(*x.shape, p=(1 - self.p))
+            return (mask * x) / (1 - self.p)
+        return x
