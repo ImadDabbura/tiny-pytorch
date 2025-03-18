@@ -139,3 +139,29 @@ class SoftmaxLoss(Module):
         )
         log_softmax = logits - log_sum_exp
         return -ops.Summation()(log_softmax * y_one_hot) / m
+
+
+class LayerNorm1d(Module):
+    def __init__(self, dim, eps=1e-5, device=None, dtype="float32"):
+        super().__init__()
+        self.dim = dim
+        self.eps = eps
+        self.weight = Parameter(init.ones(dim, device=device, dtype=dtype))
+        self.bias = Parameter(init.zeros(dim, device=device, dtype=dtype))
+
+    def forward(self, x: Tensor) -> Tensor:
+        m = x.shape[0]
+        mean = ops.Summation((1,))(x) / self.dim
+        mean = ops.BroadcastTo((m, self.dim))(ops.Reshape((m, 1))(mean))
+        var = ops.Summation((1,))((x - mean) ** 2) / self.dim
+        var = ops.BroadcastTo((m, self.dim))(ops.Reshape((m, 1))(var))
+        x = (x - mean) / ((var + self.eps) ** 0.5)
+        weight = ops.BroadcastTo((m, self.dim))(
+            ops.Reshape((1, self.dim))(self.weight)
+        )
+        bias = ops.BroadcastTo((m, self.dim))(
+            ops.Reshape((1, self.dim))(self.bias)
+        )
+        if self.training:
+            return weight * x + bias
+        return weight.data * x + bias.data
