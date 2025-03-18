@@ -1,3 +1,5 @@
+from functools import reduce
+from operator import mul
 from typing import Any
 
 from . import init, ops
@@ -165,3 +167,9 @@ class LayerNorm1d(Module):
         if self.training:
             return weight * x + bias
         return weight.data * x + bias.data
+
+
+class Flatten(Module):
+    def forward(self, X):
+        shape = X.shape
+        return ops.Reshape((shape[0], reduce(mul, shape[1:])))(X)
