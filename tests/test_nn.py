@@ -158,7 +158,6 @@ def test_nn_linear_backward_1():
 
 
 def test_nn_linear_backward_2():
-    print(linear_backward((10, 5), (3, 10)))
     np.testing.assert_allclose(
         linear_backward((10, 5), (3, 10)),
         np.array(
@@ -208,7 +207,6 @@ def test_nn_linear_backward_2():
 
 
 def test_nn_linear_backward_3():
-    print(linear_backward((10, 5), (1, 3, 10)))
     np.testing.assert_allclose(
         linear_backward((10, 5), (1, 3, 10)),
         np.array(
@@ -306,7 +304,6 @@ def sequential_backward(batches=3):
 
 
 def test_nn_sequential_forward_1():
-    print(sequential_forward(batches=3))
     np.testing.assert_allclose(
         sequential_forward(batches=3),
         np.array(
@@ -1198,7 +1195,6 @@ def residual_forward(shape=(5, 5)):
         nn.Sequential(nn.Linear(*shape), nn.ReLU(), nn.Linear(*shape[::-1]))
     )
     x = get_tensor(*shape[::-1])
-    print(x)
     return f(x).cached_data
 
 
