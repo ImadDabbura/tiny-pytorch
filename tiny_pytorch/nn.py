@@ -14,11 +14,47 @@ class Parameter(Tensor):
     """
 
 
+def _unpack_params(value: object) -> list[Tensor]:
+    if isinstance(value, Parameter):
+        return [value]
+    elif isinstance(value, Module):
+        return value.parameters()
+    elif isinstance(value, dict):
+        params = []
+        for k, v in value.items():
+            params += _unpack_params(v)
+        return params
+    elif isinstance(value, (list, tuple)):
+        params = []
+        for v in value:
+            params += _unpack_params(v)
+        return params
+    else:
+        return []
+
+
+def _child_modules(value: object) -> list["Module"]:
+    if isinstance(value, Module):
+        modules = [value]
+        modules.extend(_child_modules(value.__dict__))
+        return modules
+    if isinstance(value, dict):
+        modules = []
+        for v in value.values():
+            modules += _child_modules(v)
+        return modules
+    elif isinstance(value, (list, tuple)):
+        modules = []
+        for v in value:
+            modules += _child_modules(v)
+        return modules
+    else:
+        return []
+
+
 class Module:
     def __init__(self):
         self._training = True
-        self._params = []
-        self._children = []
 
     @property
     def training(self) -> bool:
@@ -27,40 +63,21 @@ class Module:
     @training.setter
     def training(self, value):
         self._training = value
-        for module in self._children:
+        for module in self.children():
             module.training = value
-
-    def register_params(self, *params):
-        self._params += params
-
-    def register_modules(self, *modules):
-        self._children += modules
 
     def parameters(self) -> list[Tensor]:
         """Return the list of parameters in the module."""
-        return self._params + sum(
-            [module.parameters() for module in self._children], []
-        )
+        return _unpack_params(self.__dict__)
 
-    def children(self):
-        return self._children
+    def children(self) -> list["Module"]:
+        return _child_modules(self.__dict__)
 
     def eval(self):
-        self._training = False
-        for module in self.children():
-            module.training = False
+        self.training = False
 
     def train(self):
-        self._training = True
-        for module in self.children():
-            module.training = True
-
-    def __setattr__(self, k, v):
-        super().__setattr__(k, v)
-        if isinstance(v, Parameter):
-            self.register_params(v)
-        elif isinstance(v, Module):
-            self.register_modules(v)
+        self.training = True
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
