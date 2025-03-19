@@ -211,3 +211,57 @@ class Residual(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         return self.fn(x) + x
+
+
+class BatchNorm1d(Module):
+    def __init__(
+        self, dim, eps=1e-5, momentum=0.1, device=None, dtype="float32"
+    ):
+        super().__init__()
+        self.dim = dim
+        self.eps = eps
+        self.momentum = momentum
+        self.weight = Parameter(init.ones(dim, device=device, dtype=dtype))
+        self.bias = Parameter(init.zeros(dim, device=device, dtype=dtype))
+        self.running_mean = init.zeros(
+            dim, device=device, dtype=dtype, requires_grad=False
+        )
+        self.running_var = init.ones(
+            dim, device=device, dtype=dtype, requires_grad=False
+        )
+
+    def forward(self, x: Tensor) -> Tensor:
+        m = x.shape[0]
+        if self.training:
+            mean = ops.summation(x, 0) / m
+            self.running_mean = (
+                1 - self.momentum
+            ) * self.running_mean + self.momentum * mean
+            mean = ops.broadcast_to(
+                ops.reshape(mean, (1, self.dim)), (m, self.dim)
+            )
+
+            var = ops.summation((x - mean) ** 2, 0) / m
+            self.running_var = (
+                1 - self.momentum
+            ) * self.running_var + self.momentum * var
+            var = ops.broadcast_to(
+                ops.reshape(var, (1, self.dim)), (m, self.dim)
+            )
+        else:
+            mean = ops.broadcast_to(
+                ops.reshape(self.running_mean, (1, self.dim)), (m, self.dim)
+            )
+            var = ops.broadcast_to(
+                ops.reshape(self.running_var, (1, self.dim)), (m, self.dim)
+            )
+        x = (x - mean) / ((var + self.eps) ** 0.5)
+        weight = ops.broadcast_to(
+            ops.reshape(self.weight, (1, self.dim)), (m, self.dim)
+        )
+        bias = ops.broadcast_to(
+            ops.reshape(self.bias, (1, self.dim)), (m, self.dim)
+        )
+        if self.training:
+            return weight * x + bias
+        return weight.data * x + bias.data
