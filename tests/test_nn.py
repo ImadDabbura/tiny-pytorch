@@ -1190,3 +1190,59 @@ def test_nn_dropout_backward_1():
         rtol=1e-5,
         atol=1e-5,
     )
+
+
+def residual_forward(shape=(5, 5)):
+    np.random.seed(42)
+    f = nn.Residual(
+        nn.Sequential(nn.Linear(*shape), nn.ReLU(), nn.Linear(*shape[::-1]))
+    )
+    x = get_tensor(*shape[::-1])
+    print(x)
+    return f(x).cached_data
+
+
+def residual_backward(shape=(5, 5)):
+    np.random.seed(42)
+    f = nn.Residual(
+        nn.Sequential(nn.Linear(*shape), nn.ReLU(), nn.Linear(*shape[::-1]))
+    )
+    x = get_tensor(*shape[::-1])
+    f(x).sum().backward()
+    return x.grad.cached_data
+
+
+def test_nn_residual_forward_1():
+    np.testing.assert_allclose(
+        residual_forward(),
+        np.array(
+            [
+                [0.4660964, 3.8619597, -3.637068, 3.7489638, 2.4931884],
+                [-3.3769124, 2.5409935, -2.7110925, 4.9782896, -3.005401],
+                [-3.0222898, 3.796795, -2.101042, 6.785948, 0.9347453],
+                [-2.2496533, 3.635599, -2.1818666, 5.6361046, 0.9748006],
+                [-0.03458184, 0.0823682, -0.06686163, 1.9169499, 1.2638961],
+            ],
+            dtype=np.float32,
+        ),
+        rtol=1e-5,
+        atol=1e-5,
+    )
+
+
+def test_nn_residual_backward_1():
+    np.testing.assert_allclose(
+        residual_backward(),
+        np.array(
+            [
+                [0.24244219, -0.19571924, -0.08556509, 0.9191598, 1.6787351],
+                [0.24244219, -0.19571924, -0.08556509, 0.9191598, 1.6787351],
+                [0.24244219, -0.19571924, -0.08556509, 0.9191598, 1.6787351],
+                [0.24244219, -0.19571924, -0.08556509, 0.9191598, 1.6787351],
+                [0.24244219, -0.19571924, -0.08556509, 0.9191598, 1.6787351],
+            ],
+            dtype=np.float32,
+        ),
+        rtol=1e-5,
+        atol=1e-5,
+    )

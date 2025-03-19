@@ -185,3 +185,12 @@ class Dropout(Module):
             mask = init.randb(*x.shape, p=(1 - self.p))
             return (mask * x) / (1 - self.p)
         return x
+
+
+class Residual(Module):
+    def __init__(self, fn: Module):
+        super().__init__()
+        self.fn = fn
+
+    def forward(self, x: Tensor) -> Tensor:
+        return self.fn(x) + x
