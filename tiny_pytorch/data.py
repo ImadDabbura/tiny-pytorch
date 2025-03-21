@@ -4,6 +4,8 @@ from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 from typing import Callable, Iterable, Iterator
 
+import numpy as np
+
 from .tensor import Tensor
 
 
@@ -139,3 +141,28 @@ class DataLoader:
             yield from ex.map(
                 partial(self.collate_fn, ds=self.dataset), self.batch_sampler
             )
+
+
+class Transform:
+    def __call__(self, x):
+        raise NotImplementedError()
+
+
+class RandomFlipHorizontal(Transform):
+    """Horizonally flip an image, specified as n H x W x C NDArray."""
+
+    def __init__(self, p: int = 0.5):
+        self.p = p
+
+    def __call__(self, img):
+        """
+        Args:
+            img: H x W x C NDArray of an image
+        Returns:
+            H x W x C ndarray corresponding to image flipped with probability self.p
+        Note: use the provided code to provide randomness, for easier testing
+        """
+        flip_img = np.random.rand() < self.p
+        if flip_img:
+            return np.flip(img, 1)
+        return img
