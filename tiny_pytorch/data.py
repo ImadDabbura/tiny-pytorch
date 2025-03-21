@@ -1,4 +1,6 @@
+import itertools
 import random
+from typing import Iterable, Iterator
 
 
 class Dataset:
@@ -45,3 +47,31 @@ class Sampler:
         if self.shuffle:
             random.shuffle(res)
         return iter(res)
+
+
+class BatchSampler:
+    def __init__(
+        self,
+        sampler: Sampler | Iterable[int],
+        batch_size: int,
+        drop_last: bool = False,
+    ):
+        self.sampler = sampler
+        self.batch_size = batch_size
+        self.drop_last = drop_last
+
+    def __iter__(self):
+        yield from BatchSampler.chunked(
+            iter(self.sampler), self.batch_size, drop_last=self.drop_last
+        )
+
+    @staticmethod
+    def chunked(it, chunk_sz=None, drop_last=False):
+        if not isinstance(it, Iterator):
+            it = iter(it)
+        while True:
+            res = list(itertools.islice(it, chunk_sz))
+            if res and (len(res) == chunk_sz or not drop_last):
+                yield res
+            if len(res) < chunk_sz:
+                return
