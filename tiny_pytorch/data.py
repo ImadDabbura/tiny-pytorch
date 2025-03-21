@@ -1,3 +1,6 @@
+import random
+
+
 class Dataset:
     r"""An abstract class representing a `Dataset`.
 
@@ -30,3 +33,15 @@ class NDArrayDataset(Dataset):
 
     def __getitem__(self, i) -> object:
         return tuple([a[i] for a in self.arrays])
+
+
+class Sampler:
+    def __init__(self, ds: Dataset, shuffle: bool = False):
+        self.n = len(ds)
+        self.shuffle = shuffle
+
+    def __iter__(self):
+        res = list(range(self.n))
+        if self.shuffle:
+            random.shuffle(res)
+        return iter(res)
