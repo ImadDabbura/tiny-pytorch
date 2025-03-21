@@ -1,4 +1,5 @@
 import itertools
+import math
 import random
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
@@ -166,3 +167,39 @@ class RandomFlipHorizontal(Transform):
         if flip_img:
             return np.flip(img, 1)
         return img
+
+
+class RandomCrop(Transform):
+    """Zero pad and then randomly crop an image."""
+
+    def __init__(self, padding=3):
+        self.padding = padding
+
+    def __call__(self, img):
+        """
+        Args:
+             img: H x W x C NDArray of an image
+        Return
+            H x W x C NAArray of cliped image
+        Note: generate the image shifted by shift_x, shift_y specified below
+        """
+        shift_x, shift_y = np.random.randint(
+            low=-self.padding, high=self.padding + 1, size=2
+        )
+        if len(img.shape) < 3:
+            size = int(math.sqrt(img.shape[0]))
+            img = img.reshape(size, size, 1)
+        h, w, _ = img.shape
+        top_left = self.padding + shift_x
+        bottom_left = self.padding + shift_y
+        padded_img = np.pad(
+            img,
+            pad_width=(
+                (self.padding, self.padding),
+                (self.padding, self.padding),
+                (0, 0),
+            ),
+        )
+        return padded_img[
+            top_left : top_left + h, bottom_left : bottom_left + w, :
+        ]
