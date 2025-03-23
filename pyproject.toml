@@ -24,6 +24,12 @@ isort = "^6.0"
 flake8 = "^7.1"
 pre-commit = "^4.1"
 
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6"
+mkdocs-material = "^9.6"
+mkdocstrings-python = "^1.16"
+
 [tool.black]
 line-length = 79
 include = '\.pyi?$'
