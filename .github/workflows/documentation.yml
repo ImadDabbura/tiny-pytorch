@@ -1,0 +1,36 @@
+name: Documentation builder
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "tiny_pytorch/**"
+      - "docs/**"
+      - "mkdocs.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "tiny_pytorch/**"
+      - "docs/**"
+      - "mkdocs.yml"
+permissions:
+  contents: write
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "poetry"
+      - name: Install docs dependencies
+        run: |
+          poetry install --only docs
+      - name: Deploy documentation
+        run: poetry run mkdocs gh-deploy --force
