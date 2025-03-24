@@ -1,0 +1,73 @@
+site_name: tiny_pytorch
+nav:
+  - Home: index.md
+  - Tensor: tensor.md
+  - Utils: utils.md
+  - Optimizer: optim.md
+  - NN: nn.md
+  - Initialization: init.md
+  - Data: data.md
+  - Operators: ops.md
+  - Device: device.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: false
+            docstring_style: numpy
+            docstring_section_style: list
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+  features:
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github-alt
+  language: en
+repo_name: ImadDabbura/tiny-pytorch
+repo_url: https://github.com/ImadDabbura/tiny-pytorch
+edit_uri: ""
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/ImadDabbura/tiny-pytorch
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/ImadPhd
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/imaddabbura/
+    - icon: fontawesome/brands/medium
+      link: https://medium.com/@ImadPhd
+    - icon: fontawesome/solid/globe
+      link: https://imaddabbura.github.io/
+watch:
+  - .
