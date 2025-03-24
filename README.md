@@ -54,9 +54,9 @@ the computation.
         `DataLoader`.
 - **Phase II**:
   - [ ] `NDArray`: A generic class that supports multiple backends and
-        provide us with *strided\*\* array. All the underlying arrays are flat
+        provide us with _strided_ array. All the underlying arrays are flat
         arrays stored in row-major order, but `NDArray` will help us represent
-        any multi-dimensional arrays using *offset, strides, shape\*.
+        any multi-dimensional arrays using _offset, strides, shape_.
   - [ ] Numpy backend (default backend)
   - [ ] CPU backend
   - [ ] Cuda backend
@@ -65,6 +65,11 @@ the computation.
   - [ ] RNN
   - [ ] LSTM
   - [ ] LLM
+
+## Documentation
+
+The official documentation is hosted on
+https://imaddabbura.github.io/tiny-pytorch/.
 
 ## Limitations
 
