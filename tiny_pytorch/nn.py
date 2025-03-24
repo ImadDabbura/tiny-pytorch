@@ -1,3 +1,34 @@
+"""
+This module provides a set of classes and functions for building neural networks.
+
+Classes
+-------
+Module
+    Base class for all neural network modules.
+Parameter
+    A special kind of tensor that represents parameters. It acts as a marker
+    so modules can be able to identify learnable parameters. All `Parameter`
+    tensors have require_grad set to True.
+BatchNorm1d
+    Batch normalization module.
+LayerNorm1d
+    Layer normalization module.
+Dropout
+    Dropout module.
+Linear
+    Linear transformation module.
+Sequential
+    Sequential container module.
+Residual
+    Residual connection module.
+ReLU
+    ReLU activation module.
+SoftmaxLoss
+    Softmax loss module.
+Flatten
+    Flatten module.
+"""
+
 from functools import reduce
 from operator import mul
 from typing import Any
@@ -53,6 +84,15 @@ def _child_modules(value: object) -> list["Module"]:
 
 
 class Module:
+    """
+    Base class for all neural network modules. Your module should also subclass this.
+
+    Attributes
+    ----------
+    training : bool
+        Whether the module is in training mode or not.
+    """
+
     def __init__(self):
         self._training = True
 
@@ -67,24 +107,75 @@ class Module:
             module.training = value
 
     def parameters(self) -> list[Tensor]:
+        """
+        Returns
+        -------
+        list[Tensor]
+            A list of tensors representing the parameters of the module.
+        """
         """Return the list of parameters in the module."""
         return _unpack_params(self.__dict__)
 
     def children(self) -> list["Module"]:
+        """
+        Return the list of child modules in the module.
+
+        Returns
+        -------
+        list["Module"]
+            List of child modules in the module.
+        """
         return _child_modules(self.__dict__)
 
     def eval(self):
+        """
+        Sets the module in evaluation mode.
+
+        This method sets the `training` attribute to `False`, which affects the behavior of certain modules like dropout and batch normalization. It also recursively sets the `training` attribute of all child modules.
+
+        Notes
+        -----
+        This method is a no-op if the module is already in evaluation mode.
+        """
         self.training = False
 
     def train(self):
+        """
+        Sets the module in training mode.
+
+        This method sets the `training` attribute to `True`, which affects the behavior of certain modules like dropout and batch normalization. It also recursively sets the `training` attribute of all child modules.
+
+        Notes
+        -----
+        This method is a no-op if the module is already in training mode.
+        """
         self.training = True
 
     def __call__(self, *args, **kwargs):
+        """
+        Forward pass of the module.
+
+        Returns
+        -------
+        Tensor
+            The output tensor of the forward pass.
+        """
         return self.forward(*args, **kwargs)
 
 
 # TODO: Both weight and biases are initialized with Kaiming uniform
 class Linear(Module):
+    """
+    Applies a linear transformation to the input data.
+
+    Attributes
+    ----------
+    weight : Tensor
+        The learnable weights of the module of shape `(in_features, out_features)`.
+    bias : Tensor, optional
+        The learnable bias of the module of shape `(1, out_features)`.
+    """
+
     def __init__(
         self,
         in_features,
@@ -93,6 +184,20 @@ class Linear(Module):
         device=None,
         dtype="float32",
     ):
+        """
+        Parameters
+        ----------
+        in_features : int
+            Size of each input sample.
+        out_features : int
+            Size of each output sample.
+        bias : bool, optional
+            If set to `False`, the layer will not learn an additive bias. Default is `True`.
+        device : Device, optional
+            Device on which to place the tensor. Default is CPU.
+        dtype : str, optional
+            Data type of the tensor. Default is "float32".
+        """
         super().__init__()
         self.in_features = in_features
         self.out_features = out_features
@@ -134,11 +239,39 @@ class Linear(Module):
 
 
 class ReLU(Module):
+    """
+    Applies the rectified linear unit (ReLU) activation function element-wise.
+
+    Parameters
+    ----------
+    x : Tensor
+        Input tensor.
+
+    Returns
+    -------
+    Tensor
+        Output tensor with ReLU activation applied element-wise.
+    """
+
     def forward(self, x: Tensor) -> Tensor:
         return ops.ReLU()(x)
 
 
 class Sequential(Module):
+    """
+    Applies a sequence of modules to the input.
+
+    Parameters
+    ----------
+    *modules : Module
+        A sequence of modules to apply to the input.
+
+    Returns
+    -------
+    Tensor
+        The output tensor after applying all modules in sequence.
+    """
+
     def __init__(self, *modules):
         super().__init__()
         self.modules = modules
@@ -150,6 +283,22 @@ class Sequential(Module):
 
 
 class SoftmaxLoss(Module):
+    """
+    Computes the softmax loss between logits and labels.
+
+    Parameters
+    ----------
+    logits : Tensor
+        Input logits tensor.
+    y : Tensor
+        Ground truth labels tensor.
+
+    Returns
+    -------
+    Tensor
+        The softmax loss between logits and labels.
+    """
+
     def forward(self, logits: Tensor, y: Tensor):
         m, k = logits.shape
         y_one_hot = init.one_hot(k, y.numpy().tolist())
@@ -161,6 +310,28 @@ class SoftmaxLoss(Module):
 
 
 class LayerNorm1d(Module):
+    """
+    Applies layer normalization to the input tensor.
+
+    Parameters
+    ----------
+    x : Tensor
+        Input tensor to apply layer normalization.
+    dim : int
+        Dimension to normalize.
+    eps : float, optional
+        Epsilon for numerical stability. Default is 1e-5.
+    device : Device, optional
+        Device on which to place the tensor. Default is CPU.
+    dtype : str, optional
+        Data type of the tensor. Default is "float32".
+
+    Returns
+    -------
+    Tensor
+        Normalized tensor.
+    """
+
     def __init__(self, dim, eps=1e-5, device=None, dtype="float32"):
         super().__init__()
         self.dim = dim
@@ -187,12 +358,45 @@ class LayerNorm1d(Module):
 
 
 class Flatten(Module):
+    """
+    Flattens the input tensor into a 2D tensor.
+
+    Parameters
+    ----------
+    X : Tensor
+        Input tensor to be flattened.
+
+    Returns
+    -------
+    Tensor
+        Flattened tensor.
+    """
+
     def forward(self, X):
         shape = X.shape
         return ops.Reshape((shape[0], reduce(mul, shape[1:])))(X)
 
 
 class Dropout(Module):
+    """
+    Applies dropout to the input tensor.
+
+    Parameters
+    ----------
+    p : float, optional
+        Probability of an element to be dropped. Default is 0.5.
+
+    Attributes
+    ----------
+    p : float
+        Probability of an element to be dropped.
+
+    Methods
+    -------
+    forward(x)
+        Applies dropout to the input tensor `x`.
+    """
+
     def __init__(self, p=0.5):
         super().__init__()
         self.p = p
@@ -205,6 +409,25 @@ class Dropout(Module):
 
 
 class Residual(Module):
+    """
+    Applies a residual connection to the input tensor.
+
+    Parameters
+    ----------
+    fn : Module
+        The module to apply before adding the residual connection.
+
+    Attributes
+    ----------
+    fn : Module
+        The module to apply before adding the residual connection.
+
+    Methods
+    -------
+    forward(x)
+        Applies the residual connection to the input tensor `x`.
+    """
+
     def __init__(self, fn: Module):
         super().__init__()
         self.fn = fn
@@ -214,6 +437,45 @@ class Residual(Module):
 
 
 class BatchNorm1d(Module):
+    """
+    Applies batch normalization to the input tensor.
+
+    Parameters
+    ----------
+    dim : int
+        Number of dimensions in the input tensor.
+    eps : float, optional
+        Value added to the denominator for numerical stability. Default is 1e-5.
+    momentum : float, optional
+        Momentum for the moving average. Default is 0.1.
+    device : Device, optional
+        Device on which to place the tensor. Default is CPU.
+    dtype : str, optional
+        Data type of the tensor. Default is "float32".
+
+    Attributes
+    ----------
+    dim : int
+        Number of dimensions in the input tensor.
+    eps : float
+        Value added to the denominator for numerical stability.
+    momentum : float
+        Momentum for the moving average.
+    weight : Parameter
+        Learnable weight parameter.
+    bias : Parameter
+        Learnable bias parameter.
+    running_mean : Tensor
+        Running mean of the input tensor.
+    running_var : Tensor
+        Running variance of the input tensor.
+
+    Methods
+    -------
+    forward(x)
+        Applies batch normalization to the input tensor `x`.
+    """
+
     def __init__(
         self, dim, eps=1e-5, momentum=0.1, device=None, dtype="float32"
     ):

@@ -28,6 +28,21 @@ class Op:
 
 
 class Tensor:
+    """
+    Tensor is the fundamental data structure in tiny_pytorch. It is a multi-dimensional array of numerical values used to represent inputs, outputs, and intermediate results in a computation graph.
+
+    Attributes
+    ----------
+    cached_data : list[object]
+        The cached data of the tensor.
+    inputs : list[Tensor]
+        The input tensors to the operation that produced this tensor.
+    op : Op
+        The operation that produced this tensor.
+    requires_grad : bool
+        If True, the tensor will track gradients.
+    """
+
     def __init__(
         self,
         array,
@@ -36,7 +51,20 @@ class Tensor:
         dtype: str | None = None,
         requires_grad: bool = True,
     ) -> None:
-        """Construct a Tensor by copying `array`."""
+        """
+        Construct a Tensor by copying `array`.
+
+        Parameters
+        ----------
+        array : object
+            The array to be copied.
+        device : Device, optional
+            The device on which to place the tensor. Default is None.
+        dtype : str, optional
+            The data type of the tensor. Default is None.
+        requires_grad : bool, optional
+            If True, the tensor will track gradients. Default is True.
+        """
         if isinstance(array, Tensor):
             device = array.device if not device else device
             dtype = array.dtype if not dtype else dtype
@@ -96,18 +124,50 @@ class Tensor:
 
     @property
     def shape(self):
+        """
+        Returns the shape of the tensor as a tuple.
+
+        Returns
+        -------
+        tuple
+            Shape of the tensor.
+        """
         return self.realize_cached_data().shape
 
     @property
     def ndim(self):
+        """
+        Returns the number of dimensions of the tensor.
+
+        Returns
+        -------
+        int
+            Number of dimensions of the tensor.
+        """
         return self.realize_cached_data().ndim
 
     @property
     def dtype(self):
+        """
+        Returns the data type of the tensor.
+
+        Returns
+        -------
+        dtype : numpy.dtype
+            The data type of the tensor.
+        """
         return self.realize_cached_data().dtype
 
     @property
     def device(self):
+        """
+        Returns the device on which the tensor is stored.
+
+        Returns
+        -------
+        device : Device
+            The device on which the tensor is stored.
+        """
         if array_api is np:
             return cpu()
         return self.realize_cached_data().device
@@ -206,18 +266,83 @@ class Tensor:
         return tiny_pytorch.ops.MatMul()(self, other)
 
     def sum(self, axes=None):
+        """
+        Returns the sum of elements over specified axes.
+
+        Parameters
+        ----------
+        axes : None or int or tuple of ints, optional
+            Axis or axes along which a sum is performed. The default is to sum all of the elements of the input tensor.
+
+        Returns
+        -------
+        Tensor
+            A new tensor with the sum of elements over specified axes.
+        """
         return tiny_pytorch.ops.Summation(axes)(self)
 
     def reshape(self, shape):
+        """
+        Reshapes the tensor to the specified shape.
+
+        Parameters
+        ----------
+        shape : tuple of ints
+            The new shape of the tensor.
+
+        Returns
+        -------
+        Tensor
+            A new tensor with the specified shape.
+        """
         return tiny_pytorch.ops.Reshape(shape)(self)
 
     def broadcast_to(self, shape):
+        """
+        Broadcasts the tensor to the specified shape.
+
+        Parameters
+        ----------
+        shape : tuple of ints
+            The new shape of the tensor.
+
+        Returns
+        -------
+        Tensor
+            A new tensor with the specified shape.
+        """
         return tiny_pytorch.ops.BroadcastTo(shape)(self)
 
     def transpose(self, axes=None):
+        """
+        Transposes the tensor according to the specified axes.
+
+        Parameters
+        ----------
+        axes : tuple of ints, optional
+            By default, reverse the dimensions, otherwise permute the axes according to the values given.
+
+        Returns
+        -------
+        Tensor
+            A new tensor with the specified axes transposed.
+        """
         return tiny_pytorch.ops.Transpose(axes)(self)
 
     def backward(self, out_grad: Tensor | None = None):
+        """
+        Computes the gradients of the tensor with respect to the output gradient.
+
+        Parameters
+        ----------
+        out_grad : Tensor, optional
+            The gradient of the output with respect to which the gradients are computed. If None, a tensor of ones is used.
+
+        Returns
+        -------
+        None
+            This method updates the `grad` attribute of the tensor and its dependencies with the computed gradients.
+        """
         out_grad = (
             out_grad if out_grad else Tensor(self.device.ones(self.shape))
         )
