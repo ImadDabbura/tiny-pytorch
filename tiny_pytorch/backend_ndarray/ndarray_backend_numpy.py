@@ -1,3 +1,5 @@
+from typing import Sequence
+
 import numpy as np
 
 __device_name__ = "numpy"
@@ -25,3 +27,12 @@ def from_numpy(array: np.ndarray, out: Array) -> None:
     # This means that we're copying the content of the array into out which
     # means the handler `array` will now point to the newly copied array
     out.array[:] = array.flatten()
+
+
+def to_numpy(
+    a: Array, shape: Sequence[int], strides: Sequence[int], offset: int
+):
+    """Creates a view on the `a` Array."""
+    return np.lib.stride_tricks.as_strided(
+        a.array[offset:], shape, [s * _datatype_size for s in strides]
+    )
