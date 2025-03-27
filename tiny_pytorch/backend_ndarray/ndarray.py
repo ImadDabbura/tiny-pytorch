@@ -164,3 +164,24 @@ class NDArray:
     def fill(self, value):
         """Fill in-place with a constant value."""
         self._device.fill(self._handle, value)
+
+    def is_compact(self):
+        """
+        Return true if array is compact in memory and internal size equals
+        product of the shape dimensions.
+        """
+        # An array is contiguous is it has the same strides as row-major order
+        # and offset = 0 (i.e. same size as the original array)
+        return self._strides == NDArray.compact_strides(
+            self._shape
+        ) and self.size == prod(self._handle.shape)
+
+    def compact(self):
+        """Convert NDArray to be compact if it is not already compact."""
+        if self.is_compact():
+            return self
+        out = NDArray.make(self._shape, device=self._device)
+        self.device.compact(
+            self._handle, out._handle, self._shape, self._strides, self._offset
+        )
+        return out
