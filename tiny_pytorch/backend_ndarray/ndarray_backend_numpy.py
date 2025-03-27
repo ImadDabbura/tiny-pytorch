@@ -36,3 +36,7 @@ def to_numpy(
     return np.lib.stride_tricks.as_strided(
         a.array[offset:], shape, [s * _datatype_size for s in strides]
     )
+
+
+def fill(a: Array, value):
+    a.array.fill(value)
