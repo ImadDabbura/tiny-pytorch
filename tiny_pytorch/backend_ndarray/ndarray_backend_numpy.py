@@ -40,3 +40,17 @@ def to_numpy(
 
 def fill(a: Array, value):
     a.array.fill(value)
+
+
+def compact(
+    a: Array,
+    out: Array,
+    shape: Sequence[int],
+    strides: Sequence[int],
+    offset: int,
+):
+    """
+    First creates strided view of `a` array then flatten it out to get a
+    compact array that adheres to the shape/strides/offset.
+    """
+    out.array[:] = to_numpy(a, shape, strides, offset).flatten()
