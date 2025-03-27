@@ -174,7 +174,7 @@ class NDArray:
         # and offset = 0 (i.e. same size as the original array)
         return self._strides == NDArray.compact_strides(
             self._shape
-        ) and self.size == prod(self._handle.shape)
+        ) and self._handle.size == prod(self._shape)
 
     def compact(self):
         """Convert NDArray to be compact if it is not already compact."""
