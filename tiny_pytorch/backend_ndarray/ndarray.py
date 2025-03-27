@@ -160,3 +160,7 @@ class NDArray:
 
     def __repr__(self):
         return f"NDArray({str(self)}, device={self.device})"
+
+    def fill(self, value):
+        """Fill in-place with a constant value."""
+        self._device.fill(self._handle, value)
