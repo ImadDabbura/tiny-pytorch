@@ -185,3 +185,10 @@ class NDArray:
             self._handle, out._handle, self._shape, self._strides, self._offset
         )
         return out
+
+    def as_strided(self, shape, strides):
+        """
+        Create a strided view of the underlying memory without copying anything.
+        """
+        assert len(shape) == len(strides)
+        return NDArray.make(shape, strides, self._device, self._handle)
