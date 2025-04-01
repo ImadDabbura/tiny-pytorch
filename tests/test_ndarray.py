@@ -40,8 +40,32 @@ import tiny_pytorch.backend_ndarray.ndarray as nd
             "np_fn": lambda X: np.broadcast_to(X, shape=(4, 5, 4)),
             "nd_fn": lambda X: X.broadcast_to((4, 5, 4)),
         },
+        {
+            "shape": (8, 8),
+            "np_fn": lambda X: X[4:, 4:],
+            "nd_fn": lambda X: X[4:, 4:],
+        },
+        {
+            "shape": (8, 8, 2, 2, 2, 2),
+            "np_fn": lambda X: X[1:3, 5:8, 1:2, 0:1, 0:1, 1:2],
+            "nd_fn": lambda X: X[1:3, 5:8, 1:2, 0:1, 0:1, 1:2],
+        },
+        {
+            "shape": (7, 8),
+            "np_fn": lambda X: X.transpose()[3:7, 2:5],
+            "nd_fn": lambda X: X.permute((1, 0))[3:7, 2:5],
+        },
     ],
-    ids=["reshape1", "reshape2", "reshape3", "permute", "broadcast_to"],
+    ids=[
+        "reshape1",
+        "reshape2",
+        "reshape3",
+        "permute",
+        "broadcast_to",
+        "getitem1",
+        "getitem2",
+        "transposegetitem",
+    ],
 )
 def test_compact(params):
     shape, np_fn, nd_fn = params["shape"], params["np_fn"], params["nd_fn"]
