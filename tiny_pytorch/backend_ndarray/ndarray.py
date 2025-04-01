@@ -234,3 +234,34 @@ class NDArray:
         return self.make(
             new_shape, new_strides, self._device, self._handle, self._offset
         )
+
+    def permute(self, new_axes):
+        """
+        Permute order of the dimensions. `new_axes` describes a permutation of
+        the existing axes, Example:
+
+          - If we have an array with dimension "BHWC" then .permute((0,3,1,2))
+            would convert this to "BCHW" order.
+          - For a 2D array, .permute((1,0)) would transpose the array.
+
+        Like `reshape`, this operation should not copy memory, but achieves the
+        permuting by just adjusting the shape/strides of the array.  That is,
+        it returns a new array that has the dimensions permuted as desired, but
+        which points to the same memory as the original array.
+
+        Parameters
+        ----------
+        new_axes: tuple
+            Permutation order of the dimensions
+
+        Returns
+        -------
+        NDarray
+            New NDArray object with permuted dimensions, pointing to the same
+            memory as the original NDArray (i.e., just shape and strides changed).
+        """
+        shape = tuple([self._shape[i] for i in new_axes])
+        strides = tuple([self._strides[i] for i in new_axes])
+        return self.make(
+            shape, strides, self._device, self._handle, self._offset
+        )
