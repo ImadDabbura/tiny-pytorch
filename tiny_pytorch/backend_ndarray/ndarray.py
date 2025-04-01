@@ -39,6 +39,18 @@ def default_device():
     return cpu_numpy()
 
 
+# NDArray is basically a Python wrapper for handling operations on
+# n-dimensional arrays. The underlying array is just a flat 1D array and the
+# backend device will handle all the ops on the 1D array. Strides, shape, and
+# offset allows us to map n-dimensional (logical) array to the 1D flat array
+# that are physically allocation in memory.
+# The high level ops such as broadcasting and transposing are all done in
+# Python without touching the underlying array.
+# The other `raw` ops such as addition and matrix-multiplication will be
+# implemented is C/C++ that would call highly optimized Kernels for such ops
+# such as CUDA Kernels.
+# To make the backend code simpler, we will only operate on compact arrays so
+# we need to call `compact()` before any ops.
 class NDArray:
     """
     A generic ND array class that may contain multipe different backends
@@ -75,7 +87,7 @@ class NDArray:
         self._offset = other._offset
         # BackendDevice: helps us dispatch ops to the corresponding device
         self._device = other._device
-        self._handle = other._handle  # pointer to 1D array
+        self._handle = other._handle  # pointer to 1D array of type `Array`
 
     def to(self, device):
         if device == self.device:
@@ -192,3 +204,33 @@ class NDArray:
         """
         assert len(shape) == len(strides)
         return NDArray.make(shape, strides, self._device, self._handle)
+
+    def reshape(self, new_shape):
+        """
+        Reshape the matrix without copying memory.  This will return a matrix
+        that corresponds to a reshaped array but points to the same memory as
+        the original array. Therefore, we only change the shape and the strides
+        to get the new n-dimensional logical view of the array.
+
+        Parameters
+        ----------
+        new_shape: tuple
+            New shape of the array.
+
+        Returns
+        -------
+        NDArray
+            Reshaped array; this will point to the same memory as the original
+            NDArray
+
+        Raises
+        ------
+            ValueError if product of current shape is not equal to the product
+            of the new shape, or if the matrix is not compact.
+        """
+        if prod(self._shape) != prod(new_shape) or not self.is_compact():
+            raise ValueError()
+        new_strides = self.compact_strides(new_shape)
+        return self.make(
+            new_shape, new_strides, self._device, self._handle, self._offset
+        )
