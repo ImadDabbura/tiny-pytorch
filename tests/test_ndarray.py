@@ -30,8 +30,13 @@ import tiny_pytorch.backend_ndarray.ndarray as nd
             "np_fn": lambda X: X.reshape(16, 16),
             "nd_fn": lambda X: X.reshape((16, 16)),
         },
+        {
+            "shape": (4, 4),
+            "np_fn": lambda X: X.transpose(),
+            "nd_fn": lambda X: X.permute((1, 0)),
+        },
     ],
-    ids=["reshape1", "reshape2", "reshape3"],
+    ids=["reshape1", "reshape2", "reshape3", "permute"],
 )
 def test_compact(params):
     shape, np_fn, nd_fn = params["shape"], params["np_fn"], params["nd_fn"]
