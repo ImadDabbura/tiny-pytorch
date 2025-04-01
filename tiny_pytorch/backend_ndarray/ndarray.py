@@ -225,8 +225,9 @@ class NDArray:
 
         Raises
         ------
-            ValueError if product of current shape is not equal to the product
-            of the new shape, or if the matrix is not compact.
+        ValueError
+            If product of current shape is not equal to the product of the new
+            shape, or if the matrix is not compact.
         """
         if prod(self._shape) != prod(new_shape) or not self.is_compact():
             raise ValueError()
@@ -264,4 +265,40 @@ class NDArray:
         strides = tuple([self._strides[i] for i in new_axes])
         return self.make(
             shape, strides, self._device, self._handle, self._offset
+        )
+
+    def broadcast_to(self, new_shape):
+        """
+        Broadcast an array to a new shape.  `new_shape`'s elements must be the
+        same as the original shape, except for dimensions in the self where
+        the size = 1 (which can then be broadcast to any size). This will not
+        copy memory, and just achieves broadcasting by manipulating the strides.
+
+        Parameters
+        ----------
+        new_shape: tuple
+            Shape to broadcast to
+
+        Returns
+        -------
+        NDArray:
+            New NDArray object with the new broadcast shape; should
+            point to the same memory as the original array.
+
+        Raises
+        ------
+        AssertionError
+            If new_shape[i] != shape[i] for all i where shape[i] != 1
+        """
+        assert all(
+            [e == new_shape[i] for i, e in enumerate(self._shape) if e != 1]
+        )
+        new_strides = tuple(
+            [
+                0 if e == 1 else self._strides[i]
+                for (i, e) in enumerate(self._shape)
+            ]
+        )
+        return self.make(
+            new_shape, new_strides, self._device, self._handle, self._offset
         )
