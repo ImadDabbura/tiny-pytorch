@@ -35,8 +35,13 @@ import tiny_pytorch.backend_ndarray.ndarray as nd
             "np_fn": lambda X: X.transpose(),
             "nd_fn": lambda X: X.permute((1, 0)),
         },
+        {
+            "shape": (4, 1, 4),
+            "np_fn": lambda X: np.broadcast_to(X, shape=(4, 5, 4)),
+            "nd_fn": lambda X: X.broadcast_to((4, 5, 4)),
+        },
     ],
-    ids=["reshape1", "reshape2", "reshape3", "permute"],
+    ids=["reshape1", "reshape2", "reshape3", "permute", "broadcast_to"],
 )
 def test_compact(params):
     shape, np_fn, nd_fn = params["shape"], params["np_fn"], params["nd_fn"]
