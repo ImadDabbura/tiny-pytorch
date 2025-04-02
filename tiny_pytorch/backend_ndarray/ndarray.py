@@ -40,31 +40,30 @@ def default_device():
     return cpu_numpy()
 
 
-# NDArray is basically a Python wrapper for handling operations on
-# n-dimensional arrays. The underlying array is just a flat 1D array and the
-# backend device will handle all the ops on the 1D array. Strides, shape, and
-# offset allows us to map n-dimensional (logical) array to the 1D flat array
-# that are physically allocation in memory.
-# The high level ops such as broadcasting and transposing are all done in
-# Python without touching the underlying array.
-# The other `raw` ops such as addition and matrix-multiplication will be
-# implemented is C/C++ that would call highly optimized Kernels for such ops
-# such as CUDA Kernels.
-# To make the backend code simpler, we will only operate on compact arrays so
-# we need to call `compact()` before any ops.
 class NDArray:
     """
     A generic ND array class that may contain multipe different backends
     i.e., a Numpy backend, a native CPU backend, or a GPU backend.
 
-    For now, for simplicity the class only supports float32 types,
-    though this can be extended if desired.
+    NDArray is basically a Python wrapper for handling operations on
+    n-dimensional arrays. The underlying array is just a flat 1D array and the
+    backend device will handle all the ops on the 1D array. Strides, shape, and
+    offset allows us to map n-dimensional (logical) array to the 1D flat array
+    that are physically allocated in memory.
+    The high level ops such as broadcasting and transposing are all done in
+    Python without touching the underlying array.
+    The other `raw` ops such as addition and matrix-multiplication will be
+    implemented is C/C++ that would call highly optimized Kernels for such ops
+    such as CUDA Kernels.
+    To make the backend code simpler, we will only operate on compact arrays so
+    we need to call `compact()` before any ops AND we support only float32 data
+    type.
     """
 
     def __init__(self, other, device=None):
         """
-        Create NDArray by copying another NDArray/Numpy array or create
-        Or use Numpy as a bridge for all other types of iterables.
+        Create NDArray by copying another NDArray/Numpy array OR use Numpy as
+        a bridge for all other types of iterables.
         """
         if isinstance(other, NDArray):
             if device is None:
@@ -103,17 +102,20 @@ class NDArray:
 
     @staticmethod
     def compact_strides(shape):
-        """Utility function to compute compact strides."""
-        # ND-dimensional arrays are represented (with row-major order)
-        # contiguously from the inner most dimension to the outer most
-        # dimension.
-        # Examples:
-        #   1. 4 x 3 array will be represented physically in memory with first
-        #   row (3 elements) then the second and so on
-        #   2. 4 x 3 x 2 array will be represented with inner most dimension
-        #   first first until its done (2 in this case), then next outer dimension
-        #   (3 rows of 2), finally outer most dimension which has 4 (3 x 2)
-        #   arrays
+        """
+        Utility function to compute compact strides.
+
+        N-dimensional arrays are represented (with row-major order)
+        contiguously from the inner most dimension to the outer most
+        dimension.
+        Examples:
+          1. 4 x 3 array will be represented physically in memory with first
+          row (3 elements) then the second and so on
+          2. 4 x 3 x 2 array will be represented with inner most dimension
+          first first until its done (2 in this case), then next outer dimension
+          (3 rows of 2), finally outer most dimension which has 4 (3 x 2)
+          arrays
+        """
         stride = 1
         res = []
         for i in range(1, len(shape) + 1):
@@ -124,8 +126,9 @@ class NDArray:
     @staticmethod
     def make(shape, strides=None, device=None, handle=None, offset=0):
         """
-        Create a new NDArray with the given properties.  This will allocate the
-        memory if handle is None, otherwise it will use the handle of an existing array.
+        Create a new NDArray with the given properties. Memory will only be
+        allocated if `handle` is None, otherwise it will use the same
+        underlying memory.
         """
         array = NDArray.__new__(NDArray)
         array._shape = tuple(shape)
@@ -262,8 +265,8 @@ class NDArray:
             New NDArray object with permuted dimensions, pointing to the same
             memory as the original NDArray (i.e., just shape and strides changed).
         """
-        shape = tuple([self._shape[i] for i in new_axes])
-        strides = tuple([self._strides[i] for i in new_axes])
+        shape = tuple(self._shape[i] for i in new_axes)
+        strides = tuple(self._strides[i] for i in new_axes)
         return self.make(
             shape, strides, self._device, self._handle, self._offset
         )
@@ -292,13 +295,11 @@ class NDArray:
             If new_shape[i] != shape[i] for all i where shape[i] != 1
         """
         assert all(
-            [e == new_shape[i] for i, e in enumerate(self._shape) if e != 1]
+            e == new_shape[i] for i, e in enumerate(self._shape) if e != 1
         )
         new_strides = tuple(
-            [
-                0 if e == 1 else self._strides[i]
-                for (i, e) in enumerate(self._shape)
-            ]
+            0 if e == 1 else self._strides[i]
+            for i, e in enumerate(self._shape)
         )
         return self.make(
             new_shape, new_strides, self._device, self._handle, self._offset
@@ -357,7 +358,6 @@ class NDArray:
         strides = tuple(
             idx.step * stride for (idx, stride) in zip(idxs, self._strides)
         )
-        print(idxs, "\n", shape, "\n", strides)
         return self.make(
             shape,
             strides,
