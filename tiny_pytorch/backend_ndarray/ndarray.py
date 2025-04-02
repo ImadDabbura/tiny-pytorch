@@ -365,3 +365,23 @@ class NDArray:
             self._handle,
             sum(s.start * self._strides[i] for i, s in enumerate(idxs)),
         )
+
+
+# Convenience methods to match numpy a bit more closely.
+def array(a, dtype="float32", device=None):
+    assert dtype == "float32"
+    return NDArray(a, device=device)
+
+
+def empty(shape, dtype="float32", device=None):
+    device = device if device is not None else default_device()
+    return device.empty(shape, dtype)
+
+
+def full(shape, fill_value, dtype="float32", device=None):
+    device = device if device is not None else default_device()
+    return device.full(shape, fill_value, dtype)
+
+
+def broadcast_to(array, new_shape):
+    return array.broadcast_to(new_shape)
