@@ -54,3 +54,11 @@ def compact(
     compact array that adheres to the shape/strides/offset.
     """
     out.array[:] = to_numpy(a, shape, strides, offset).flatten()
+
+
+def ewise_setitem(a, out, shape, strides, offset):
+    to_numpy(out, shape, strides, offset)[:] = a.array.reshape(shape)
+
+
+def scalar_setitem(size, val, out, shape, strides, offset):
+    to_numpy(out, shape, strides, offset)[:] = val

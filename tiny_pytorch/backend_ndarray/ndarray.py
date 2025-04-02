@@ -366,6 +366,31 @@ class NDArray:
             sum(s.start * self._strides[i] for i, s in enumerate(idxs)),
         )
 
+    def __setitem__(self, idxs, other):
+        """
+        Set the values of a view into an array, using the same semantics as
+        __getitem__().
+        """
+        view = self.__getitem__(idxs)
+        if isinstance(other, NDArray):
+            assert prod(view.shape) == prod(other.shape)
+            self.device.ewise_setitem(
+                other.compact()._handle,
+                view._handle,
+                view.shape,
+                view.strides,
+                view._offset,
+            )
+        else:
+            self.device.scalar_setitem(
+                prod(view.shape),
+                other,
+                view._handle,
+                view.shape,
+                view.strides,
+                view._offset,
+            )
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
