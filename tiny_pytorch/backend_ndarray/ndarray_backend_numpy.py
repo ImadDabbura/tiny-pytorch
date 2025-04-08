@@ -86,3 +86,11 @@ def ewise_mul(a, b, out):
 
 def scalar_mul(a, val, out):
     out.array[:] = a.array * val
+
+
+def ewise_div(a, b, out):
+    out.array[:] = a.array / b.array
+
+
+def scalar_div(a, val, out):
+    out.array[:] = a.array / val
