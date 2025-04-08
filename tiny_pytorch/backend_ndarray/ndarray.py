@@ -458,6 +458,28 @@ class NDArray:
             other, self.device.ewise_minimum, self.device.scalar_minimum
         )
 
+    def __eq__(self, other):
+        return self.ewise_or_scalar(
+            other, self.device.ewise_eq, self.device.scalar_eq
+        )
+
+    def __ge__(self, other):
+        return self.ewise_or_scalar(
+            other, self.device.ewise_ge, self.device.scalar_ge
+        )
+
+    def __ne__(self, other):
+        return 1 - (self == other)
+
+    def __gt__(self, other):
+        return (self >= other) * (self != other)
+
+    def __lt__(self, other):
+        return 1 - (self >= other)
+
+    def __le__(self, other):
+        return 1 - (self > other)
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
