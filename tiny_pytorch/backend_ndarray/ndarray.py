@@ -480,6 +480,11 @@ class NDArray:
     def __le__(self, other):
         return 1 - (self > other)
 
+    def log(self):
+        out = NDArray.make(self.shape, device=self.device)
+        self.device.ewise_log(self.compact()._handle, out._handle)
+        return out
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
