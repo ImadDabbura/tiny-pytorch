@@ -18,6 +18,14 @@ class Array:
         return self.array.size
 
 
+def empty(shape, dtype: str | None = _datatype):
+    return np.empty(shape, dtype)
+
+
+def full(shape, fill_value, dtype: str | None = _datatype):
+    return np.full(shape, fill_value, dtype)
+
+
 def from_numpy(array: np.ndarray, out: Array) -> None:
     """
     Replace the content of `out` Array with the content of `array` numpy
