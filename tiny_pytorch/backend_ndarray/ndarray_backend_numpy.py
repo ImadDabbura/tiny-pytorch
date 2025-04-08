@@ -130,3 +130,7 @@ def ewise_ge(a, b, out):
 
 def scalar_ge(a, val, out):
     out.array[:] = (a.array >= val).astype(np.float32)
+
+
+def ewise_log(a, out):
+    out.array[:] = np.log(a.array)
