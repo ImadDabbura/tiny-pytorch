@@ -448,6 +448,16 @@ class NDArray:
         self.device.scalar_power(self.compact()._handle, other, out._handle)
         return out
 
+    def maximum(self, other):
+        return self.ewise_or_scalar(
+            other, self.device.ewise_maximum, self.device.scalar_maximum
+        )
+
+    def minimum(self, other):
+        return self.ewise_or_scalar(
+            other, self.device.ewise_minimum, self.device.scalar_minimum
+        )
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
