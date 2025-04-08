@@ -394,6 +394,23 @@ class NDArray:
                 view._offset,
             )
 
+    def ewise_or_scalar(self, other, ewise_func, scalar_func):
+        """
+        Run either an element-wise or scalar version of a function,
+        depending on whether "other" is an NDArray or scalar
+        """
+        out = NDArray.make(self.shape, device=self.device)
+        if isinstance(other, NDArray):
+            assert (
+                self.shape == other.shape
+            ), "operation needs two equal-sized arrays"
+            ewise_func(
+                self.compact()._handle, other.compact()._handle, out._handle
+            )
+        else:
+            scalar_func(self.compact()._handle, other, out._handle)
+        return out
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
