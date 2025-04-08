@@ -78,3 +78,11 @@ def ewise_add(a, b, out):
 
 def scalar_add(a, val, out):
     out.array[:] = a.array + val
+
+
+def ewise_mul(a, b, out):
+    out.array[:] = a.array * b.array
+
+
+def scalar_mul(a, val, out):
+    out.array[:] = a.array * val
