@@ -70,3 +70,11 @@ def ewise_setitem(a, out, shape, strides, offset):
 
 def scalar_setitem(size, val, out, shape, strides, offset):
     to_numpy(out, shape, strides, offset)[:] = val
+
+
+def ewise_add(a, b, out):
+    out.array[:] = a.array + b.array
+
+
+def scalar_add(a, val, out):
+    out.array[:] = a.array + val

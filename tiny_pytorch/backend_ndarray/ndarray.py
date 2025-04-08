@@ -411,6 +411,13 @@ class NDArray:
             scalar_func(self.compact()._handle, other, out._handle)
         return out
 
+    def __add__(self, other):
+        return self.ewise_or_scalar(
+            other, self.device.ewise_add, self.device.scalar_add
+        )
+
+    __radd__ = __add__
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
