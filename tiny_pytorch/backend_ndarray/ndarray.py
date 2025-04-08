@@ -434,6 +434,11 @@ class NDArray:
 
     __rmul__ = __mul__
 
+    def __truediv__(self, other):
+        return self.ewise_or_scalar(
+            other, self.device.ewise_div, self.device.scalar_div
+        )
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
