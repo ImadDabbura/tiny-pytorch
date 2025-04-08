@@ -1,4 +1,5 @@
 from math import prod
+from numbers import Number
 
 import numpy as np
 
@@ -438,6 +439,14 @@ class NDArray:
         return self.ewise_or_scalar(
             other, self.device.ewise_div, self.device.scalar_div
         )
+
+    def __pow__(self, other):
+        assert isinstance(other, Number) and not isinstance(
+            other, bool
+        ), "array's power must be scalar"
+        out = NDArray.make(self.shape, device=self.device)
+        self.device.scalar_power(self.compact()._handle, other, out._handle)
+        return out
 
 
 # Convenience methods to match numpy a bit more closely.
