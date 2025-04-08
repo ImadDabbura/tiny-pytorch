@@ -427,6 +427,13 @@ class NDArray:
     def __neg__(self):
         return self * (-1)
 
+    def __mul__(self, other):
+        return self.ewise_or_scalar(
+            other, self.device.ewise_mul, self.device.scalar_mul
+        )
+
+    __rmul__ = __mul__
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
