@@ -418,6 +418,15 @@ class NDArray:
 
     __radd__ = __add__
 
+    def __sub__(self, other):
+        return self + (-other)
+
+    def __rsub__(self, other):
+        return other + (-self)
+
+    def __neg__(self):
+        return self * (-1)
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
