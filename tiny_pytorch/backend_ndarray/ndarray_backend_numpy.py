@@ -114,3 +114,19 @@ def ewise_minimum(a, b, out):
 
 def scalar_minimum(a, val, out):
     out.array[:] = np.minimum(a.array, val)
+
+
+def ewise_eq(a, b, out):
+    out.array[:] = (a.array == b.array).astype(np.float32)
+
+
+def scalar_eq(a, val, out):
+    out.array[:] = (a.array == val).astype(np.float32)
+
+
+def ewise_ge(a, b, out):
+    out.array[:] = (a.array >= b.array).astype(np.float32)
+
+
+def scalar_ge(a, val, out):
+    out.array[:] = (a.array >= val).astype(np.float32)
