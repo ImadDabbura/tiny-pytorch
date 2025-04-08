@@ -266,6 +266,7 @@ class NDArray:
             New NDArray object with permuted dimensions, pointing to the same
             memory as the original NDArray (i.e., just shape and strides changed).
         """
+        assert len(self._shape) == len(new_axes)
         shape = tuple(self._shape[i] for i in new_axes)
         strides = tuple(self._strides[i] for i in new_axes)
         return self.make(
@@ -295,6 +296,7 @@ class NDArray:
         AssertionError
             If new_shape[i] != shape[i] for all i where shape[i] != 1
         """
+        assert len(self._shape) == len(new_shape)
         assert all(
             e == new_shape[i] for i, e in enumerate(self._shape) if e != 1
         )
