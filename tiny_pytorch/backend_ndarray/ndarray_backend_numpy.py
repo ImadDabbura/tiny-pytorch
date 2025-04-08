@@ -94,3 +94,7 @@ def ewise_div(a, b, out):
 
 def scalar_div(a, val, out):
     out.array[:] = a.array / val
+
+
+def scalar_power(a, val, out):
+    out.array[:] = a.array**val
