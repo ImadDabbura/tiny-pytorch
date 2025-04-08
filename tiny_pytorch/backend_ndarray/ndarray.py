@@ -110,11 +110,11 @@ class NDArray:
         dimension.
         Examples:
           1. 4 x 3 array will be represented physically in memory with first
-          row (3 elements) then the second and so on
+          row (3 elements) then the second and so on -> strides = (3, 1)
           2. 4 x 3 x 2 array will be represented with inner most dimension
-          first first until its done (2 in this case), then next outer dimension
+          first until its done (2 in this case), then next outer dimension
           (3 rows of 2), finally outer most dimension which has 4 (3 x 2)
-          arrays
+          arrays -> strides = (6, 2, 1)
         """
         stride = 1
         res = []
@@ -245,9 +245,10 @@ class NDArray:
         Permute order of the dimensions. `new_axes` describes a permutation of
         the existing axes, Example:
 
-          - If we have an array with dimension "BHWC" then .permute((0,3,1,2))
+          - If we have an array with dimension "BHWC" then
+            `.permute((0,3,1,2))`
             would convert this to "BCHW" order.
-          - For a 2D array, .permute((1,0)) would transpose the array.
+          - For a 2D array, `.permute((1,0))` would transpose the array.
 
         Like `reshape`, this operation should not copy memory, but achieves the
         permuting by just adjusting the shape/strides of the array.  That is,
