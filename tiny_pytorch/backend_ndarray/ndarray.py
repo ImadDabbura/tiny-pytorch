@@ -577,6 +577,18 @@ class NDArray:
         )
         return out
 
+    def max(self, axis=None):
+        """
+        Sum either across all axis (when axis=None) or one axis.
+
+        Note: It doesn't support axis being multiple of axes.
+        """
+        view, out = self.reduce_view_out(axis)
+        self.device.reduce_max(
+            view.compact()._handle, out._handle, view.shape[-1]
+        )
+        return out
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
