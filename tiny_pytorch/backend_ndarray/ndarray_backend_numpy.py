@@ -142,3 +142,7 @@ def ewise_exp(a, out):
 
 def ewise_tanh(a, out):
     out.array[:] = np.tanh(a.array)
+
+
+def matmul(a, b, out, m, n, p):
+    out.array[:] = (a.array.reshape(m, n) @ b.array.reshape(n, p)).reshape(-1)
