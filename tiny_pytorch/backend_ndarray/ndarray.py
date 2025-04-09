@@ -545,6 +545,26 @@ class NDArray:
             )
             return out
 
+    def reduce_view_out(self, axis):
+        """
+        Return a view to the array set up for reduction functions and output
+        array.
+        """
+        if axis is None:
+            view = self.reshape((1,) * (self.ndim - 1) + (prod(self.shape),))
+            out = NDArray.make((1,) * self.ndim, device=self.device)
+        else:
+            view = self.permute(
+                tuple([a for a in range(self.ndim) if a != axis]) + (axis,)
+            )
+            out = NDArray.make(
+                tuple(
+                    [1 if i == axis else s for i, s in enumerate(self.shape)]
+                ),
+                device=self.device,
+            )
+        return view, out
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
