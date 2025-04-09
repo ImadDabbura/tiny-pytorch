@@ -495,6 +495,56 @@ class NDArray:
         self.device.ewise_tanh(self.compact()._handle, out._handle)
         return out
 
+    def __matmul__(self, other):
+        """
+        Matrix multiplication of two arrays.  This requires that both arrays
+        be 2D (i.e., we don't handle batch matrix multiplication), and that the
+        sizes match up properly for matrix multiplication.
+        """
+        assert self.ndim == 2 and other.ndim == 2
+        assert self.shape[1] == other.shape[0]
+
+        m, n, p = self.shape[0], self.shape[1], other.shape[1]
+
+        # if the matrix is aligned, use tiled matrix multiplication
+        if hasattr(self.device, "matmul_tiled") and all(
+            d % self.device.__tile_size__ == 0 for d in (m, n, p)
+        ):
+
+            def tile(a, tile):
+                return a.as_strided(
+                    (a.shape[0] // tile, a.shape[1] // tile, tile, tile),
+                    (a.shape[1] * tile, tile, self.shape[1], 1),
+                )
+
+            t = self.device.__tile_size__
+            a = tile(self.compact(), t).compact()
+            b = tile(other.compact(), t).compact()
+            out = NDArray.make(
+                (a.shape[0], b.shape[1], t, t), device=self.device
+            )
+            self.device.matmul_tiled(
+                a._handle, b._handle, out._handle, m, n, p
+            )
+
+            return (
+                out.permute((0, 2, 1, 3))
+                .compact()
+                .reshape((self.shape[0], other.shape[1]))
+            )
+
+        else:
+            out = NDArray.make((m, p), device=self.device)
+            self.device.matmul(
+                self.compact()._handle,
+                other.compact()._handle,
+                out._handle,
+                m,
+                n,
+                p,
+            )
+            return out
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
