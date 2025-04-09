@@ -1,6 +1,6 @@
 [project]
 name = "tiny-pytorch"
-version = "0.0.3"
+version = "0.0.4"
 description = "Mini Deep Learning framework similar to PyTorch"
 authors = [
     {name = "ImadDabbura", email = "imad.dabbura@hotmail.com"}
@@ -29,6 +29,7 @@ pre-commit = "^4.1"
 mkdocs = "^1.6"
 mkdocs-material = "^9.6"
 mkdocstrings-python = "^1.16"
+mike = "^2.1"
 
 [tool.black]
 line-length = 79
