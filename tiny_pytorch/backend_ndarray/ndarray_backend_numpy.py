@@ -134,3 +134,7 @@ def scalar_ge(a, val, out):
 
 def ewise_log(a, out):
     out.array[:] = np.log(a.array)
+
+
+def ewise_exp(a, out):
+    out.array[:] = np.exp(a.array)
