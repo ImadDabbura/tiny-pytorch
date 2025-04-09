@@ -2,27 +2,39 @@
 
 ## Introduction
 
-Tiny-Pytorch is a deep learning system that is similar in nature to **Pytorch**. It involves implementing the core underlying algorithms behind deep learning systems such as **automatic differentiation** and different optimization algorithms such as Stochastic Gradient Boosting (SGD) and Adaptive Momentum (Adam).
+Tiny-Pytorch is a deep learning system that is similar in nature to **Pytorch**.
+It involves implementing the core underlying machinery and algorithms behind deep
+learning systems such as 1) **Automatic differentiation**, 2) **Tensor** (multi-dimensional
+array), 3) **Neural network** modules such as **Linear/BatchNorm/RNN/LSTM**, 4) **Optimization**
+algorithms such as **Stochastic Gradient Boosting (SGD)** and **Adaptive
+Momentum (Adam)**, 5) **Hardware acceleration** such as GPUs, etc.
 
-The main learning and critical part of this project is building everything from the ground up:
+The main learning and critical part of this project is building everything
+from the ground up:
 
 ```mermaid
-graph BT;
-    A[Flat Array] --> B[N-Dimensional Array];
-    B[N-Dimensional Array] --> C[Tensor];
+graph BT
+    A[Flat Array] --> B[N-Dimensional Array]
+    B[N-Dimensional Array] --> C[Tensor]
 ```
 
 ## Learning Objectives
 
-The main objectives to build this framework:
+- Build deep learning systems
 
-- Build deep learning systems:
   - Contribute to open-source deep learning frameworks.
-  - Work on developing my own framework for specific tasks. I have been collecting my own implementation of different things in Pytorch such as analyzing gradients of each layer.
+  - Work on developing my own framework for specific tasks. I have been
+    collecting my own implementation of different things in Pytorch such as
+    analyzing gradients of each layer.
+
 - Use existing systems more effectively:
-  - Understanding how the internals of existing deep learning systems work let you use them much more efficiently.
+
+  - Understanding how the internals of existing deep learning systems work
+    let you use them much more efficiently.
   - The only way to understand how things really work is to build it from scratch.
-- Understand how operations are carried on both CPU and GPU so I can optimize my customized models/layers to run more efficiently.
+
+- Understand how operations are carried on both CPU and GPU so I can optimize
+  my customized models/layers to run more efficiently.
 
 ## Road Map
 
@@ -53,11 +65,11 @@ the computation.
   - [x] `data`: Classes to load various types of data; mainly `Dataset` and
         `DataLoader`.
 - **Phase II**:
-  - [ ] `NDArray`: A generic class that supports multiple backends and
+  - [x] `NDArray`: A generic class that supports multiple backends and
         provide us with _strided_ array. All the underlying arrays are flat
         arrays stored in row-major order, but `NDArray` will help us represent
         any multi-dimensional arrays using _offset, strides, shape_.
-  - [ ] Numpy backend (default backend)
+  - [x] Numpy backend (default backend)
   - [ ] CPU backend
   - [ ] Cuda backend
   - [ ] CNN and its main operations such as _padding_ and _dilation_
