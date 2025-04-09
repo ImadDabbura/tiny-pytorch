@@ -138,3 +138,7 @@ def ewise_log(a, out):
 
 def ewise_exp(a, out):
     out.array[:] = np.exp(a.array)
+
+
+def ewise_tanh(a, out):
+    out.array[:] = np.tanh(a.array)
