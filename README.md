@@ -80,6 +80,12 @@ https://imaddabbura.github.io/tiny-pytorch/.
   ```python
   x.reshape((1, 10)).broadcast_to((20, 10)) + y
   ```
+- `NDArray` only supports `float32` dtype
+- All operations on the underlying 1D flat array is done on compact arrays.
+  Therefore, we would need to call `compact()` before any operation to create
+  contiguous array if it is not already compacted
+- Reduction sum/max can either be done on 1 axis or all axes. Summing/max
+  across a set of axes isn't supported
 
 ## License
 

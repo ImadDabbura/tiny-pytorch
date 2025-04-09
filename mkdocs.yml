@@ -1,6 +1,7 @@
 site_name: tiny_pytorch
 nav:
   - Home: index.md
+  - NDArray: ndarray.md
   - Tensor: tensor.md
   - Utils: utils.md
   - Optimizer: optim.md
