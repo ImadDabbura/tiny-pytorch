@@ -59,6 +59,8 @@ repo_name: ImadDabbura/tiny-pytorch
 repo_url: https://github.com/ImadDabbura/tiny-pytorch
 edit_uri: ""
 extra:
+  version:
+    provider: mike
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/ImadDabbura/tiny-pytorch
