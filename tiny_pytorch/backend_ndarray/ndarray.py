@@ -625,6 +625,7 @@ class NDArray:
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
+    dtype = "float32" if dtype is None else dtype
     assert dtype == "float32"
     return NDArray(a, device=device)
 
