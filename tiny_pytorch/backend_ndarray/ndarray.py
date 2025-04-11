@@ -31,6 +31,27 @@ class BackendDevice:
         # i.e. device.op will become self.module.op
         return getattr(self.module, name)
 
+    def randn(self, *shape, dtype="float32"):
+        return NDArray(np.random.randn(*shape).astype(dtype), device=self)
+
+    def rand(self, *shape, dtype="float32"):
+        return NDArray(np.random.rand(*shape).astype(dtype), device=self)
+
+    def one_hot(self, n, i, dtype="float32"):
+        return NDArray(np.eye(n, dtype=dtype)[i], device=self)
+
+    def empty(self, shape, dtype="float32"):
+        dtype = "float32" if dtype is None else dtype
+        assert dtype == "float32"
+        return NDArray.make(shape, device=self)
+
+    def full(self, shape, fill_value, dtype="float32"):
+        dtype = "float32" if dtype is None else dtype
+        assert dtype == "float32"
+        arr = self.empty(shape, dtype)
+        arr.fill(fill_value)
+        return arr
+
 
 def cpu_numpy():
     return BackendDevice("cpu_numpy", ndarray_backend_numpy)
