@@ -31,6 +31,27 @@ class BackendDevice:
         # i.e. device.op will become self.module.op
         return getattr(self.module, name)
 
+    def randn(self, *shape, dtype="float32"):
+        return NDArray(np.random.randn(*shape).astype(dtype), device=self)
+
+    def rand(self, *shape, dtype="float32"):
+        return NDArray(np.random.rand(*shape).astype(dtype), device=self)
+
+    def one_hot(self, n, i, dtype="float32"):
+        return NDArray(np.eye(n, dtype=dtype)[i], device=self)
+
+    def empty(self, shape, dtype="float32"):
+        dtype = "float32" if dtype is None else dtype
+        assert dtype == "float32"
+        return NDArray.make(shape, device=self)
+
+    def full(self, shape, fill_value, dtype="float32"):
+        dtype = "float32" if dtype is None else dtype
+        assert dtype == "float32"
+        arr = self.empty(shape, dtype)
+        arr.fill(fill_value)
+        return arr
+
 
 def cpu_numpy():
     return BackendDevice("cpu_numpy", ndarray_backend_numpy)
@@ -39,6 +60,18 @@ def cpu_numpy():
 def default_device():
     """Return cpu numpy backend."""
     return cpu_numpy()
+
+
+def cpu():
+    pass
+
+
+def cuda():
+    pass
+
+
+def all_devices():
+    return [cpu_numpy(), cpu(), cuda()]
 
 
 class NDArray:
@@ -545,45 +578,68 @@ class NDArray:
             )
             return out
 
-    def reduce_view_out(self, axis):
+    def reduce_view_out(self, axis, keepdims=False):
         """
         Return a view to the array set up for reduction functions and output
         array.
         """
+        if isinstance(axis, tuple) and not axis:
+            raise ValueError("Empty axis in reduce")
+
         if axis is None:
-            view = self.reshape((1,) * (self.ndim - 1) + (prod(self.shape),))
-            out = NDArray.make((1,) * self.ndim, device=self.device)
+            view = self.compact().reshape(
+                (1,) * (self.ndim - 1) + (prod(self.shape),)
+            )
+            out = NDArray.make(
+                (1,) * (self.ndim if keepdims else 1), device=self.device
+            )
+
         else:
+            if isinstance(axis, (tuple, list)):
+                assert (
+                    len(axis) == 1
+                ), "Only support reduction over a single axis"
+                axis = axis[0]
+
             view = self.permute(
                 tuple([a for a in range(self.ndim) if a != axis]) + (axis,)
             )
             out = NDArray.make(
-                tuple(
-                    [1 if i == axis else s for i, s in enumerate(self.shape)]
+                (
+                    tuple(
+                        [
+                            1 if i == axis else s
+                            for i, s in enumerate(self.shape)
+                        ]
+                    )
+                    if keepdims
+                    else tuple(
+                        [s for i, s in enumerate(self.shape) if i != axis]
+                    )
                 ),
                 device=self.device,
             )
         return view, out
 
-    def sum(self, axis=None):
+    def sum(self, axis=None, keepdims=False):
         """
         Sum either across all axis (when axis=None) or one axis.
 
         Note: It doesn't support axis being multiple of axes.
         """
-        view, out = self.reduce_view_out(axis)
+        view, out = self.reduce_view_out(axis, keepdims=keepdims)
         self.device.reduce_sum(
             view.compact()._handle, out._handle, view.shape[-1]
         )
         return out
 
-    def max(self, axis=None):
+    def max(self, axis=None, keepdims=False):
         """
-        Sum either across all axis (when axis=None) or one axis.
+        Max either across all axis (when axis=None) or one axis.
 
         Note: It doesn't support axis being multiple of axes.
         """
-        view, out = self.reduce_view_out(axis)
+        view, out = self.reduce_view_out(axis, keepdims=keepdims)
         self.device.reduce_max(
             view.compact()._handle, out._handle, view.shape[-1]
         )
@@ -592,6 +648,7 @@ class NDArray:
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
+    dtype = "float32" if dtype is None else dtype
     assert dtype == "float32"
     return NDArray(a, device=device)
 
