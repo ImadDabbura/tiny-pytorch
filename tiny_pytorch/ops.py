@@ -95,11 +95,8 @@ from __future__ import annotations
 
 from itertools import zip_longest
 
-import numpy as array_api
-
+from .backend_selection import NDArray, array_api
 from .tensor import Op, Tensor
-
-NDArray = array_api.ndarray
 
 
 class ScalarAdd(Op):
