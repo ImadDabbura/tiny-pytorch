@@ -62,6 +62,18 @@ def default_device():
     return cpu_numpy()
 
 
+def cpu():
+    pass
+
+
+def cuda():
+    pass
+
+
+def all_devices():
+    return [cpu_numpy(), cpu(), cuda()]
+
+
 class NDArray:
     """
     A generic ND array class that may contain multipe different backends
