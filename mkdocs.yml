@@ -9,7 +9,7 @@ nav:
   - Initialization: init.md
   - Data: data.md
   - Operators: ops.md
-  - Device: device.md
+  - Backend Numpy: backend_numpy.md
 
 plugins:
   - search
