@@ -77,3 +77,37 @@ def test_compact(params):
 
     rhs = np_fn(_A)
     np.testing.assert_allclose(lhs.numpy(), rhs, atol=1e-5, rtol=1e-5)
+
+
+reduce_params = [
+    {"dims": (10,), "axis": 0},
+    {"dims": (4, 5, 6), "axis": 0},
+    {"dims": (4, 5, 6), "axis": 1},
+    {"dims": (4, 5, 6), "axis": 2},
+]
+
+
+@pytest.mark.parametrize("params", reduce_params)
+def test_reduce_sum(params):
+    dims, axis = params["dims"], params["axis"]
+    _A = np.random.randn(*dims)
+    A = nd.array(_A)
+    np.testing.assert_allclose(
+        _A.sum(axis=axis, keepdims=True),
+        A.sum(axis=axis, keepdims=True).numpy(),
+        atol=1e-5,
+        rtol=1e-5,
+    )
+
+
+@pytest.mark.parametrize("params", reduce_params)
+def test_reduce_max(params):
+    dims, axis = params["dims"], params["axis"]
+    _A = np.random.randn(*dims)
+    A = nd.array(_A)
+    np.testing.assert_allclose(
+        _A.max(axis=axis, keepdims=True),
+        A.max(axis=axis, keepdims=True).numpy(),
+        atol=1e-5,
+        rtol=1e-5,
+    )

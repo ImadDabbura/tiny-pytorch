@@ -578,45 +578,68 @@ class NDArray:
             )
             return out
 
-    def reduce_view_out(self, axis):
+    def reduce_view_out(self, axis, keepdims=False):
         """
         Return a view to the array set up for reduction functions and output
         array.
         """
+        if isinstance(axis, tuple) and not axis:
+            raise ValueError("Empty axis in reduce")
+
         if axis is None:
-            view = self.reshape((1,) * (self.ndim - 1) + (prod(self.shape),))
-            out = NDArray.make((1,) * self.ndim, device=self.device)
+            view = self.compact().reshape(
+                (1,) * (self.ndim - 1) + (prod(self.shape),)
+            )
+            out = NDArray.make(
+                (1,) * (self.ndim if keepdims else 1), device=self.device
+            )
+
         else:
+            if isinstance(axis, (tuple, list)):
+                assert (
+                    len(axis) == 1
+                ), "Only support reduction over a single axis"
+                axis = axis[0]
+
             view = self.permute(
                 tuple([a for a in range(self.ndim) if a != axis]) + (axis,)
             )
             out = NDArray.make(
-                tuple(
-                    [1 if i == axis else s for i, s in enumerate(self.shape)]
+                (
+                    tuple(
+                        [
+                            1 if i == axis else s
+                            for i, s in enumerate(self.shape)
+                        ]
+                    )
+                    if keepdims
+                    else tuple(
+                        [s for i, s in enumerate(self.shape) if i != axis]
+                    )
                 ),
                 device=self.device,
             )
         return view, out
 
-    def sum(self, axis=None):
+    def sum(self, axis=None, keepdims=False):
         """
         Sum either across all axis (when axis=None) or one axis.
 
         Note: It doesn't support axis being multiple of axes.
         """
-        view, out = self.reduce_view_out(axis)
+        view, out = self.reduce_view_out(axis, keepdims=keepdims)
         self.device.reduce_sum(
             view.compact()._handle, out._handle, view.shape[-1]
         )
         return out
 
-    def max(self, axis=None):
+    def max(self, axis=None, keepdims=False):
         """
-        Sum either across all axis (when axis=None) or one axis.
+        Max either across all axis (when axis=None) or one axis.
 
         Note: It doesn't support axis being multiple of axes.
         """
-        view, out = self.reduce_view_out(axis)
+        view, out = self.reduce_view_out(axis, keepdims=keepdims)
         self.device.reduce_max(
             view.compact()._handle, out._handle, view.shape[-1]
         )
