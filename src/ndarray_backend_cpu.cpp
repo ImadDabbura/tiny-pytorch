@@ -70,5 +70,11 @@ void ScalarMul(const AlignedArray &a, scalar_t val, AlignedArray *out) {
   }
 }
 
+void ScalarPower(const AlignedArray &a, scalar_t val, AlignedArray *out) {
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = std::pow(a.ptr[i], val);
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
