@@ -20,5 +20,12 @@ struct AlignedArray {
   size_t size;
 };
 
+void Fill(AlignedArray *out, scalar_t val) {
+  /* File aligned array with value `val` */
+  for (int i = 0; i < out->size; i++) {
+    out->ptr[i] = val;
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
