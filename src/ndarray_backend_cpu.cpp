@@ -59,5 +59,16 @@ void ScalarDiv(const AlignedArray &a, scalar_t val, AlignedArray *out) {
   }
 }
 
+void EwiseMul(const AlignedArray &a, const AlignedArray &b, AlignedArray *out) {
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = a.ptr[i] * b.ptr[i];
+  }
+}
+void ScalarMul(const AlignedArray &a, scalar_t val, AlignedArray *out) {
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = a.ptr[i] * val;
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
