@@ -246,10 +246,10 @@ class NDArray:
 
     def reshape(self, new_shape):
         """
-        Reshape the matrix without copying memory.  This will return a matrix
-        that corresponds to a reshaped array but points to the same memory as
-        the original array. Therefore, we only change the shape and the strides
-        to get the new n-dimensional logical view of the array.
+        Reshape the array without copying memory.  This will return a new array
+        (view) that corresponds to a reshaped array but points to the same
+        memory as the original array. Therefore, we only change the shape and
+        the strides to get the new n-dimensional logical view of the array.
 
         Parameters
         ----------
@@ -260,7 +260,7 @@ class NDArray:
         -------
         NDArray
             Reshaped array; this will point to the same memory as the original
-            NDArray
+            NDArray.
 
         Raises
         ------
@@ -295,7 +295,7 @@ class NDArray:
         Parameters
         ----------
         new_axes: tuple
-            Permutation order of the dimensions
+            Permutation order of the dimensions.
 
         Returns
         -------
@@ -320,7 +320,7 @@ class NDArray:
         Parameters
         ----------
         new_shape: tuple
-            Shape to broadcast to
+            Shape to broadcast to.
 
         Returns
         -------
@@ -433,7 +433,7 @@ class NDArray:
     def ewise_or_scalar(self, other, ewise_func, scalar_func):
         """
         Run either an element-wise or scalar version of a function,
-        depending on whether "other" is an NDArray or scalar
+        depending on whether "other" is an NDArray or scalar.
         """
         out = NDArray.make(self.shape, device=self.device)
         if isinstance(other, NDArray):

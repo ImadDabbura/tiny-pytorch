@@ -1,7 +1,8 @@
 """
-This module provides functions for initializing tensors with different types of values.
-It includes functions for generating tensors filled with ones, zeros, random numbers, binary random numbers,
-and one-hot encoded tensors. It also provides functions for initializing weights using Xavier/Glorot uniform
+This module provides functions for initializing tensors with different types
+of values. It includes functions for generating tensors filled with ones,
+zeros, random numbers, binary random numbers, and one-hot encoded tensors. It
+also provides functions for initializing weights using Xavier/Glorot uniform
 and Kaiming/He uniform and normal distributions.
 
 Functions
@@ -18,6 +19,8 @@ one_hot
     Generate a one-hot encoded tensor.
 xavier_uniform
     Initialize weights using Xavier/Glorot uniform initialization.
+xavier_normal
+    Initialize weights using Xavier/Glorot normal initialization.
 kaiming_uniform
     Initialize weights using Kaiming/He uniform initialization.
 kaiming_normal
