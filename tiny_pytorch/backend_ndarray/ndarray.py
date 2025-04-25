@@ -116,11 +116,11 @@ class NDArray:
 
     def _init(self, other: "NDArray"):
         # shape, stride, and offset allows us to represent 1D array as NDarray
-        self._shape = other._shape
-        self._strides = other._strides
+        self._shape = other.shape
+        self._strides = other.strides
         self._offset = other._offset
         # BackendDevice: helps us dispatch ops to the corresponding device
-        self._device = other._device
+        self._device = other.device
         self._handle = other._handle  # pointer to 1D array of type `Array`
 
     def to(self, device):
@@ -194,11 +194,11 @@ class NDArray:
 
     @property
     def size(self):
-        return prod(self._shape)
+        return prod(self.shape)
 
     @property
     def ndim(self):
-        return len(self._shape)
+        return len(self.shape)
 
     @property
     def dtype(self):
@@ -213,7 +213,7 @@ class NDArray:
 
     def fill(self, value):
         """Fill in-place with a constant value."""
-        self._device.fill(self._handle, value)
+        self.device.fill(self._handle, value)
 
     def is_compact(self):
         """
@@ -222,17 +222,18 @@ class NDArray:
         """
         # An array is contiguous is it has the same strides as row-major order
         # and offset = 0 (i.e. same size as the original array)
-        return self._strides == NDArray.compact_strides(
-            self._shape
-        ) and self._handle.size == prod(self._shape)
+        return (
+            self.strides == NDArray.compact_strides(self.shape)
+            and self._handle.size == self.size
+        )
 
     def compact(self):
         """Convert NDArray to be compact if it is not already compact."""
         if self.is_compact():
             return self
-        out = NDArray.make(self._shape, device=self._device)
+        out = NDArray.make(self.shape, device=self.device)
         self.device.compact(
-            self._handle, out._handle, self._shape, self._strides, self._offset
+            self._handle, out._handle, self.shape, self.strides, self._offset
         )
         return out
 
@@ -241,7 +242,7 @@ class NDArray:
         Create a strided view of the underlying memory without copying anything.
         """
         assert len(shape) == len(strides)
-        return NDArray.make(shape, strides, self._device, self._handle)
+        return NDArray.make(shape, strides, self.device, self._handle)
 
     def reshape(self, new_shape):
         """
@@ -267,11 +268,13 @@ class NDArray:
             If product of current shape is not equal to the product of the new
             shape, or if the matrix is not compact.
         """
-        if prod(self._shape) != prod(new_shape) or not self.is_compact():
-            raise ValueError()
+        if prod(self.shape) != prod(new_shape) or not self.is_compact():
+            raise ValueError(
+                "Array must be compact and its size must remain the same."
+            )
         new_strides = self.compact_strides(new_shape)
         return self.make(
-            new_shape, new_strides, self._device, self._handle, self._offset
+            new_shape, new_strides, self.device, self._handle, self._offset
         )
 
     def permute(self, new_axes):
@@ -300,11 +303,11 @@ class NDArray:
             New NDArray object with permuted dimensions, pointing to the same
             memory as the original NDArray (i.e., just shape and strides changed).
         """
-        assert len(self._shape) == len(new_axes)
-        shape = tuple(self._shape[i] for i in new_axes)
-        strides = tuple(self._strides[i] for i in new_axes)
+        assert len(self.shape) == len(new_axes)
+        shape = tuple(self.shape[i] for i in new_axes)
+        strides = tuple(self.strides[i] for i in new_axes)
         return self.make(
-            shape, strides, self._device, self._handle, self._offset
+            shape, strides, self.device, self._handle, self._offset
         )
 
     def broadcast_to(self, new_shape):
@@ -330,16 +333,15 @@ class NDArray:
         AssertionError
             If new_shape[i] != shape[i] for all i where shape[i] != 1
         """
-        assert len(self._shape) == len(new_shape)
+        assert len(self.shape) == len(new_shape)
         assert all(
-            e == new_shape[i] for i, e in enumerate(self._shape) if e != 1
+            e == new_shape[i] for i, e in enumerate(self.shape) if e != 1
         )
         new_strides = tuple(
-            0 if e == 1 else self._strides[i]
-            for i, e in enumerate(self._shape)
+            0 if e == 1 else self.strides[i] for i, e in enumerate(self.shape)
         )
         return self.make(
-            new_shape, new_strides, self._device, self._handle, self._offset
+            new_shape, new_strides, self.device, self._handle, self._offset
         )
 
     def _process_slice(self, sl, dim):
@@ -393,14 +395,14 @@ class NDArray:
         )
         shape = tuple(int((s.stop - s.start - 1) / s.step) + 1 for s in idxs)
         strides = tuple(
-            idx.step * stride for (idx, stride) in zip(idxs, self._strides)
+            idx.step * stride for (idx, stride) in zip(idxs, self.strides)
         )
         return self.make(
             shape,
             strides,
-            self._device,
+            self.device,
             self._handle,
-            sum(s.start * self._strides[i] for i, s in enumerate(idxs)),
+            sum(s.start * self.strides[i] for i, s in enumerate(idxs)),
         )
 
     def __setitem__(self, idxs, other):
