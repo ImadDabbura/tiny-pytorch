@@ -114,5 +114,11 @@ void ScalarGe(const AlignedArray &a, scalar_t val, AlignedArray *out) {
   }
 }
 
+void EwiseLog(const AlignedArray &a, AlignedArray *out) {
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = std::log(a.ptr[i]);
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
