@@ -64,6 +64,7 @@ void EwiseMul(const AlignedArray &a, const AlignedArray &b, AlignedArray *out) {
     out->ptr[i] = a.ptr[i] * b.ptr[i];
   }
 }
+
 void ScalarMul(const AlignedArray &a, scalar_t val, AlignedArray *out) {
   for (size_t i = 0; i < a.size; i++) {
     out->ptr[i] = a.ptr[i] * val;
@@ -73,6 +74,19 @@ void ScalarMul(const AlignedArray &a, scalar_t val, AlignedArray *out) {
 void ScalarPower(const AlignedArray &a, scalar_t val, AlignedArray *out) {
   for (size_t i = 0; i < a.size; i++) {
     out->ptr[i] = std::pow(a.ptr[i], val);
+  }
+}
+
+void EwiseMaximum(const AlignedArray &a, const AlignedArray &b,
+                  AlignedArray *out) {
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = std::max(a.ptr[i], b.ptr[i]);
+  }
+}
+
+void ScalarMaximum(const AlignedArray &a, scalar_t val, AlignedArray *out) {
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = std::max(a.ptr[i], val);
   }
 }
 
