@@ -102,5 +102,17 @@ void ScalarEq(const AlignedArray &a, scalar_t val, AlignedArray *out) {
   }
 }
 
+void EwiseGe(const AlignedArray &a, const AlignedArray &b, AlignedArray *out) {
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = scalar_t(a.ptr[i] >= b.ptr[i]);
+  }
+}
+
+void ScalarGe(const AlignedArray &a, scalar_t val, AlignedArray *out) {
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = scalar_t(a.ptr[i] >= val);
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
