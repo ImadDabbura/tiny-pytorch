@@ -27,5 +27,25 @@ void Fill(AlignedArray *out, scalar_t val) {
   }
 }
 
+void EwiseAdd(const AlignedArray &a, const AlignedArray &b, AlignedArray *out) {
+  /**
+   * Set entries in `out` to be the sum of correspondings entires in `a` and
+   * `b`.
+   */
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = a.ptr[i] + b.ptr[i];
+  }
+}
+
+void ScalarAdd(const AlignedArray &a, scalar_t val, AlignedArray *out) {
+  /**
+   * Set entries in `out` to be the sum of corresponding entry in `a` plus the
+   * scalar `val`.
+   */
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = a.ptr[i] + val;
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
