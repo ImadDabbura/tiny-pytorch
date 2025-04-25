@@ -126,5 +126,11 @@ void EwiseExp(const AlignedArray &a, AlignedArray *out) {
   }
 }
 
+void EwiseTanh(const AlignedArray &a, AlignedArray *out) {
+  for (size_t i = 0; i < a.size; i++) {
+    out->ptr[i] = std::tanh(a.ptr[i]);
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
