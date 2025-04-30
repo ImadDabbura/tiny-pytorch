@@ -251,5 +251,25 @@ void ReduceSum(const AlignedArray &a, AlignedArray *out, size_t reduce_size) {
     out->ptr[i] = sum;
   }
 }
+
+void ReduceMax(const AlignedArray &a, AlignedArray *out, size_t reduce_size) {
+  /**
+   * Reduce by taking max over `reduce_size` contiguous blocks.
+   *
+   * Args:
+   *   a: compact array of size a.size = out.size * reduce_size to reduce over
+   *   out: compact array to write into
+   *   reduce_size: size of the dimension to reduce over
+   */
+  scalar_t max;
+  for (int i = 0; i < out->size; i++) {
+    max = a.ptr[i * reduce_size];
+    for (int j = 1; j < reduce_size; j++) {
+      max = std::max(max, a.ptr[i * reduce_size + j]);
+    }
+    out->ptr[i] = max;
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
