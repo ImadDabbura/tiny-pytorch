@@ -274,8 +274,8 @@ void ReduceMax(const AlignedArray &a, AlignedArray *out, size_t reduce_size) {
 void Matmul(const AlignedArray &a, const AlignedArray &b, AlignedArray *out,
             uint32_t m, uint32_t n, uint32_t p) {
   /**
-   * Multiply two (compact) matrices into an output (also compact) matrix.  For
-   * this implementation you can use the "naive" three-loop algorithm.
+   * Naively multiply two (compact) matrices into an output (also compact)
+   * matrix.
    *
    * Args:
    *   a: compact 2D array of size m x n
@@ -294,6 +294,39 @@ void Matmul(const AlignedArray &a, const AlignedArray &b, AlignedArray *out,
         res += a.ptr[i * n + k] * b.ptr[k * p + j];
       }
       out->ptr[i * p + j] = res;
+    }
+  }
+}
+
+inline void AlignedDot(const float *__restrict__ a, const float *__restrict__ b,
+                       float *__restrict__ out) {
+  /**
+   * Multiply together two TILE x TILE matrices, and _add_ the result to out.
+   * `__restrict__ keyword indicates to the compiler that a, b, and out don't
+   * have any overlapping memory (which is necessary in order for vector
+   * operations to be equivalent to their non-vectorized ops.
+   * `__builtin_assume_aligned` keyword tells the compiler that the input array
+   * will be aligned to the appropriate blocks in memory, which also helps the
+   * compiler vectorize the code.
+   *
+   * Args:
+   *   a: compact 2D array of size TILE x TILE
+   *   b: compact 2D array of size TILE x TILE
+   *   out: compact 2D array of size TILE x TILE to write to
+   */
+
+  a = (const float *)__builtin_assume_aligned(a, TILE * ELEM_SIZE);
+  b = (const float *)__builtin_assume_aligned(b, TILE * ELEM_SIZE);
+  out = (float *)__builtin_assume_aligned(out, TILE * ELEM_SIZE);
+
+  scalar_t res;
+  for (int i = 0; i < TILE; i++) {
+    for (int j = 0; j < TILE; j++) {
+      res = out[i * TILE + j];
+      for (int k = 0; k < TILE; k++) {
+        res += a[i * TILE + k] * b[k * TILE + j];
+      }
+      out[i * TILE + j] = res;
     }
   }
 }
