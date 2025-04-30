@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 
 namespace tiny_pytorch {
@@ -132,6 +133,69 @@ void EwiseTanh(const AlignedArray &a, AlignedArray *out) {
   for (size_t i = 0; i < a.size; i++) {
     out->ptr[i] = std::tanh(a.ptr[i]);
   }
+}
+
+enum strided_mode { INDEX_IN, INDEX_OUT, INDEX_SET };
+
+void _set_noncompact(const AlignedArray *a, AlignedArray *out,
+                     std::vector<uint32_t> shape, std::vector<uint32_t> strides,
+                     size_t offset, int mode, int val = 0) {
+  /*
+   * Utility function that would iterate over non_compact array `a` using
+   * strided indices and set the elements in `out` array which is compact in
+   * sequential order to create compact array
+   */
+  int cnt = 0;
+  int ndim = shape.size();
+  std::vector<uint32_t> pos(ndim, 0);
+  while (true) {
+    int idx = offset;
+    for (int i = 0; i < ndim; i++) {
+      idx += strides[i] * pos[i];
+    }
+    switch (mode) {
+    case INDEX_IN:
+      out->ptr[cnt++] = a->ptr[idx];
+      break;
+    case INDEX_OUT:
+      out->ptr[idx] = a->ptr[cnt++];
+      break;
+    case INDEX_SET:
+      out->ptr[idx] = val;
+      break;
+    }
+    pos[ndim - 1]++;
+    int j = ndim - 1;
+    while (pos[j] == shape[j]) {
+      if (j == 0) {
+        return;
+      }
+      pos[j--] = 0;
+      pos[j]++;
+    }
+  }
+}
+
+void Compact(const AlignedArray &a, AlignedArray *out,
+             std::vector<uint32_t> shape, std::vector<uint32_t> strides,
+             size_t offset) {
+  /**
+   * Compact an array in memory
+   *
+   * Args:
+   *   a: non-compact representation of the array, given as input
+   *   out: compact version of the array to be written
+   *   shape: shapes of each dimension for a and out
+   *   strides: strides of the *a* array (not out, which has compact strides)
+   *   offset: offset of the *a* array (not out, which has zero offset, being
+   * compact)
+   *
+   * Returns:
+   *  void (you need to modify out directly, rather than returning anything;
+   * this is true for all the function will implement here, so we won't repeat
+   * this note.)
+   */
+  _set_noncompact(&a, out, shape, strides, offset, INDEX_IN);
 }
 
 } // namespace cpu
