@@ -198,5 +198,22 @@ void Compact(const AlignedArray &a, AlignedArray *out,
   _set_noncompact(&a, out, shape, strides, offset, INDEX_IN);
 }
 
+void EwiseSetitem(const AlignedArray &a, AlignedArray *out,
+                  std::vector<uint32_t> shape, std::vector<uint32_t> strides,
+                  size_t offset) {
+  /**
+   * Set items in a (non-compact) array
+   *
+   * Args:
+   *   a: _compact_ array whose items will be written to out
+   *   out: non-compact array whose items are to be written
+   *   shape: shapes of each dimension for a and out
+   *   strides: strides of the *out* array (not a, which has compact strides)
+   *   offset: offset of the *out* array (not a, which has zero offset, being
+   * compact)
+   */
+  _set_noncompact(&a, out, shape, strides, offset, INDEX_OUT);
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
