@@ -1,4 +1,6 @@
+#include <cmath>
 #include <iostream>
+
 namespace tiny_pytorch {
 namespace cpu {
 
@@ -92,25 +94,25 @@ void ScalarMaximum(const AlignedArray &a, scalar_t val, AlignedArray *out) {
 
 void EwiseEq(const AlignedArray &a, const AlignedArray &b, AlignedArray *out) {
   for (size_t i = 0; i < a.size; i++) {
-    out->ptr[i] = scalar_t(a.ptr[i] == b.ptr[i]);
+    out->ptr[i] = static_cast<scalar_t>(a.ptr[i] == b.ptr[i]);
   }
 }
 
 void ScalarEq(const AlignedArray &a, scalar_t val, AlignedArray *out) {
   for (size_t i = 0; i < a.size; i++) {
-    out->ptr[i] = scalar_t(a.ptr[i] == val);
+    out->ptr[i] = static_cast<scalar_t>(a.ptr[i] == val);
   }
 }
 
 void EwiseGe(const AlignedArray &a, const AlignedArray &b, AlignedArray *out) {
   for (size_t i = 0; i < a.size; i++) {
-    out->ptr[i] = scalar_t(a.ptr[i] >= b.ptr[i]);
+    out->ptr[i] = static_cast<scalar_t>(a.ptr[i] >= b.ptr[i]);
   }
 }
 
 void ScalarGe(const AlignedArray &a, scalar_t val, AlignedArray *out) {
   for (size_t i = 0; i < a.size; i++) {
-    out->ptr[i] = scalar_t(a.ptr[i] >= val);
+    out->ptr[i] = static_cast<scalar_t>(a.ptr[i] >= val);
   }
 }
 
