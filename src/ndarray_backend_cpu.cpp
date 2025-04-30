@@ -232,5 +232,24 @@ void ScalarSetitem(const size_t size, scalar_t val, AlignedArray *out,
 
   _set_noncompact(nullptr, out, shape, strides, offset, INDEX_SET, val);
 }
+
+void ReduceSum(const AlignedArray &a, AlignedArray *out, size_t reduce_size) {
+  /**
+   * Reduce by taking sum over `reduce_size` contiguous blocks.
+   *
+   * Args:
+   *   a: compact array of size a.size = out.size * reduce_size to reduce over
+   *   out: compact array to write into
+   *   reduce_size: size of the dimension to reduce over
+   */
+  scalar_t sum;
+  for (int i = 0; i < out->size; i++) {
+    sum = 0;
+    for (int j = 0; j < reduce_size; j++) {
+      sum += a.ptr[i * reduce_size + j];
+    }
+    out->ptr[i] = sum;
+  }
+}
 } // namespace cpu
 } // namespace tiny_pytorch
