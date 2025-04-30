@@ -215,5 +215,22 @@ void EwiseSetitem(const AlignedArray &a, AlignedArray *out,
   _set_noncompact(&a, out, shape, strides, offset, INDEX_OUT);
 }
 
+void ScalarSetitem(const size_t size, scalar_t val, AlignedArray *out,
+                   std::vector<uint32_t> shape, std::vector<uint32_t> strides,
+                   size_t offset) {
+  /**
+   * Set items is a (non-compact) array
+   *
+   * Args:
+   *   size: number of elements to write in out array (note that this will note
+   * be the same as out.size, because out is a non-compact subset array);  it
+   * _will_ be the same as the product of items in shape, but convenient to just
+   * pass it here. val: scalar value to write to out: non-compact array whose
+   * items are to be written shape: shapes of each dimension of out strides:
+   * strides of the out array offset: offset of the out array
+   */
+
+  _set_noncompact(nullptr, out, shape, strides, offset, INDEX_SET, val);
+}
 } // namespace cpu
 } // namespace tiny_pytorch
