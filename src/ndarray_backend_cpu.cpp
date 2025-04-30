@@ -331,5 +331,39 @@ inline void AlignedDot(const float *__restrict__ a, const float *__restrict__ b,
   }
 }
 
+void MatmulTiled(const AlignedArray &a, const AlignedArray &b,
+                 AlignedArray *out, uint32_t m, uint32_t n, uint32_t p) {
+  /**
+   * Matrix multiplication on tiled representations of array.  In this setting,
+   * a, b, and out are all *4D* compact arrays of the appropriate size, e.g. a
+   * is an array of size a[m/TILE][n/TILE][TILE][TILE].
+   *
+   * Note that this function will only be called when m, n, p are all multiples
+   * of TILE.
+   *
+   * Args:
+   *   a: compact 4D array of size m/TILE x n/TILE x TILE x TILE
+   *   b: compact 4D array of size n/TILE x p/TILE x TILE x TILE
+   *   out: compact 4D array of size m/TILE x p/TILE x TILE x TILE to write to
+   *   m: rows of a / out
+   *   n: columns of a / rows of b
+   *   p: columns of b / out
+   */
+
+  // initialize out to zero
+  for (int i = 0; i < m * p; i++)
+    out->ptr[i] = 0;
+
+  for (int i = 0; i < m / TILE; i++) {
+    for (int j = 0; j < p / TILE; j++) {
+      for (int k = 0; k < n / TILE; k++) {
+        AlignedDot(&a.ptr[i * n * TILE + k * TILE * TILE],
+                   &b.ptr[k * p * TILE + j * TILE * TILE],
+                   &out->ptr[i * p * TILE + j * TILE * TILE]);
+      }
+    }
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
