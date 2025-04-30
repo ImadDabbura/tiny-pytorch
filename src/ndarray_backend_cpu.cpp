@@ -271,5 +271,32 @@ void ReduceMax(const AlignedArray &a, AlignedArray *out, size_t reduce_size) {
   }
 }
 
+void Matmul(const AlignedArray &a, const AlignedArray &b, AlignedArray *out,
+            uint32_t m, uint32_t n, uint32_t p) {
+  /**
+   * Multiply two (compact) matrices into an output (also compact) matrix.  For
+   * this implementation you can use the "naive" three-loop algorithm.
+   *
+   * Args:
+   *   a: compact 2D array of size m x n
+   *   b: compact 2D array of size n x p
+   *   out: compact 2D array of size m x p to write the output to
+   *   m: rows of a / out
+   *   n: columns of a / rows of b
+   *   p: columns of b / out
+   */
+
+  scalar_t res;
+  for (int i = 0; i < m; i++) {
+    for (int j = 0; j < p; j++) {
+      res = 0;
+      for (int k = 0; k < n; k++) {
+        res += a.ptr[i * n + k] * b.ptr[k * p + j];
+      }
+      out->ptr[i * p + j] = res;
+    }
+  }
+}
+
 } // namespace cpu
 } // namespace tiny_pytorch
