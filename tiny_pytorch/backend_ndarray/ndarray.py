@@ -548,25 +548,19 @@ class NDArray:
 
             def tile(a, tile):
                 return a.as_strided(
-                    (a.shape[0] // tile, a.shape[1] // tile, tile, tile),
-                    (a.shape[1] * tile, tile, self.shape[1], 1),
+                    (m // tile, n // tile, tile, tile),
+                    (n * tile, tile, n, 1),
                 )
 
             t = self.device.__tile_size__
             a = tile(self.compact(), t).compact()
             b = tile(other.compact(), t).compact()
-            out = NDArray.make(
-                (a.shape[0], b.shape[1], t, t), device=self.device
-            )
+            out = NDArray.make((m // t, p // t, t, t), device=self.device)
             self.device.matmul_tiled(
                 a._handle, b._handle, out._handle, m, n, p
             )
 
-            return (
-                out.permute((0, 2, 1, 3))
-                .compact()
-                .reshape((self.shape[0], other.shape[1]))
-            )
+            return out.permute((0, 2, 1, 3)).compact().reshape((m, p))
 
         else:
             out = NDArray.make((m, p), device=self.device)
