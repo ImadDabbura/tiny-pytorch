@@ -222,5 +222,17 @@ void ScalarGe(const CudaArray &a, scalar_t val, CudaArray *out) {
       a.ptr, val, out->ptr, out->size);
 }
 
+__global__ void EwiseLogKernel(const scalar_t *a, scalar_t *out, size_t n) {
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if (i < n) {
+    out[i] = log(a[i]);
+  }
+}
+
+void EwiseLog(const CudaArray &a, CudaArray *out) {
+  EwiseLogKernel<<<ceil(out->size, NUM_THREADS), NUM_THREADS>>>(
+      a.ptr, b.ptr, out->ptr, out->size);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
