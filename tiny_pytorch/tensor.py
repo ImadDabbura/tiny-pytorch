@@ -5,14 +5,12 @@ Core data structures for multi-dimensional tensors.
 from __future__ import annotations
 
 import numpy as np
-import numpy as array_api
 
 import tiny_pytorch
 
-from .device import CPUDevice, Device, cpu
+from .backend_selection import Device, NDArray, array_api, default_device
 from .utils import listify, tuplify
 
-NDArray = array_api.ndarray
 LAZY_MODE = False  # Default mode is eager mode
 
 
@@ -76,7 +74,7 @@ class Tensor:
                     array.numpy(), device=device, dtype=dtype
                 )
         else:
-            device = cpu() if not device else device
+            device = default_device() if not device else device
             cached_data = self._from_numpy_array(
                 array, device=device, dtype=dtype
             )
@@ -169,7 +167,7 @@ class Tensor:
             The device on which the tensor is stored.
         """
         if array_api is np:
-            return cpu()
+            return default_device()
         return self.realize_cached_data().device
 
     @property

@@ -50,12 +50,16 @@ class CPUDevice(Device):
         return f"{self.__class__.__name__}()"
 
     def __hash__(self):
-        return self.__repr__.__hash__()
+        return self.__repr__().__hash__()
 
 
 def cpu():
     "Returns CPU device."
     return CPUDevice()
+
+
+def default_device():
+    return cpu()
 
 
 def all_devices():
