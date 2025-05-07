@@ -157,5 +157,18 @@ void EwiseMaximum(const CudaArray &a, const CudaArray &b, CudaArray *out) {
       a.ptr, b.ptr, out->ptr, out->size);
 }
 
+__global__ void ScalarMaximumlKernel(const scalar_t *a, scalar_t val,
+                                     scalar_t *out, size_t n) {
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if (i < n) {
+    out[i] = max(a[i], val);
+  }
+}
+
+void ScalarMaximum(const CudaArray &a, scalar_t val, CudaArray *out) {
+  ScalarMaximumKernel<<<ceil(out->size, NUM_THREADS), NUM_THREADS>>>(
+      a.ptr, val, out->ptr, out->size);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
