@@ -340,5 +340,32 @@ void ReduceSum(const CudaArray &a, CudaArray *out, size_t reduce_size) {
       a.ptr, out->ptr, reduce_size, out->size);
 }
 
+__global__ void ReduceMaxKernel(const scalar_t *a, scalar_t *out,
+                                size_t reduce_size, size_t n) {
+  size_t i = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < n) {
+    size_t offset = i * reduce_size;
+    scalar_t reduce_max = a[offset];
+    for (int i = 1; i < reduce_size; i++) {
+      reduce_max = max(reduce_max, a[i + offset]);
+    }
+    out[i] = reduce_max;
+  }
+}
+
+void ReduceMax(const CudaArray &a, CudaArray *out, size_t reduce_size) {
+  /**
+   * Reduce by taking maximum over `reduce_size` contiguous blocks.
+   *
+   * Args:
+   *   a: compact array of size a.size = out.size * reduce_size to reduce over
+   *   out: compact array to write into
+   *   redice_size: size of the dimension to reduce over
+   */
+  ReduceMaxKernel<<<ceil(out->size / NUM_THREADS), NUM_THREADS>>>(
+      a.ptr, out->ptr, reduce_size, out->size);
+                                           out->size);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
