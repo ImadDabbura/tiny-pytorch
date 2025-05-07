@@ -314,5 +314,31 @@ void Matmul(const CudaArray &a, const CudaArray &b, CudaArray *out, uint32_t M,
   TiledMatMulKernel<<<(ceil(M, TILE), ceil(N, TILE), (TILE, TILE)>>>(a.ptr, b.ptr, out.ptr, M, N, P)
 }
 
+__global__ void ReduceSumKernel(const scalar_t *a, scalar_t *out, size_t reduce_size, size_t n) {
+  /* Each thread would sum across one reduction item */
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < n) {
+    size_t offset = i * reduce_size;
+    scalar_t reduce_sum = 0;
+    for (int i = 0; i < reduce_size; i++) {
+      reduce_sum += a[i + offset];
+    }
+    out[i] = reduce_sum;
+  }
+}
+
+void ReduceSum(const CudaArray &a, CudaArray *out, size_t reduce_size) {
+  /**
+   * Reduce by taking summation over `reduce_size` contiguous blocks.
+   *
+   * Args:
+   *   a: compact array of size a.size = out.size * reduce_size to reduce over
+   *   out: compact array to write into
+   *   redice_size: size of the dimension to reduce over
+   */
+  ReduceSumKernel<<<ceil(out->size / NUM_THREADS), NUM_THREADS>>>(
+      a.ptr, out->ptr, reduce_size, out->size);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
