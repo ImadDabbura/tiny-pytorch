@@ -422,5 +422,31 @@ void Compact(const CudaArray &a, CudaArray *out, std::vector<uint32_t> shape,
       a.ptr, out->ptr, out->size, VecToCuda(shape), VecToCuda(strides), offset);
 }
 
+__global__ void EwiseSetitemKernel(const scalar_t *a, scalar_t *out, size_t n,
+                                   CudaVec shape, CudaVec strides,
+                                   size_t offset) {
+  size_t i = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < n)
+    out[threadIndexToIdx(i, shape, strides, offset)] = a[i];
+}
+
+void EwiseSetitem(const CudaArray &a, CudaArray *out,
+                  std::vector<int32_t> shape, std::vector<int32_t> strides,
+                  size_t offset) {
+  /**
+   * Set items in a (non-compact) array using CUDA.
+   *
+   * Args:
+   *   a: _compact_ array whose items will be written to out
+   *   out: non-compact array whose items are to be written
+   *   shape: shapes of each dimension for a and out
+   *   strides: strides of the *out* array (not a, which has compact strides)
+   *   offset: offset of the *out* array (not a, which has zero offset, being
+   *   compact)
+   */
+  EwiseSetitemKernel<<<ceil(out->size, NUM_THREADS), NUM_THREADS>>>(
+      a.ptr, out->ptr, a.size, VecToCuda(shape), VecToCuda(strides), offset);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
