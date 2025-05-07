@@ -367,5 +367,19 @@ void ReduceMax(const CudaArray &a, CudaArray *out, size_t reduce_size) {
                                            out->size);
 }
 
+__device__ threadIndexToIdx(size_t thread_idx, CudaVec shape, CudaVec strides,
+                            size_t offset) {
+  int dim = shape.size;
+  int idx = offset;
+  /* Start from last dimension and go backward to get the mapping from the CUDA
+   * index (compact array index) to the strided non-compact array index
+   */
+  for (int i = dim - 1; i >= 0; i--) {
+    idx += (thread_idx % shape.data[i]) * strides.data[i];
+    thread_idx /= shape.data[i];
+  }
+  return idx;
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
