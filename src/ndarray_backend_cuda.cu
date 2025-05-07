@@ -448,5 +448,33 @@ void EwiseSetitem(const CudaArray &a, CudaArray *out,
       a.ptr, out->ptr, a.size, VecToCuda(shape), VecToCuda(strides), offset);
 }
 
+__global__ void ScalarSetitemKernel(const scalar_t val, scalar_t *out, size_t n,
+                                    CudaVec shape, CudaVec strides,
+                                    size_t offset) {
+  size_t i = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < n)
+    out[threadIndexToIdx(i, shape, strides, offset)] = val;
+}
+
+void ScalarSetitem(size_t size, scalar_t val, CudaArray *out,
+                   std::vector<int32_t> shape, std::vector<int32_t> strides,
+                   size_t offset) {
+  /**
+   * Set items is a (non-compact) array
+   *
+   * Args:
+   *   size: number of elements to write in out array (note that this will not
+   *   be the same as out.size, because out is a non-compact subset array);  it
+   *   _will_ be the same as the product of items in shape, but covenient to
+   *   just pass it here.
+   *   val: scalar value to write to
+   *   out: non-compact array whose items are to be written
+   *   shape: shapes of each dimension of out
+   *   strides: strides of the out array offset: offset of the out array
+   */
+  ScalarSetitemKernel<<<ceil(out->size, NUM_THREADS), NUM_THREADS>>>(
+      val, out->ptr, size, VecToCuda(shape), VecToCuda(strides), offset);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
