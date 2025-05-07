@@ -381,5 +381,46 @@ __device__ threadIndexToIdx(size_t thread_idx, CudaVec shape, CudaVec strides,
   return idx;
 }
 
+__global__ void CompactKernel(const scalar_t *a, scalar_t *out, size_t n,
+                              CudaVec shape, CudaVec strides, size_t offset) {
+  /**
+   * The CUDA kernel for the compact opeation.  This should effectively map a
+   * single entry in the non-compact input a, to the corresponding item (at
+   * location gid) in the compact array out.
+   *
+   * Args:
+   *   a: CUDA pointer to a array
+   *   out: CUDA pointer to out array
+   *   size: size of out array
+   *   shape: vector of shapes of a and out arrays (of type CudaVec, for past
+   *   passing to CUDA kernel)
+   *   strides: vector of strides of out array
+   *   offset: offset of out array
+   */
+  size_t i = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < n) {
+    int idx = threadIndexToIdx(i, shape, stride, offset);
+    out[i] = a[idx];
+  }
+}
+
+void Compact(const CudaArray &a, CudaArray *out, std::vector<uint32_t> shape,
+             std::vector<uint32_t> strides, size_t offset) {
+  /**
+   * Compact an array in memory.
+   *
+   * Args:
+   *   a: non-compact represntation of the array
+   *   out: compact version of the array to be written
+   *   shape: shape of each dimension for a and out
+   *   strides: stride of the *a* array (not out, which has compact strides)
+   *   offset: offset of the *a* array (not out, which has zero offset, being
+   *   compact)
+   */
+
+  CompactKernel<<<ceil(out->size / NUM_THREADS), NUM_THREADS>>>(
+      a.ptr, out->ptr, out->size, VecToCuda(shape), VecToCuda(strides), offset);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
