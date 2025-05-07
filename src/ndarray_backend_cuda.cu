@@ -131,5 +131,18 @@ void ScalarDiv(const CudaArray &a, scalar_t val, CudaArray *out) {
       a.ptr, val, out->ptr, out->size);
 }
 
+__global__ void ScalarPowerlKernel(const scalar_t *a, scalar_t val,
+                                   scalar_t *out, size_t n) {
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if (i < n) {
+    out[i] = pow(a[i], val);
+  }
+}
+
+void ScalarPower(const CudaArray &a, scalar_t val, CudaArray *out) {
+  ScalarPowerKernel<<<ceil(out->size, NUM_THREADS), NUM_THREADS>>>(
+      a.ptr, val, out->ptr, out->size);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
