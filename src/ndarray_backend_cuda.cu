@@ -79,5 +79,18 @@ void ScalarAdd(const CudaArray &a, scalar_t val, CudaArray *out) {
       a.ptr, val, out->ptr, out->size);
 }
 
+__global__ void EwiseMulKernel(const scalar_t *a, const scalar_t *b,
+                               scalar_t *out, size_t n) {
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if (i < n) {
+    out[i] = a[i] * b[i];
+  }
+}
+
+void EwiseMul(const CudaArray &a, const CudaArray &b, CudaArray *out) {
+  EwiseMulKernel<<<ceil(out->size, NUM_THREADS), NUM_THREADS>>>(
+      a.ptr, b.ptr, out->ptr, out->size);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
