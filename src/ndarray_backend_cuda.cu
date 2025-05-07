@@ -258,5 +258,61 @@ void EwiseTanh(const CudaArray &a, CudaArray *out) {
       a.ptr, b.ptr, out->ptr, out->size);
 }
 
+__global__ TiledMatMulKernel(scalar_t *a, scalar_t *b, float *out, int m, int n,
+                             int p) {
+  /*
+   * a: m x n
+   * b: n x p
+   * out: m x p
+   */
+  __shared__ float ms[TILE][TILE];
+  __shared__ float ns[TILE][TILE];
+
+  int bx = blockIdx.x;
+  int by = blockIdx.y;
+  int tx = threadIdx.x;
+  int ty = threadIdx.y;
+
+  int row = by * TILE + ty;
+  int col = bx * TILE + tx;
+
+  float pvalues = 0.0;
+
+  for (int ph = 0; ph < n / TILE; ph++) {
+    ms[ty][tx] = ((row < m) && (ph * TILE + ty) < n)
+                     ? a[row * n + ph * TILE + tx]
+                     : 0.0f;
+    ns[ty][tx] = ((ph * TILE + ty) < n && (col < p))
+                     ? b[(ph * TILE * ty) * p + col]
+                     : 0.0f;
+    __synchthreads();
+
+    for (int i = 0; i < TILE; i++) {
+      pvalues += ms[ty][i] * ns[i][tx];
+    }
+    __syncthreads();
+  }
+
+  if ((row < m) && (col < p)) {
+    out[row * p + col] = pvalues;
+  }
+}
+
+void Matmul(const CudaArray &a, const CudaArray &b, CudaArray *out, uint32_t M,
+            uint32_t N, uint32_t P) {
+  /**
+   * Multiply two (compact) matrices into an output (also comapct) matrix.
+   *
+   * Args:
+   *   a: compact 2D array of size m x n
+   *   b: comapct 2D array of size n x p
+   *   out: compact 2D array of size m x p to write the output to
+   *   M: rows of a / out
+   *   N: columns of a / rows of b
+   *   P: columns of b / out
+   */
+  TiledMatMulKernel<<<(ceil(M, TILE), ceil(N, TILE), (TILE, TILE)>>>(a.ptr, b.ptr, out.ptr, M, N, P)
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
