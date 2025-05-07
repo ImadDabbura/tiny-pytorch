@@ -41,5 +41,17 @@ CudaVec VecToCuda(const std::vector<uint32_t> &x) {
   return shape;
 }
 
+__global__ void FillKernel(scalar_t *out, scalar_t val, size_t n) {
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if (i < n) {
+    out[i] = val;
+  }
+}
+
+void Fill(CudaArray *out, scalar_t val) {
+  FillKernel<<<ceil(out->size / NUM_THREADS), NUM_THREADS>>>(out->ptr, val,
+                                                             out->size);
+}
+
 } // namespace cuda
 } // namespace tiny_pytorch
