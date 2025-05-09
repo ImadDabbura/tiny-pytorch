@@ -355,24 +355,15 @@ class NDArray:
             new_shape, new_strides, self.device, self._handle, self._offset
         )
 
-    def _process_slice(self, sl, dim):
-        """Convert a slice to an explicit start/stop/step"""
-        start, stop, step = sl.start, sl.stop, sl.step
-        if start is None:
-            start = 0
-        elif start < 0:
-            start += self.shape[dim]
-        if stop is None:
-            stop = self.shape[dim]
-        elif stop < 0:
-            stop += self.shape[dim]
-        if step is None:
-            step = 1
-
-        # we're not gonna handle negative strides and that kind of thing
-        assert stop > start, "Start must be less than stop"
-        assert step > 0, "No support for  negative increments"
-        return slice(start, stop, step)
+    def _process_idx(self, sl: int | slice, dim: int):
+        """Convert index/slice to indices within bound."""
+        if isinstance(sl, slice):
+            return slice(*sl.indices(self.shape[dim]))
+        if abs(sl) > self.shape[dim]:
+            raise IndexError(
+                f"index {sl} is out of bounds for axis {dim} with size {self.shape[dim]}"
+            )
+        return slice(*slice(sl, sl + 1, 1).indices(self.shape[dim]))
 
     def __getitem__(self, idxs):
         """
@@ -396,14 +387,7 @@ class NDArray:
         assert (
             len(idxs) == self.ndim
         ), "Need indexes equal to number of dimensions"
-        idxs = tuple(
-            (
-                self._process_slice(s, i)
-                if isinstance(s, slice)
-                else slice(s, s + 1, 1)
-            )
-            for i, s in enumerate(idxs)
-        )
+        idxs = tuple(self._process_slice(s, i) for i, s in enumerate(idxs))
         shape = tuple(int((s.stop - s.start - 1) / s.step) + 1 for s in idxs)
         strides = tuple(
             idx.step * stride for (idx, stride) in zip(idxs, self.strides)
