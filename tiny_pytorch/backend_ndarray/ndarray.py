@@ -387,7 +387,7 @@ class NDArray:
         assert (
             len(idxs) == self.ndim
         ), "Need indexes equal to number of dimensions"
-        idxs = tuple(self._process_slice(s, i) for i, s in enumerate(idxs))
+        idxs = tuple(self._process_idx(s, i) for i, s in enumerate(idxs))
         shape = tuple(int((s.stop - s.start - 1) / s.step) + 1 for s in idxs)
         strides = tuple(
             idx.step * stride for (idx, stride) in zip(idxs, self.strides)
