@@ -3,13 +3,16 @@ name = "tiny-pytorch"
 version = "0.0.4"
 description = "Mini Deep Learning framework similar to PyTorch"
 authors = [
-    {name = "ImadDabbura", email = "imad.dabbura@hotmail.com"}
+    {name = "Imad Dabbura", email = "imad.dabbura@hotmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "numpy (>=2.2.3,<3.0.0)",
 ]
+
+[tool.poetry.group.build.dependencies]
+pybind11 = "^2.10.0"
 
 [tool.poetry]
 packages = [{include = "tiny_pytorch"}]
@@ -54,5 +57,11 @@ multi_line_output = 3
 line_length = 79
 
 [build-system]
-requires = ["poetry-core>=2.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0", "wheel", "pybind11>=2.10.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["tiny_pytorch*"]
+
+[tool.setuptools.package-data]
+tiny_pytorch = ["*.cpp"]
