@@ -2,7 +2,7 @@
 
 import os
 
-BACKEND = os.environ.get("NEEDLE_BACKEND", "np")
+BACKEND = os.environ.get("TINY_PYTORCH_BACKEND", "np")
 
 
 if BACKEND == "nd":
@@ -24,4 +24,4 @@ elif BACKEND == "np":
 
     NDArray = array_api.ndarray
 else:
-    raise RuntimeError("Unknown needle array backend %s" % BACKEND)
+    raise RuntimeError("Unknown tiny-pytorch array backend {BACKEND}")

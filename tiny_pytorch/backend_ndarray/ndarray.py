@@ -63,11 +63,18 @@ def default_device():
 
 
 def cpu():
-    pass
+    try:
+        from .. import ndarray_backend_cpu
+
+        return BackendDevice("cpu", ndarray_backend_cpu)
+    except ImportError:
+        # Fallback to numpy if C++ extension is not available
+        return cpu_numpy()
 
 
 def cuda():
-    pass
+    # CUDA backend not implemented yet
+    raise NotImplementedError("CUDA backend not yet implemented")
 
 
 def all_devices():
