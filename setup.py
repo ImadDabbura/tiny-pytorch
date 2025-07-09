@@ -17,11 +17,17 @@ def get_compiler_flags():
 
     # Add C++11 standard and optimization
     if sys.platform.startswith("linux"):
-        flags.extend(["-std=c++11", "-O3", "-fPIC", "-march=native"])
+        # For Linux, use conservative flags that work across different architectures
+        flags.extend(["-std=c++11", "-O3", "-fPIC"])
+        # Don't use architecture-specific flags to avoid compatibility issues
     elif sys.platform == "darwin":  # macOS
-        flags.extend(["-std=c++11", "-O3", "-march=native"])
+        # For macOS, use conservative flags that work on both Intel and Apple Silicon
+        flags.extend(["-std=c++11", "-O3"])
+        # Don't use architecture-specific flags to avoid compatibility issues
     elif sys.platform == "win32":  # Windows
+        # For Windows, use conservative flags that work across different architectures
         flags.extend(["/std:c++11", "/O2"])
+        # Don't use architecture-specific flags to avoid compatibility issues
 
     return flags
 
