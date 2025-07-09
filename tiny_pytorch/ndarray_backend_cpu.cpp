@@ -399,6 +399,8 @@ PYBIND11_MODULE(ndarray_backend_cpu, m) {
   m.def("from_numpy", [](py::array_t<scalar_t> a, AlignedArray *out) {
     std::memcpy(out->ptr, a.request().ptr, out->size * ELEM_SIZE);
   });
+  m.def("fill", Fill);
+  m.def("compact", Compact);
   m.def("ewise_setitem", EwiseSetitem);
   m.def("scalar_setitem", ScalarSetitem);
   m.def("ewise_add", EwiseAdd);
