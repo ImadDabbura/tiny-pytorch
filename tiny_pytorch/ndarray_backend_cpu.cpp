@@ -194,9 +194,7 @@ void Compact(const AlignedArray &a, AlignedArray *out,
    * compact)
    *
    * Returns:
-   *  void (you need to modify out directly, rather than returning anything;
-   * this is true for all the function will implement here, so we won't repeat
-   * this note.)
+   *  void
    */
   _set_noncompact(&a, out, shape, strides, offset, INDEX_IN);
 }
@@ -384,8 +382,7 @@ PYBIND11_MODULE(ndarray_backend_cpu, m) {
       .def("ptr", &AlignedArray::ptr_as_int)
       .def_readonly("size", &AlignedArray::size);
 
-  // return numpy array (with copying for simplicity, otherwise garbage
-  // collection is a pain)
+  // TODO: Creates a view now, we should change it to create a copy
   m.def("to_numpy", [](const AlignedArray &a, std::vector<size_t> shape,
                        std::vector<size_t> strides, size_t offset) {
     std::vector<size_t> numpy_strides = strides;
