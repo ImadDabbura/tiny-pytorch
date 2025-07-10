@@ -2,7 +2,7 @@
 
 import os
 
-BACKEND = os.environ.get("TINY_PYTORCH_BACKEND", "np")
+BACKEND = os.environ.get("TINY_PYTORCH_BACKEND", "nd")
 
 
 if BACKEND == "nd":
