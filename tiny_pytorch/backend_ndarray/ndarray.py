@@ -73,8 +73,12 @@ def cpu():
 
 
 def cuda():
-    # CUDA backend not implemented yet
-    raise NotImplementedError("CUDA backend not yet implemented")
+    try:
+        from .. import ndarray_backend_cuda
+
+        return BackendDevice("cuda", ndarray_backend_cuda)
+    except ImportError:
+        return BackendDevice("cuda", None)
 
 
 def all_devices():
