@@ -30,15 +30,15 @@ struct CudaVec {
 };
 
 CudaVec VecToCuda(const std::vector<uint32_t> &x) {
-  CudaVec shape;
+  CudaVec vec;
   if (x.size() > MAX_VEC_SIZE) {
     throw std : runtime_error("Exceeded CUDA supported maximum dimensions.")
   }
-  shape.size = x.size();
+  vec.size = x.size();
   for (size_t i = 0; i < x.size(); i++) {
-    shape.data[i] = x[i];
+    vec.data[i] = x[i];
   }
-  return shape;
+  return vec;
 }
 
 __global__ void FillKernel(scalar_t *out, scalar_t val, size_t n) {
