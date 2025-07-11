@@ -138,7 +138,7 @@ class _ShapeAndSlices(nd.NDArray):
         idxs = tuple(
             [
                 (
-                    self._process_slice(s, i)
+                    self._process_idx(s, i)
                     if isinstance(s, slice)
                     else slice(s, s + 1, 1)
                 )
