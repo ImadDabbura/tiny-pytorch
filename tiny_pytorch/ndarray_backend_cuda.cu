@@ -478,3 +478,72 @@ void ScalarSetitem(size_t size, scalar_t val, CudaArray *out,
 
 } // namespace cuda
 } // namespace tiny_pytorch
+
+PYBIND11_MODULE(ndarray_backend_cuda, m) {
+  namespace py = pybind11;
+  using namespace tiny_pytorch;
+  using namespace cuda;
+
+  m.attr("__device_name__") = "cuda";
+  m.attr("__tile_size__") = TILE;
+
+  py::class_<CudaArray>(m, "Array")
+      .def(py::init<size_t>(), py::return_value_policy::take_ownership)
+      .def_readonly("size", &CudaArray::size)
+      .def("ptr", &CudaArray::ptr_as_int);
+
+  // return numpy array, copying from GPU
+  m.def("to_numpy", [](const CudaArray &a, std::vector<size_t> shape,
+                       std::vector<size_t> strides, size_t offset) {
+    std::vector<size_t> numpy_strides = strides;
+    std::transform(numpy_strides.begin(), numpy_strides.end(),
+                   numpy_strides.begin(),
+                   [](size_t &c) { return c * ELEM_SIZE; });
+
+    // copy memory to host
+    scalar_t *host_ptr = (scalar_t *)std::malloc(a.size * ELEM_SIZE);
+    if (host_ptr == 0)
+      throw std::bad_alloc();
+    cudaError_t err =
+        cudaMemcpy(host_ptr, a.ptr, a.size * ELEM_SIZE, cudaMemcpyDeviceToHost);
+    if (err != cudaSuccess)
+      throw std::runtime_error(cudaGetErrorString(err));
+
+    // return numpy array
+    py::capsule deallocate_buffer(host_ptr, [](void *p) { free(p); });
+    return py::array_t<scalar_t>(shape, numpy_strides, host_ptr + offset,
+                                 deallocate_buffer);
+  });
+
+  // copy numpy array to GPU
+  m.def("from_numpy", [](py::array_t<scalar_t> a, CudaArray *out) {
+    cudaError_t err = cudaMemcpy(out->ptr, a.request().ptr,
+                                 out->size * ELEM_SIZE, cudaMemcpyHostToDevice);
+    if (err != cudaSuccess)
+      throw std::runtime_error(cudaGetErrorString(err));
+  });
+
+  m.def("fill", Fill);
+  m.def("compact", Compact);
+  m.def("ewise_setitem", EwiseSetitem);
+  m.def("scalar_setitem", ScalarSetitem);
+  m.def("ewise_add", EwiseAdd);
+  m.def("scalar_add", ScalarAdd);
+  m.def("ewise_mul", EwiseMul);
+  m.def("scalar_mul", ScalarMul);
+  m.def("ewise_div", EwiseDiv);
+  m.def("scalar_div", ScalarDiv);
+  m.def("scalar_power", ScalarPower);
+  m.def("ewise_maximum", EwiseMaximum);
+  m.def("scalar_maximum", ScalarMaximum);
+  m.def("ewise_eq", EwiseEq);
+  m.def("scalar_eq", ScalarEq);
+  m.def("ewise_ge", EwiseGe);
+  m.def("scalar_ge", ScalarGe);
+  m.def("ewise_log", EwiseLog);
+  m.def("ewise_exp", EwiseExp);
+  m.def("ewise_tanh", EwiseTanh);
+  m.def("matmul", Matmul);
+  m.def("reduce_max", ReduceMax);
+  m.def("reduce_sum", ReduceSum);
+}
