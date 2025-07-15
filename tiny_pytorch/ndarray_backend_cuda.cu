@@ -1,5 +1,11 @@
-#include <cmath.h>
+#include <cmath>
 #include <cuda_runtime.h>
+#include <stdexcept>
+#include <vector>
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+
+namespace py = pybind11;
 
 namespace tiny_pytorch {
 namespace cuda {
@@ -18,6 +24,40 @@ const size_t ELEM_SIZE = sizeof(scalar_t);
       throw std::runtime_error(std::string(op) + " failed at " + __FILE__ + ":" + std::to_string(__LINE__) + ": " + cudaGetErrorString(_err)); \
     } \
   } while (0)
+
+// Kernel launch utility
+template<typename... Args>
+void launch_kernel(void (*kernel)(Args...), size_t num_elements, Args... args) {
+  dim3 block_size(NUM_THREADS);
+  dim3 grid_size((num_elements + NUM_THREADS - 1) / NUM_THREADS);
+
+  kernel<<<grid_size, block_size>>>(args...);
+
+  // Check for kernel launch errors
+  cudaError_t error = cudaGetLastError();
+  CUDA_CHECK_ERROR(error, "Kernel launch");
+
+  // Synchronize and check for runtime errors
+  error = cudaDeviceSynchronize();
+  CUDA_CHECK_ERROR(error, "Kernel execution");
+}
+
+// 2D kernel launch utility for matrix operations
+template<typename... Args>
+void launch_kernel_2d(void (*kernel)(Args...), int grid_x, int grid_y, int block_x, int block_y, Args... args) {
+  dim3 block_size(block_x, block_y);
+  dim3 grid_size(grid_x, grid_y);
+
+  kernel<<<grid_size, block_size>>>(args...);
+
+  // Check for kernel launch errors
+  cudaError_t error = cudaGetLastError();
+  CUDA_CHECK_ERROR(error, "2D kernel launch");
+
+  // Synchronize and check for runtime errors
+  error = cudaDeviceSynchronize();
+  CUDA_CHECK_ERROR(error, "2D kernel execution");
+}
 
 struct CudaArray {
   CudaArray(const size_t size) {
