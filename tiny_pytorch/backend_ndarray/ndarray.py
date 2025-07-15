@@ -1,3 +1,40 @@
+"""NDArray implementation with multiple backend support.
+
+This module provides the core NDArray class that supports multiple backends
+including NumPy, CPU, and CUDA. The NDArray class is a Python wrapper for
+handling operations on n-dimensional arrays with strided memory layout.
+
+The module includes:
+- BackendDevice class for device abstraction
+- NDArray class with strided array operations
+- Device factory functions (cpu, cuda, etc.)
+- Array creation utilities
+
+Key Features
+-----------
+- Strided memory layout for efficient array operations
+- Multiple backend support (NumPy, CPU, CUDA)
+- Broadcasting and reshaping without memory copying
+- Element-wise and scalar operations
+- Matrix operations and reductions
+
+Classes
+-------
+BackendDevice
+    Device abstraction that wraps backend implementation modules.
+NDArray
+    Multi-dimensional array with strided memory layout.
+
+Functions
+---------
+cpu_numpy, cpu, cuda
+    Device factory functions.
+array, empty, full
+    Array creation utilities.
+broadcast_to
+    Broadcasting utility function.
+"""
+
 from math import prod
 from numbers import Number
 
@@ -8,44 +45,178 @@ from . import ndarray_backend_numpy
 
 
 class BackendDevice:
-    """Backend devive that wraps the implementation module for each device."""
+    """Backend device that wraps the implementation module for each device.
+
+    This class provides a unified interface for different backend implementations
+    (numpy, CPU, CUDA) by forwarding operations to the appropriate module.
+
+    Attributes
+    ----------
+    name : str
+        Name of the device (e.g., "cpu", "cuda", "cpu_numpy").
+    module : object
+        The backend implementation module that handles actual operations.
+    """
 
     def __init__(self, name: str, module=None):
+        """Initialize a new BackendDevice.
+
+        Parameters
+        ----------
+        name : str
+            Name of the device.
+        module : object, optional
+            Module that implements the device's operations.
+        """
         self.name = name
         # Key attribute that will handle all ops on its device
         self.module = module
 
     def __eq__(self, other):
-        # Two devives are equal if they have the same name
+        """Check if two devices are equal.
+
+        Two devices are equal if they have the same name.
+
+        Parameters
+        ----------
+        other : object
+            Device to compare with.
+
+        Returns
+        -------
+        bool
+            True if devices have the same name.
+        """
         return self.name == other.name
 
     def __repr__(self):
+        """String representation of the device.
+
+        Returns
+        -------
+        str
+            String representation showing the device name.
+        """
         return f"{self.name}()"
 
     def enabled(self):
+        """Check if the device is enabled.
+
+        Returns
+        -------
+        bool
+            True if the device has an implementation module.
+        """
         return self.module is not None
 
     def __getattr__(self, name):
-        # All attempts to get attribute from device will be forwarded to the
-        # module that implements the device's operations
-        # i.e. device.op will become self.module.op
+        """Forward attribute access to the implementation module.
+
+        All attempts to get attribute from device will be forwarded to the
+        module that implements the device's operations.
+        i.e. device.op will become self.module.op
+
+        Parameters
+        ----------
+        name : str
+            Name of the attribute to access.
+
+        Returns
+        -------
+        object
+            Attribute from the implementation module.
+        """
         return getattr(self.module, name)
 
     def randn(self, *shape, dtype="float32"):
+        """Generate random numbers from standard normal distribution.
+
+        Parameters
+        ----------
+        *shape : int
+            Shape of the output array.
+        dtype : str, optional
+            Data type of the array. Default is "float32".
+
+        Returns
+        -------
+        NDArray
+            Array with random values from N(0, 1).
+        """
         return NDArray(np.random.randn(*shape).astype(dtype), device=self)
 
     def rand(self, *shape, dtype="float32"):
+        """Generate random numbers from uniform distribution.
+
+        Parameters
+        ----------
+        *shape : int
+            Shape of the output array.
+        dtype : str, optional
+            Data type of the array. Default is "float32".
+
+        Returns
+        -------
+        NDArray
+            Array with random values from U[0, 1).
+        """
         return NDArray(np.random.rand(*shape).astype(dtype), device=self)
 
     def one_hot(self, n, i, dtype="float32"):
+        """Create a one-hot encoded array.
+
+        Parameters
+        ----------
+        n : int
+            Number of classes.
+        i : int or array-like
+            Indices to encode.
+        dtype : str, optional
+            Data type of the array. Default is "float32".
+
+        Returns
+        -------
+        NDArray
+            One-hot encoded array.
+        """
         return NDArray(np.eye(n, dtype=dtype)[i], device=self)
 
     def empty(self, shape, dtype="float32"):
+        """Create an empty array.
+
+        Parameters
+        ----------
+        shape : tuple[int, ...]
+            Shape of the array.
+        dtype : str, optional
+            Data type of the array. Default is "float32".
+
+        Returns
+        -------
+        NDArray
+            Empty array with the specified shape.
+        """
         dtype = "float32" if dtype is None else dtype
         assert dtype == "float32"
         return NDArray.make(shape, device=self)
 
     def full(self, shape, fill_value, dtype="float32"):
+        """Create an array filled with a constant value.
+
+        Parameters
+        ----------
+        shape : tuple[int, ...]
+            Shape of the array.
+        fill_value : float
+            Value to fill the array with.
+        dtype : str, optional
+            Data type of the array. Default is "float32".
+
+        Returns
+        -------
+        NDArray
+            Array filled with the specified value.
+        """
         dtype = "float32" if dtype is None else dtype
         assert dtype == "float32"
         arr = self.empty(shape, dtype)
@@ -54,15 +225,38 @@ class BackendDevice:
 
 
 def cpu_numpy():
+    """Create a CPU device using NumPy backend.
+
+    Returns
+    -------
+    BackendDevice
+        CPU device with NumPy backend.
+    """
     return BackendDevice("cpu_numpy", ndarray_backend_numpy)
 
 
 def default_device():
-    """Return cpu numpy backend."""
+    """Return the default device (CPU with NumPy backend).
+
+    Returns
+    -------
+    BackendDevice
+        Default CPU device.
+    """
     return cpu_numpy()
 
 
 def cpu():
+    """Create a CPU device with native backend if available.
+
+    Attempts to use the native CPU backend, falls back to NumPy if
+    the C++ extension is not available.
+
+    Returns
+    -------
+    BackendDevice
+        CPU device with best available backend.
+    """
     try:
         from .. import ndarray_backend_cpu
 
@@ -73,6 +267,13 @@ def cpu():
 
 
 def cuda():
+    """Create a CUDA device if available.
+
+    Returns
+    -------
+    BackendDevice
+        CUDA device, or disabled device if CUDA is not available.
+    """
     try:
         from .. import ndarray_backend_cuda
 
@@ -82,33 +283,58 @@ def cuda():
 
 
 def all_devices():
+    """Get a list of all available devices.
+
+    Returns
+    -------
+    list[BackendDevice]
+        List of all available devices.
+    """
     return [cpu_numpy(), cpu(), cuda()]
 
 
 class NDArray:
-    """
-    A generic ND array class that may contain multipe different backends
-    i.e., a Numpy backend, a native CPU backend, or a GPU backend.
+    """A generic ND array class that may contain multiple different backends.
 
     NDArray is basically a Python wrapper for handling operations on
     n-dimensional arrays. The underlying array is just a flat 1D array and the
     backend device will handle all the ops on the 1D array. Strides, shape, and
     offset allows us to map n-dimensional (logical) array to the 1D flat array
     that are physically allocated in memory.
+
     The high level ops such as broadcasting and transposing are all done in
-    Python without touching the underlying array.
-    The other `raw` ops such as addition and matrix-multiplication will be
-    implemented is C/C++ that would call highly optimized Kernels for such ops
-    such as CUDA Kernels.
+    Python without touching the underlying array. The other `raw` ops such as
+    addition and matrix-multiplication will be implemented in C/C++ that would
+    call highly optimized Kernels for such ops such as CUDA Kernels.
+
     To make the backend code simpler, we will only operate on compact arrays so
     we need to call `compact()` before any ops AND we support only float32 data
     type.
+
+    Attributes
+    ----------
+    _shape : tuple[int, ...]
+        Shape of the array.
+    _strides : tuple[int, ...]
+        Strides for accessing elements in the underlying 1D array.
+    _offset : int
+        Offset into the underlying 1D array.
+    _device : BackendDevice
+        Device that handles the operations.
+    _handle : Array
+        Pointer to the underlying 1D array.
     """
 
     def __init__(self, other, device=None):
-        """
-        Create NDArray by copying another NDArray/Numpy array OR use Numpy as
+        """Create NDArray by copying another NDArray/Numpy array OR use Numpy as
         a bridge for all other types of iterables.
+
+        Parameters
+        ----------
+        other : NDArray or numpy.ndarray or array_like
+            Source data to create the NDArray from.
+        device : BackendDevice, optional
+            Device to place the array on. If None, uses default device.
         """
         if isinstance(other, NDArray):
             if device is None:
@@ -126,6 +352,13 @@ class NDArray:
             self._init(array)
 
     def _init(self, other: "NDArray"):
+        """Initialize the NDArray from another NDArray.
+
+        Parameters
+        ----------
+        other : NDArray
+            Source NDArray to copy attributes from.
+        """
         # shape, stride, and offset allows us to represent 1D array as NDarray
         self._shape = other.shape
         self._strides = other.strides
@@ -135,12 +368,31 @@ class NDArray:
         self._handle = other._handle  # pointer to 1D array of type `Array`
 
     def to(self, device):
+        """Move the array to a different device.
+
+        Parameters
+        ----------
+        device : BackendDevice
+            Target device.
+
+        Returns
+        -------
+        NDArray
+            Array on the target device.
+        """
         if device == self.device:
             return self
         # Use Numpy as a bridge by first converting NDArray to numpy array first
         return NDArray(self.numpy(), device)
 
     def numpy(self):
+        """Convert the NDArray to a NumPy array.
+
+        Returns
+        -------
+        numpy.ndarray
+            NumPy array with the same data.
+        """
         return self.device.to_numpy(
             self._handle, self.shape, self.strides, self._offset
         )
@@ -639,20 +891,84 @@ class NDArray:
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
+    """Create an NDArray from array-like data.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data to create the array from.
+    dtype : str, optional
+        Data type of the array. Default is "float32".
+    device : BackendDevice, optional
+        Device to place the array on. If None, uses default device.
+
+    Returns
+    -------
+    NDArray
+        New NDArray with the specified data.
+    """
     dtype = "float32" if dtype is None else dtype
     assert dtype == "float32"
     return NDArray(a, device=device)
 
 
 def empty(shape, dtype="float32", device=None):
-    device = device if device is not None else default_device()
-    return device.empty(shape, dtype)
+    """Create an empty NDArray.
+
+    Parameters
+    ----------
+    shape : tuple[int, ...]
+        Shape of the array.
+    dtype : str, optional
+        Data type of the array. Default is "float32".
+    device : BackendDevice, optional
+        Device to place the array on. If None, uses default device.
+
+    Returns
+    -------
+    NDArray
+        Empty NDArray with the specified shape.
+    """
+    return NDArray.make(shape, device=device)
 
 
 def full(shape, fill_value, dtype="float32", device=None):
-    device = device if device is not None else default_device()
-    return device.full(shape, fill_value, dtype)
+    """Create an NDArray filled with a constant value.
+
+    Parameters
+    ----------
+    shape : tuple[int, ...]
+        Shape of the array.
+    fill_value : float
+        Value to fill the array with.
+    dtype : str, optional
+        Data type of the array. Default is "float32".
+    device : BackendDevice, optional
+        Device to place the array on. If None, uses default device.
+
+    Returns
+    -------
+    NDArray
+        NDArray filled with the specified value.
+    """
+    arr = empty(shape, dtype, device)
+    arr.fill(fill_value)
+    return arr
 
 
 def broadcast_to(array, new_shape):
+    """Broadcast an array to a new shape.
+
+    Parameters
+    ----------
+    array : NDArray
+        Array to broadcast.
+    new_shape : tuple[int, ...]
+        Target shape for broadcasting.
+
+    Returns
+    -------
+    NDArray
+        Broadcasted array.
+    """
     return array.broadcast_to(new_shape)

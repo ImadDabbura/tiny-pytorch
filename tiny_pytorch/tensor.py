@@ -15,13 +15,77 @@ LAZY_MODE = False  # Default mode is eager mode
 
 
 class Op:
+    """Base class for all tensor operations.
+
+    This class defines the interface that all tensor operations must implement.
+    Operations are callable objects that can be applied to tensors to create
+    new tensors in the computation graph.
+
+    Methods
+    -------
+    __call__(*args)
+        Apply the operation to the given arguments.
+    compute(*args)
+        Compute the actual operation on the underlying arrays.
+    gradient(out_grad, out_node)
+        Compute the gradient of the operation.
+    """
+
     def __call__(self, *args):
+        """Apply the operation to the given arguments.
+
+        Parameters
+        ----------
+        *args : Tensor
+            Input tensors to the operation.
+
+        Returns
+        -------
+        Tensor
+            Result of applying the operation to the inputs.
+        """
         return Tensor.from_operation(self, args)
 
     def compute(self, *args: tuple[NDArray]):
+        """Compute the actual operation on the underlying arrays.
+
+        Parameters
+        ----------
+        *args : tuple[NDArray]
+            Input arrays to the operation.
+
+        Returns
+        -------
+        NDArray
+            Result of the operation.
+
+        Raises
+        ------
+        NotImplementedError
+            This method must be implemented by subclasses.
+        """
         raise NotImplementedError()
 
     def gradient(self, out_grad, out_node):
+        """Compute the gradient of the operation.
+
+        Parameters
+        ----------
+        out_grad : Tensor
+            Gradient of the output with respect to the final result.
+        out_node : Tensor
+            The output tensor of this operation.
+
+        Returns
+        -------
+        Tensor or tuple[Tensor]
+            Gradient(s) with respect to the input(s) of this operation.
+
+        Raises
+        ------
+        NotImplementedError
+            This method must be implemented by subclasses.
+        """
         raise NotImplementedError()
 
 
@@ -227,40 +291,133 @@ class Tensor:
         return self.op is None
 
     def __repr__(self):
+        """String representation of the tensor.
+
+        Returns
+        -------
+        str
+            String representation showing the tensor data.
+        """
         return f"tiny_pytorch.Tensor({str(self.realize_cached_data())})"
 
     def __str__(self):
+        """String representation of the tensor.
+
+        Returns
+        -------
+        str
+            String representation of the tensor data.
+        """
         return str(self.realize_cached_data())
 
     def __add__(self, other):
+        """Add another tensor or scalar to this tensor.
+
+        Parameters
+        ----------
+        other : Tensor or scalar
+            The tensor or scalar to add.
+
+        Returns
+        -------
+        Tensor
+            Result of the addition operation.
+        """
         if isinstance(other, Tensor):
             return tiny_pytorch.ops.EWiseAdd()(self, other)
         return tiny_pytorch.ops.ScalarAdd(other)(self)
 
     def __neg__(self):
+        """Negate this tensor.
+
+        Returns
+        -------
+        Tensor
+            Negated tensor.
+        """
         return tiny_pytorch.ops.Negate()(self)
 
     def __sub__(self, other):
+        """Subtract another tensor or scalar from this tensor.
+
+        Parameters
+        ----------
+        other : Tensor or scalar
+            The tensor or scalar to subtract.
+
+        Returns
+        -------
+        Tensor
+            Result of the subtraction operation.
+        """
         if isinstance(other, Tensor):
             return tiny_pytorch.ops.EWiseAdd()(self, -other)
         return tiny_pytorch.ops.ScalarAdd(-other)(self)
 
     def __mul__(self, other):
+        """Multiply this tensor by another tensor or scalar.
+
+        Parameters
+        ----------
+        other : Tensor or scalar
+            The tensor or scalar to multiply by.
+
+        Returns
+        -------
+        Tensor
+            Result of the multiplication operation.
+        """
         if isinstance(other, Tensor):
             return tiny_pytorch.ops.EWiseMul()(self, other)
         return tiny_pytorch.ops.ScalarMul(other)(self)
 
     def __pow__(self, other):
+        """Raise this tensor to the power of another tensor or scalar.
+
+        Parameters
+        ----------
+        other : Tensor or scalar
+            The exponent.
+
+        Returns
+        -------
+        Tensor
+            Result of the power operation.
+        """
         if isinstance(other, Tensor):
             return tiny_pytorch.ops.EWisePower()(self, other)
         return tiny_pytorch.ops.ScalarPower(other)(self)
 
     def __truediv__(self, other):
+        """Divide this tensor by another tensor or scalar.
+
+        Parameters
+        ----------
+        other : Tensor or scalar
+            The tensor or scalar to divide by.
+
+        Returns
+        -------
+        Tensor
+            Result of the division operation.
+        """
         if isinstance(other, Tensor):
             return tiny_pytorch.ops.EWiseDivide()(self, other)
         return tiny_pytorch.ops.ScalarDivide(other)(self)
 
     def __matmul__(self, other):
+        """Matrix multiplication with another tensor.
+
+        Parameters
+        ----------
+        other : Tensor
+            The tensor to multiply with.
+
+        Returns
+        -------
+        Tensor
+            Result of the matrix multiplication.
+        """
         return tiny_pytorch.ops.MatMul()(self, other)
 
     def sum(self, axes=None):
@@ -356,9 +513,23 @@ class Tensor:
 
 
 def compute_gradients(out_tensor, out_grad):
-    """
-    Take gradient of output node with respect to each node in node_list.
-    Store the computed result in the grad field of each Variable.
+    """Compute gradients for all nodes in the computation graph.
+
+    This function implements reverse-mode automatic differentiation by
+    traversing the computation graph in reverse topological order and
+    computing gradients for each node.
+
+    Parameters
+    ----------
+    out_tensor : Tensor
+        The output tensor for which gradients are computed.
+    out_grad : Tensor
+        The gradient of the output with respect to the final result.
+
+    Notes
+    -----
+    This function modifies the `grad` attribute of tensors in the computation
+    graph. It stores the computed result in the grad field of each tensor.
     """
     # a map from node to a list of gradient contributions from each output node
     node_to_output_grads_list: dict[Tensor, list[Tensor]] = {}
@@ -384,13 +555,23 @@ def compute_gradients(out_tensor, out_grad):
 
 
 def find_topo_sort(node_list: list[Tensor]) -> list[Tensor]:
-    """
-    Given a list of nodes, return a topological sort list of nodes ending in them.
+    """Find topological sort of nodes in the computation graph.
 
+    Given a list of nodes, return a topological sort list of nodes ending in them.
     A simple algorithm is to do a post-order DFS traversal on the given nodes,
     going backwards based on input edges. Since a node is added to the ordering
     after all its predecessors are traversed due to post-order DFS, we get a topological
     sort.
+
+    Parameters
+    ----------
+    node_list : list[Tensor]
+        List of tensors to sort topologically.
+
+    Returns
+    -------
+    list[Tensor]
+        Topologically sorted list of tensors.
     """
     visited = []
     topo_list = []
@@ -401,7 +582,22 @@ def find_topo_sort(node_list: list[Tensor]) -> list[Tensor]:
 
 
 def _topo_sort_dfs(node, visited, topo_list):
-    """Post-order DFS."""
+    """Perform post-order DFS for topological sorting.
+
+    Parameters
+    ----------
+    node : Tensor
+        Current node in the DFS traversal.
+    visited : list[Tensor]
+        List of already visited nodes.
+    topo_list : list[Tensor]
+        List to collect nodes in topological order.
+
+    Yields
+    ------
+    Tensor
+        Nodes in post-order DFS traversal.
+    """
     for input_node in node.inputs:
         if input_node not in visited:
             yield from _topo_sort_dfs(input_node, visited, topo_list)
