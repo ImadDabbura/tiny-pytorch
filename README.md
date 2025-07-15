@@ -70,8 +70,8 @@ the computation.
         arrays stored in row-major order, but `NDArray` will help us represent
         any multi-dimensional arrays using _offset, strides, shape_.
   - [x] Numpy backend (default backend)
-  - [ ] CPU backend
-  - [ ] Cuda backend
+  - [x] CPU backend
+  - [x] Cuda backend
   - [ ] CNN and its main operations such as _padding_ and _dilation_
   - [ ] Resnet
   - [ ] RNN
