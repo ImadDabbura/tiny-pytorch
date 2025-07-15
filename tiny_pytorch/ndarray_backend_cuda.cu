@@ -10,6 +10,15 @@ namespace cuda {
 typedef float scalar_t;
 const size_t ELEM_SIZE = sizeof(scalar_t);
 
+// Error checking macro
+#define CUDA_CHECK_ERROR(err, op) \
+  do { \
+    cudaError_t _err = (err); \
+    if (_err != cudaSuccess) { \
+      throw std::runtime_error(std::string(op) + " failed at " + __FILE__ + ":" + std::to_string(__LINE__) + ": " + cudaGetErrorString(_err)); \
+    } \
+  } while (0)
+
 struct CudaArray {
   CudaArray(const size_t size) {
     cudaError_t error = CudaMalloc(&ptr, size, ELEM_SIZE * size);
