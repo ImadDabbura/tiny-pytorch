@@ -65,4 +65,4 @@ build-backend = "setuptools.build_meta"
 include = ["tiny_pytorch*"]
 
 [tool.setuptools.package-data]
-tiny_pytorch = ["*.cpp"]
+tiny_pytorch = ["*.cpp", "*.cu"]
