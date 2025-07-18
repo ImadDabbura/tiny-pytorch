@@ -862,3 +862,37 @@ def logsumexp(a, axes=None):
         Result of log-sum-exp operation.
     """
     return LogSumExp(axes=axes)(a)
+
+
+class Tanh(Op):
+    """Hyperbolic tangent activation function.
+
+    Methods
+    -------
+    compute(a: NDArray) -> NDArray
+        Compute hyperbolic tangent.
+    gradient(out_grad: Tensor, node: Tensor) -> Tensor
+        Compute the gradient of the operation.
+    """
+
+    def compute(self, a: NDArray) -> NDArray:
+        return array_api.tanh(a)
+
+    def gradient(self, out_grad: Tensor, node: Tensor) -> Tensor:
+        return out_grad * (1 - tanh(node.inputs[0] ** 2))
+
+
+def tanh(a: Tensor) -> Tensor:
+    """Compute the hyperbolic tangent of tensor elements.
+
+    Parameters
+    ----------
+    a : Tensor
+        Input tensor.
+
+    Returns
+    -------
+    Tensor
+        Hyperbolic tangent of input tensor elements.
+    """
+    return Tanh()(a)
