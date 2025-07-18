@@ -858,6 +858,12 @@ class NDArray:
                 ), "Only support reduction over a single axis"
                 axis = axis[0]
 
+            if abs(axis) > self.ndim:
+                raise ValueError(
+                    f"Dimension out of range (expected to be in range of [-{self.ndim}, {self.ndim - 1}], but got {axis})"
+                )
+            axis = axis + self.ndim if axis < 0 else axis
+            print(axis)
             view = self.permute(
                 tuple([a for a in range(self.ndim) if a != axis]) + (axis,)
             )
