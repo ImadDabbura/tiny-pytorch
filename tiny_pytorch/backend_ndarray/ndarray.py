@@ -33,6 +33,18 @@ array, empty, full
     Array creation utilities.
 broadcast_to
     Broadcasting utility function.
+reshape
+    Reshape utility function.
+maximum
+    Element-wise maximum function.
+log
+    Natural logarithm function.
+exp
+    Exponential function.
+tanh
+    Hyperbolic tangent function.
+summation
+    Sum of array elements over a given axis.
 """
 
 from math import prod
@@ -313,16 +325,18 @@ class NDArray:
 
     Attributes
     ----------
-    _shape : tuple[int, ...]
-        Shape of the array.
-    _strides : tuple[int, ...]
-        Strides for accessing elements in the underlying 1D array.
-    _offset : int
-        Offset into the underlying 1D array.
-    _device : BackendDevice
+    device : BackendDevice
         Device that handles the operations.
-    _handle : Array
-        Pointer to the underlying 1D array.
+    shape : tuple[int, ...]
+        Shape of the array.
+    strides : tuple[int, ...]
+        Strides for accessing elements in the underlying 1D array.
+    size : int
+        Total number of elements in the array.
+    ndim : int
+        Number of dimensions in the array.
+    dtype : str
+        Data type of the array (currently only "float32" is supported).
     """
 
     def __init__(self, other, device=None):
