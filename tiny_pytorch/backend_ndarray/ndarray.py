@@ -33,6 +33,18 @@ array, empty, full
     Array creation utilities.
 broadcast_to
     Broadcasting utility function.
+reshape
+    Reshape utility function.
+maximum
+    Element-wise maximum function.
+log
+    Natural logarithm function.
+exp
+    Exponential function.
+tanh
+    Hyperbolic tangent function.
+summation
+    Sum of array elements over a given axis.
 """
 
 from math import prod
@@ -313,16 +325,18 @@ class NDArray:
 
     Attributes
     ----------
-    _shape : tuple[int, ...]
-        Shape of the array.
-    _strides : tuple[int, ...]
-        Strides for accessing elements in the underlying 1D array.
-    _offset : int
-        Offset into the underlying 1D array.
-    _device : BackendDevice
+    device : BackendDevice
         Device that handles the operations.
-    _handle : Array
-        Pointer to the underlying 1D array.
+    shape : tuple[int, ...]
+        Shape of the array.
+    strides : tuple[int, ...]
+        Strides for accessing elements in the underlying 1D array.
+    size : int
+        Total number of elements in the array.
+    ndim : int
+        Number of dimensions in the array.
+    dtype : str
+        Data type of the array (currently only "float32" is supported).
     """
 
     def __init__(self, other, device=None):
@@ -844,6 +858,12 @@ class NDArray:
                 ), "Only support reduction over a single axis"
                 axis = axis[0]
 
+            if abs(axis) > self.ndim:
+                raise ValueError(
+                    f"Dimension out of range (expected to be in range of [-{self.ndim}, {self.ndim - 1}], but got {axis})"
+                )
+            axis = axis + self.ndim if axis < 0 else axis
+            print(axis)
             view = self.permute(
                 tuple([a for a in range(self.ndim) if a != axis]) + (axis,)
             )
@@ -972,3 +992,129 @@ def broadcast_to(array, new_shape):
         Broadcasted array.
     """
     return array.broadcast_to(new_shape)
+
+
+def reshape(array: NDArray, new_shape: tuple[int, ...]) -> NDArray:
+    """Reshape an array to a new shape.
+
+    Parameters
+    ----------
+    array : NDArray
+        Array to reshape.
+    new_shape : tuple[int, ...]
+        New shape of the array.
+
+    Returns
+    -------
+    NDArray
+        Reshaped array.
+
+    Raises
+    ------
+    ValueError
+        If the product of the new shape is not equal to the product of the
+        original shape, or if the array is not compact.
+    """
+    return array.reshape(new_shape)
+
+
+def maximum(a: NDArray, b: NDArray | float) -> NDArray:
+    """Element-wise maximum of array elements.
+
+    Parameters
+    ----------
+    a : NDArray
+        First array.
+    b : NDArray or float
+        Second array or scalar value.
+
+    Returns
+    -------
+    NDArray
+        Array containing the element-wise maximum of a and b.
+    """
+    return a.maximum(b)
+
+
+def log(a: NDArray) -> NDArray:
+    """Natural logarithm, element-wise.
+
+    Parameters
+    ----------
+    a : NDArray
+        Input array.
+
+    Returns
+    -------
+    NDArray
+        Natural logarithm of a, element-wise.
+    """
+    return a.log()
+
+
+def exp(a: NDArray) -> NDArray:
+    """Exponential, element-wise.
+
+    Parameters
+    ----------
+    a : NDArray
+        Input array.
+
+    Returns
+    -------
+    NDArray
+        Exponential of a, element-wise.
+    """
+    return a.exp()
+
+
+def tanh(a: NDArray) -> NDArray:
+    """Hyperbolic tangent, element-wise.
+
+    Parameters
+    ----------
+    a : NDArray
+        Input array.
+
+    Returns
+    -------
+    NDArray
+        Hyperbolic tangent of a, element-wise.
+    """
+    return a.tanh()
+
+
+def summation(
+    a: NDArray, axis: int | None = None, keepdims: bool = False
+) -> NDArray:
+    """Sum of array elements over a given axis.
+
+    Parameters
+    ----------
+    a : NDArray
+        Input array.
+    axis : int or None, optional
+        Axis along which a sum is performed. The default, axis=None,
+        will sum all of the elements of the input array. If axis is negative
+        it counts from the last to the first axis.
+
+        Note: Only supports reduction over a single axis or all axes.
+        Multiple axes reduction is not supported.
+    keepdims : bool, optional
+        If this is set to True, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
+
+    Returns
+    -------
+    NDArray
+        An array with the same shape as a, with the specified axis removed.
+        If a is a 0-d array, or if axis is None, a scalar is returned.
+        If an output array is specified, a reference to out is returned.
+
+    Raises
+    ------
+    ValueError
+        If an empty axis tuple is provided.
+    """
+    return a.sum(axis=axis, keepdims=keepdims)
