@@ -19,6 +19,8 @@ one_hot
     Generate a one-hot encoded tensor.
 zeros_like
     Generate a tensor of zeros with the same shape and dtype as the input tensor.
+ones_like
+    Generate a tensor of ones with the same shape and dtype as the input tensor.
 xavier_uniform
     Initialize weights using Xavier/Glorot uniform initialization.
 xavier_normal
@@ -314,6 +316,38 @@ def zeros_like(array, *, device=None, requires_grad=False):
     """
     device = device if device else array.device
     return zeros(
+        *array.shape,
+        dtype=array.dtype,
+        device=device,
+        requires_grad=requires_grad,
+    )
+
+
+def ones_like(array, *, device=None, requires_grad=False):
+    """Return a tensor of ones with the same shape and dtype as the input tensor.
+
+    Parameters
+    ----------
+    array : Tensor
+        Input tensor whose shape and dtype will be used.
+    device : Device, optional
+        Device on which to place the tensor. If None, uses the device of the input tensor.
+    requires_grad : bool, optional
+        If True, tensor will track gradients. Default is False.
+
+    Returns
+    -------
+    Tensor
+        Tensor of ones with the same shape and dtype as the input tensor.
+
+    Examples
+    --------
+    >>> x = Tensor([[1, 2], [3, 4]])
+    >>> ones_like(x)
+    Tensor([[1, 1], [1, 1]])
+    """
+    device = device if device else array.device
+    return ones(
         *array.shape,
         dtype=array.dtype,
         device=device,
