@@ -17,6 +17,8 @@ randb
     Generate a binary random tensor.
 one_hot
     Generate a one-hot encoded tensor.
+zeros_like
+    Generate a tensor of zeros with the same shape and dtype as the input tensor.
 xavier_uniform
     Initialize weights using Xavier/Glorot uniform initialization.
 xavier_normal
@@ -282,6 +284,38 @@ def one_hot(k, n, device=None, dtype="float32", requires_grad=False):
     device = tiny_pytorch.cpu() if device is None else device
     return Tensor(
         device.one_hot(k, n, dtype=dtype),
+        device=device,
+        requires_grad=requires_grad,
+    )
+
+
+def zeros_like(array, *, device=None, requires_grad=False):
+    """Return a tensor of zeros with the same shape and dtype as the input tensor.
+
+    Parameters
+    ----------
+    array : Tensor
+        Input tensor whose shape and dtype will be used.
+    device : Device, optional
+        Device on which to place the tensor. If None, uses the device of the input tensor.
+    requires_grad : bool, optional
+        If True, tensor will track gradients. Default is False.
+
+    Returns
+    -------
+    Tensor
+        Tensor of zeros with the same shape and dtype as the input tensor.
+
+    Examples
+    --------
+    >>> x = Tensor([[1, 2], [3, 4]])
+    >>> zeros_like(x)
+    Tensor([[0, 0], [0, 0]])
+    """
+    device = device if device else array.device
+    return zeros(
+        *array.shape,
+        dtype=array.dtype,
         device=device,
         requires_grad=requires_grad,
     )
