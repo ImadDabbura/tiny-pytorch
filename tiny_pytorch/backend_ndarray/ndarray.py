@@ -482,6 +482,23 @@ class NDArray:
         # Only supporting float32 for now
         return "float32"
 
+    @property
+    def flat(self):
+        """Return a 1-D view (flattened) of the array.
+
+        Returns
+        -------
+        NDArray
+            A 1-dimensional view of the array with the same data.
+
+        Examples
+        --------
+        >>> a = NDArray([[1, 2], [3, 4]])
+        >>> a.flat
+        NDArray([1, 2, 3, 4], device=cpu_numpy())
+        """
+        return self.reshape((self.size,))
+
     def __str__(self):
         return str(self.numpy())
 
