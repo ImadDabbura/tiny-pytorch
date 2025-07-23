@@ -616,3 +616,95 @@ class BatchNorm1d(Module):
         if self.training:
             return weight * x + bias
         return weight.data * x + bias.data
+
+
+class Embedding(Module):
+    """A lookup table that stores embeddings of a fixed dictionary and size.
+
+    This module is often used to store word embeddings and retrieve them using indices.
+    The input to the module is a list of indices, and the output is the corresponding
+    word embeddings.
+
+    Parameters
+    ----------
+    vocab_sz : int
+        Size of the dictionary of embeddings (number of unique tokens).
+    embedding_dim : int
+        The size of each embedding vector.
+    device : Device, optional
+        Device on which to place the embedding weights. Default is None (uses default device).
+    dtype : str, optional
+        Data type of the embedding weights. Default is "float32".
+
+    Attributes
+    ----------
+    vocab_sz : int
+        Size of the dictionary of embeddings.
+    embedding_dim : int
+        The size of each embedding vector.
+    weight : Parameter
+        The learnable embedding weights of shape `(vocab_sz, embedding_dim)`.
+        Initialized from N(0, 1) distribution.
+
+    Methods
+    -------
+    forward(x: Tensor) -> Tensor
+        Maps word indices to embedding vectors.
+
+    Examples
+    --------
+    >>> embedding = Embedding(1000, 128)
+    >>> input_indices = Tensor([[1, 2, 3], [4, 5, 6]])  # shape: (seq_len, batch_size)
+    >>> output = embedding(input_indices)  # shape: (seq_len, batch_size, 128)
+    """
+
+    def __init__(
+        self,
+        vocab_sz: int,
+        embedding_dim: int,
+        device=None,
+        dtype: str = "float32",
+    ) -> None:
+        super().__init__()
+        self.vocab_sz = vocab_sz
+        self.embedding_dim = embedding_dim
+        self.weight = Parameter(
+            init.randn(
+                vocab_sz,
+                embedding_dim,
+                device=device,
+                dtype=dtype,
+                requires_grad=True,
+            )
+        )
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Maps word indices to embedding vectors.
+
+        This method converts input indices to one-hot vectors and then projects
+        them to embedding vectors using the learned embedding weights.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor containing indices of shape `(seq_len, batch_size)`.
+            Each element should be an integer index in the range [0, vocab_sz).
+
+        Returns
+        -------
+        Tensor
+            Output tensor of shape `(seq_len, batch_size, embedding_dim)` containing
+            the corresponding embedding vectors for each input index.
+
+        Notes
+        -----
+        The input indices are converted to one-hot vectors internally, then
+        multiplied with the embedding weight matrix to produce the final embeddings.
+        """
+        T, B = x.shape
+        x_one_hot = init.one_hot(
+            self.vocab_sz, x, device=x.device, dtype=x.dtype
+        )
+        return (
+            x_one_hot.reshape((T * B, self.vocab_sz)) @ self.weight
+        ).reshape((T, B, self.embedding_dim))
