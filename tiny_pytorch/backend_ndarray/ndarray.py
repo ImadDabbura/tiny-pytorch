@@ -1135,3 +1135,29 @@ def summation(
         If an empty axis tuple is provided.
     """
     return a.sum(axis=axis, keepdims=keepdims)
+
+
+def negative(a: NDArray) -> NDArray:
+    """Numerical negative, element-wise.
+
+    Parameters
+    ----------
+    a : NDArray
+        Input array.
+
+    Returns
+    -------
+    NDArray
+        Returned array or scalar: y = -x.
+
+    Examples
+    --------
+    >>> a = NDArray([1, -1, 2.5])
+    >>> negative(a)
+    NDArray([-1.0, 1.0, -2.5], device=cpu_numpy())
+
+    >>> b = NDArray([[1, 2], [3, 4]])
+    >>> negative(b)
+    NDArray([[-1.0, -2.0], [-3.0, -4.0]], device=cpu_numpy())
+    """
+    return -a
