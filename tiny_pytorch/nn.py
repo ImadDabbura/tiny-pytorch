@@ -1024,3 +1024,218 @@ class RNN(Module):
         # We'll detach history to avoid BPTT issues and keep the last hidden
         # state for each layer
         return ops.stack(inputs, 0), ops.stack(h_n, 0).detach()
+
+
+class LSTMCell(Module):
+    """
+    A long short-term memory (LSTM) cell.
+
+    Parameters
+    ----------
+    input_size : int
+        The number of expected features in the input X.
+    hidden_size : int
+        The number of features in the hidden state h.
+    bias : bool, optional
+        If False, then the layer does not use bias weights. Default is True.
+    device : Device, optional
+        Device on which to place the weights. Default is None (uses default device).
+    dtype : str, optional
+        Data type of the weights. Default is "float32".
+
+    Attributes
+    ----------
+    W_ih : Parameter
+        The learnable input-hidden weights, of shape (input_size, 4 * hidden_size).
+    W_hh : Parameter
+        The learnable hidden-hidden weights, of shape (hidden_size, 4 * hidden_size).
+    bias_ih : Parameter or None
+        The learnable input-hidden bias, of shape (4 * hidden_size,). None if bias is False.
+    bias_hh : Parameter or None
+        The learnable hidden-hidden bias, of shape (4 * hidden_size,). None if bias is False.
+    hidden_size : int
+        The number of features in the hidden state h.
+    device : Device or None
+        Device on which the parameters are allocated.
+    dtype : str
+        Data type of the parameters.
+
+    Methods
+    -------
+    forward(X: Tensor, h: tuple[Tensor, Tensor] | None = None) -> tuple[Tensor, Tensor]
+        Compute the next hidden and cell state given input X and previous states.
+    """
+
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        bias: bool = True,
+        device=None,
+        dtype: str = "float32",
+    ) -> None:
+        """
+        A long short-term memory (LSTM) cell.
+
+        Parameters
+        ----------
+        input_size : int
+            The number of expected features in the input X.
+        hidden_size : int
+            The number of features in the hidden state h.
+        bias : bool, optional
+            If False, then the layer does not use bias weights. Default is True.
+        device : Device, optional
+            Device on which to place the weights. Default is None (uses default device).
+        dtype : str, optional
+            Data type of the weights. Default is "float32".
+
+        Attributes
+        ----------
+        W_ih : Parameter
+            The learnable input-hidden weights, of shape (input_size, 4 * hidden_size).
+        W_hh : Parameter
+            The learnable hidden-hidden weights, of shape (hidden_size, 4 * hidden_size).
+        bias_ih : Parameter or None
+            The learnable input-hidden bias, of shape (4 * hidden_size,). None if bias is False.
+        bias_hh : Parameter or None
+            The learnable hidden-hidden bias, of shape (4 * hidden_size,). None if bias is False.
+        hidden_size : int
+            The number of features in the hidden state h.
+        device : Device or None
+            Device on which the parameters are allocated.
+        dtype : str
+            Data type of the parameters.
+
+        Methods
+        -------
+        forward(X: Tensor, h: tuple[Tensor, Tensor] | None = None) -> tuple[Tensor, Tensor]
+            Compute the next hidden and cell state given input X and previous states.
+        """
+        super().__init__()
+        self.device = device
+        self.dtype = dtype
+        self.bias = bias
+        self.hidden_size = hidden_size
+        bound = np.sqrt(1 / hidden_size)
+        # Using one matrix for all gates/biases for efficiency
+        self.W_ih = Parameter(
+            init.rand(
+                input_size,
+                4 * hidden_size,
+                low=-bound,
+                high=bound,
+                device=device,
+                dtype=dtype,
+                requires_grad=True,
+            )
+        )
+        self.W_hh = Parameter(
+            init.rand(
+                hidden_size,
+                4 * hidden_size,
+                low=-bound,
+                high=bound,
+                device=device,
+                dtype=dtype,
+                requires_grad=True,
+            )
+        )
+        if bias:
+            self.bias_ih = Parameter(
+                init.rand(
+                    4 * hidden_size,
+                    low=-bound,
+                    high=bound,
+                    device=device,
+                    dtype=dtype,
+                    requires_grad=True,
+                )
+            )
+            self.bias_hh = Parameter(
+                init.rand(
+                    4 * hidden_size,
+                    low=-bound,
+                    high=bound,
+                    device=device,
+                    dtype=dtype,
+                    requires_grad=True,
+                )
+            )
+        else:
+            self.bias_ih = None
+            self.bias_hh = None
+        self.sigmoid = Sigmoid()
+        self.tanh = Tanh()
+
+    def forward(
+        self, X: "Tensor", h: "tuple[Tensor, Tensor] | None" = None
+    ) -> "tuple[Tensor, Tensor]":
+        """
+        Compute the next hidden and cell state for a batch of inputs.
+
+        Parameters
+        ----------
+        X : Tensor
+            Input tensor of shape (batch_size, input_size).
+        h : tuple of (Tensor, Tensor) or None, optional
+            Tuple of (h0, c0), where each is a tensor of shape (batch_size, hidden_size). If None, both default to zeros.
+
+        Returns
+        -------
+        h_out : Tensor
+            Next hidden state tensor of shape (batch_size, hidden_size).
+        c_out : Tensor
+            Next cell state tensor of shape (batch_size, hidden_size).
+        """
+        batch_size, _ = X.shape
+        if h is None:
+            h0, c0 = init.zeros(
+                batch_size,
+                self.hidden_size,
+                device=self.device,
+                dtype=self.dtype,
+            ), init.zeros(
+                batch_size,
+                self.hidden_size,
+                device=self.device,
+                dtype=self.dtype,
+            )
+        else:
+            h0, c0 = h
+        if self.bias:
+            gates_all = (
+                X @ self.W_ih
+                + self.bias_ih.reshape((1, 4 * self.hidden_size)).broadcast_to(
+                    (batch_size, 4 * self.hidden_size)
+                )
+                + h0 @ self.W_hh
+                + self.bias_hh.reshape((1, 4 * self.hidden_size)).broadcast_to(
+                    (batch_size, 4 * self.hidden_size)
+                )
+            )
+        else:
+            gates_all = X @ self.W_ih + h0 @ self.W_hh
+        gates_all_split_tuple = ops.split(gates_all, axis=1)
+        # To change outer container from TensorTuple to list
+        gates_all_split = [g for g in gates_all_split_tuple]
+        gates = []
+        for i in range(4):
+            gates.append(
+                ops.stack(
+                    gates_all_split[
+                        i * self.hidden_size : (i + 1) * self.hidden_size
+                    ],
+                    axis=1,
+                )
+            )
+        i, f, g, o = gates
+        i, f, g, o = (
+            self.sigmoid(i),
+            self.sigmoid(f),
+            self.tanh(g),
+            self.sigmoid(o),
+        )
+        c_out = f * c0 + i * g
+        h_out = o * self.tanh(c_out)
+        return h_out, c_out
