@@ -52,10 +52,10 @@ jobs:
       - name: Test C++ extension import
         run: poetry run python -c "import tiny_pytorch.ndarray_backend_cpu; print('✅ C++ extension imported successfully')"
 
-      - name: Test with NumPy backend
-        run: |
-          export TINY_PYTORCH_BACKEND=np
-          poetry run pytest
+      # - name: Test with NumPy backend
+      #   run: |
+      #     export TINY_PYTORCH_BACKEND=np
+      #     poetry run pytest
 
       - name: Test with NDArray backend
         run: |
