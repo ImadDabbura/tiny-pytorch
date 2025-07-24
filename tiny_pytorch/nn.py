@@ -1239,3 +1239,157 @@ class LSTMCell(Module):
         c_out = f * c0 + i * g
         h_out = o * self.tanh(c_out)
         return h_out, c_out
+
+
+class LSTM(Module):
+    """
+    Applies a multi-layer long short-term memory (LSTM) RNN to an input sequence.
+
+    Parameters
+    ----------
+    input_size : int
+        The number of expected features in the input x.
+    hidden_size : int
+        The number of features in the hidden state h.
+    num_layers : int, optional
+        Number of recurrent layers. Default is 1.
+    bias : bool, optional
+        If False, then the layer does not use bias weights. Default is True.
+    device : Device, optional
+        Device on which to place the weights. Default is None (uses default device).
+    dtype : str, optional
+        Data type of the weights. Default is "float32".
+
+    Attributes
+    ----------
+    lstm_cells : list of LSTMCell
+        List of LSTMCell modules for each layer.
+    hidden_size : int
+        The number of features in the hidden state h.
+    num_layers : int
+        Number of recurrent layers.
+    device : Device or None
+        Device on which the parameters are allocated.
+    dtype : str
+        Data type of the parameters.
+
+    Methods
+    -------
+    forward(X: Tensor, h: tuple[Tensor, Tensor] | None = None) -> tuple[Tensor, tuple[Tensor, Tensor]]
+        Compute the output and final hidden and cell states for a batch of input sequences.
+    """
+
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        bias: bool = True,
+        device=None,
+        dtype: str = "float32",
+    ) -> None:
+        super().__init__()
+        """
+        Applies a multi-layer long short-term memory (LSTM) RNN to an input sequence.
+
+        Parameters:
+        input_size - The number of expected features in the input x
+        hidden_size - The number of features in the hidden state h
+        num_layers - Number of recurrent layers.
+        bias - If False, then the layer does not use bias weights.
+
+        Variables:
+        lstm_cells[k].W_ih: The learnable input-hidden weights of the k-th layer,
+            of shape (input_size, 4*hidden_size) for k=0. Otherwise the shape is
+            (hidden_size, 4*hidden_size).
+        lstm_cells[k].W_hh: The learnable hidden-hidden weights of the k-th layer,
+            of shape (hidden_size, 4*hidden_size).
+        lstm_cells[k].bias_ih: The learnable input-hidden bias of the k-th layer,
+            of shape (4*hidden_size,).
+        lstm_cells[k].bias_hh: The learnable hidden-hidden bias of the k-th layer,
+            of shape (4*hidden_size,).
+        """
+        self.device = device
+        self.dtype = dtype
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.lstm_cells = [
+            (
+                LSTMCell(
+                    input_size,
+                    hidden_size,
+                    bias=bias,
+                    device=device,
+                    dtype=dtype,
+                )
+                if i == 0
+                else LSTMCell(
+                    hidden_size,
+                    hidden_size,
+                    bias=bias,
+                    device=device,
+                    dtype=dtype,
+                )
+            )
+            for i in range(num_layers)
+        ]
+
+    def forward(
+        self, X: "Tensor", h: "tuple[Tensor, Tensor] | None" = None
+    ) -> "tuple[Tensor, tuple[Tensor, Tensor]]":
+        """
+        Compute the output and final hidden and cell states for a batch of input sequences.
+
+        Parameters
+        ----------
+        X : Tensor
+            Input tensor of shape (seq_len, batch_size, input_size) containing the features of the input sequence.
+        h : tuple of (Tensor, Tensor) or None, optional
+            Tuple of (h0, c0), where each is a tensor of shape (num_layers, batch_size, hidden_size). If None, both default to zeros.
+
+        Returns
+        -------
+        output : Tensor
+            Output tensor of shape (seq_len, batch_size, hidden_size) containing the output features (h_t) from the last layer of the LSTM, for each t.
+        (h_n, c_n) : tuple of Tensor
+            Tuple of (h_n, c_n), each of shape (num_layers, batch_size, hidden_size) containing the final hidden and cell states for each element in the batch.
+        """
+        _, batch_size, _ = X.shape
+        if h is None:
+            h0, c0 = [
+                init.zeros(
+                    batch_size,
+                    self.hidden_size,
+                    device=self.device,
+                    dtype=self.dtype,
+                )
+                for _ in range(self.num_layers)
+            ], [
+                init.zeros(
+                    batch_size,
+                    self.hidden_size,
+                    device=self.device,
+                    dtype=self.dtype,
+                )
+                for _ in range(self.num_layers)
+            ]
+        else:
+            h0_split = ops.split(h[0], 0)
+            c0_split = ops.split(h[1], 0)
+            h0 = [x for x in h0_split]
+            c0 = [x for x in c0_split]
+        h_n, c_n = [], []
+        X_split = ops.split(X, 0)
+        inputs = [x for x in X_split]
+        for num_layer in range(self.num_layers):
+            h = h0[num_layer]
+            c = c0[num_layer]
+            for t, input in enumerate(inputs):
+                h, c = self.lstm_cells[num_layer](input, (h, c))
+                inputs[t] = h
+            h_n.append(h)
+            c_n.append(c)
+        return ops.stack(inputs, 0), (
+            ops.stack(h_n, 0).detach(),
+            ops.stack(c_n, 0).detach(),
+        )
