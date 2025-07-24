@@ -31,7 +31,7 @@ Flatten
 
 from functools import reduce
 from operator import mul
-from typing import Any
+from typing import Any, Optional, Sequence
 
 import numpy as np
 
@@ -880,3 +880,147 @@ class RNNCell(Module):
             )
         else:
             return self.nonlinearity(X @ self.W_ih + h @ self.W_hh)
+
+
+class RNN(Module):
+    """
+    Applies a multi-layer RNN with tanh or ReLU non-linearity to an input sequence.
+
+    Parameters
+    ----------
+    input_size : int
+        The number of expected features in the input x.
+    hidden_size : int
+        The number of features in the hidden state h.
+    num_layers : int, optional
+        Number of recurrent layers. Default is 1.
+    bias : bool, optional
+        If False, then the layer does not use bias weights. Default is True.
+    nonlinearity : str, optional
+        The non-linearity to use. Can be either 'tanh' or 'relu'. Default is 'tanh'.
+    device : Device, optional
+        Device on which to place the weights. Default is None (uses default device).
+    dtype : str, optional
+        Data type of the weights. Default is "float32".
+
+    Attributes
+    ----------
+    rnn_cells : list of RNNCell
+        List of RNNCell modules for each layer.
+    hidden_size : int
+        The number of features in the hidden state h.
+    num_layers : int
+        Number of recurrent layers.
+    device : Device or None
+        Device on which the parameters are allocated.
+    dtype : str
+        Data type of the parameters.
+
+    Methods
+    -------
+    forward(X: Tensor, h0: Optional[Tensor] = None) -> tuple[Tensor, Tensor]
+        Compute the output and final hidden state for a batch of input sequences.
+    """
+
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        bias: bool = True,
+        nonlinearity: str = "tanh",
+        device=None,
+        dtype: str = "float32",
+    ) -> None:
+        """
+        Applies an RNN cell with tanh or ReLU nonlinearity.
+
+        Parameters:
+        input_size: The number of expected features in the input X
+        hidden_size: The number of features in the hidden state h
+        bias: If False, then the layer does not use bias weights
+        nonlinearity: The non-linearity to use. Can be either 'tanh' or 'relu'.
+
+        Variables:
+        W_ih: The learnable input-hidden weights of shape (input_size, hidden_size).
+        W_hh: The learnable hidden-hidden weights of shape (hidden_size, hidden_size).
+        bias_ih: The learnable input-hidden bias of shape (hidden_size,).
+        bias_hh: The learnable hidden-hidden bias of shape (hidden_size,).
+
+        Weights and biases are initialized from U(-sqrt(k), sqrt(k)) where k = 1/hidden_size
+        """
+        super().__init__()
+        self.device = device
+        self.dtype = dtype
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.rnn_cells = [
+            (
+                RNNCell(
+                    input_size,
+                    hidden_size,
+                    bias=bias,
+                    nonlinearity=nonlinearity,
+                    device=device,
+                    dtype=dtype,
+                )
+                if i == 0
+                else RNNCell(
+                    hidden_size,
+                    hidden_size,
+                    bias=bias,
+                    nonlinearity=nonlinearity,
+                    device=device,
+                    dtype=dtype,
+                )
+            )
+            for i in range(num_layers)
+        ]
+
+    def forward(
+        self, X: "Tensor", h0: "Optional[Tensor]" = None
+    ) -> tuple["Tensor", "Tensor"]:
+        """
+        Compute the output and final hidden state for a batch of input sequences.
+
+        Parameters
+        ----------
+        X : Tensor
+            Input tensor of shape (seq_len, batch_size, input_size) containing the features of the input sequence.
+        h0 : Tensor or None, optional
+            Initial hidden state for each element in the batch, of shape (num_layers, batch_size, hidden_size). If None, defaults to zeros.
+
+        Returns
+        -------
+        output : Tensor
+            Output tensor of shape (seq_len, batch_size, hidden_size) containing the output features (h_t) from the last layer of the RNN, for each t.
+        h_n : Tensor
+            Tensor of shape (num_layers, batch_size, hidden_size) containing the final hidden state for each element in the batch.
+        """
+        _, batch_size, _ = X.shape
+        if h0 is None:
+            h0_list = [
+                init.zeros(
+                    batch_size,
+                    self.hidden_size,
+                    device=self.device,
+                    dtype=self.dtype,
+                )
+                for _ in range(self.num_layers)
+            ]
+        else:
+            # h0: (num_layers, batch_size, hidden_size)
+            h0_split = ops.split(h0, 0)
+            h0_list = [h for h in h0_split]
+        h_n = []
+        X_split = ops.split(X, 0)
+        inputs = [x for x in X_split]
+        for num_layer in range(self.num_layers):
+            h = h0_list[num_layer]
+            for t, input in enumerate(inputs):
+                h = self.rnn_cells[num_layer](input, h)
+                inputs[t] = h
+            h_n.append(h)
+        # We'll detach history to avoid BPTT issues and keep the last hidden
+        # state for each layer
+        return ops.stack(inputs, 0), ops.stack(h_n, 0).detach()
