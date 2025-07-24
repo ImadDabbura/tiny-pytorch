@@ -139,6 +139,30 @@ class CPUDevice(Device):
         """
         return np.eye(n, dtype=dtype)[i]
 
+    def full(
+        self,
+        shape: int | Sequence[int],
+        fill_value: float,
+        dtype: str = "float32",
+    ) -> np.ndarray:
+        """Create a tensor filled with a constant value.
+
+        Parameters
+        ----------
+        shape : int or Sequence[int]
+            The shape of the tensor to create.
+        fill_value : float
+            The value to fill the tensor with.
+        dtype : str, optional
+            The data type of the tensor. Default is "float32".
+
+        Returns
+        -------
+        numpy.ndarray
+            A tensor filled with the specified value.
+        """
+        return np.full(shape, fill_value, dtype=dtype)
+
     def __eq__(self, other):
         """Check if this device equals another device."""
         return isinstance(other, self.__class__)
