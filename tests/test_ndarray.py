@@ -1,7 +1,9 @@
 import numpy as np
 import pytest
+import torch
 
 import tiny_pytorch.backend_ndarray.ndarray as nd
+from tiny_pytorch import Tensor, ops
 
 _DEVICES = [
     nd.cpu(),
@@ -459,4 +461,20 @@ def test_ewise_tanh(device):
     B = nd.array(A, device=device)
     np.testing.assert_allclose(
         np.tanh(A), (B.tanh()).numpy(), atol=1e-5, rtol=1e-5
+    )
+
+
+STACK_PARAMETERS = [((5, 5), 0, 1), ((5, 5), 0, 2), ((1, 5, 7), 2, 5)]
+
+
+@pytest.mark.parametrize("shape, axis, length", STACK_PARAMETERS)
+@pytest.mark.parametrize("device", _DEVICES, ids=["cpu", "cuda"])
+def test_stack(shape, axis, length, device):
+    _A = [np.random.randn(*shape).astype(np.float32) for i in range(length)]
+    A = [Tensor(nd.array(_A[i]), device=device) for i in range(length)]
+    A_t = [torch.Tensor(_A[i]) for i in range(length)]
+    out = ops.stack(A, axis=axis)
+    out_t = torch.stack(A_t, dim=axis)
+    np.testing.assert_allclose(
+        out_t.numpy(), out.numpy(), atol=1e-5, rtol=1e-5
     )

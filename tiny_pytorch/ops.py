@@ -1030,8 +1030,7 @@ def stack(arrays: Sequence[Tensor], axis: int) -> Tensor:
     Tensor
         The stacked tensor with one more dimension than the input tensors.
     """
-    # return Stack(axis)(make_tuple(*arrays))
-    return Stack(axis)(make_tuple(*arrays))
+    return Stack(axis)(*arrays)
 
 
 class Split(TensorTupleOp):
