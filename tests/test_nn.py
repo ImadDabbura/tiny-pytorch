@@ -1,8 +1,30 @@
 import numpy as np
+import pytest
+import torch
 
+import tiny_pytorch.backend_ndarray.ndarray as nd
 import tiny_pytorch.nn as nn
 import tiny_pytorch.ops as ops
 from tiny_pytorch.tensor import Tensor
+
+np.random.seed(3)
+
+
+_DEVICES = [
+    nd.cpu(),
+    pytest.param(
+        nd.cuda(),
+        marks=pytest.mark.skipif(not nd.cuda().enabled(), reason="No GPU"),
+    ),
+]
+
+
+BATCH_SIZES = [1, 15]
+INPUT_SIZES = [1, 11]
+HIDDEN_SIZES = [1, 12]
+BIAS = [True, False]
+INIT_HIDDEN = [True, False]
+NONLINEARITIES = ["tanh", "relu"]
 
 
 def get_tensor(*shape, entropy=1):
@@ -1487,3 +1509,64 @@ def test_nn_batchnorm_running_var_1():
 #         rtol=1e-5,
 #         atol=1e-5,
 #     )
+
+
+@pytest.mark.parametrize("batch_size", BATCH_SIZES)
+@pytest.mark.parametrize("input_size", INPUT_SIZES)
+@pytest.mark.parametrize("hidden_size", HIDDEN_SIZES)
+@pytest.mark.parametrize("bias", BIAS)
+@pytest.mark.parametrize("init_hidden", INIT_HIDDEN)
+@pytest.mark.parametrize("nonlinearity", NONLINEARITIES)
+@pytest.mark.parametrize("device", _DEVICES, ids=["cpu", "cuda"])
+def test_rnn_cell(
+    batch_size,
+    input_size,
+    hidden_size,
+    bias,
+    init_hidden,
+    nonlinearity,
+    device,
+):
+    x = np.random.randn(batch_size, input_size).astype(np.float32)
+    h0 = np.random.randn(batch_size, hidden_size).astype(np.float32)
+
+    model_ = torch.nn.RNNCell(
+        input_size, hidden_size, nonlinearity=nonlinearity, bias=bias
+    )
+    if init_hidden:
+        h_ = model_(torch.tensor(x), torch.tensor(h0))
+    else:
+        h_ = model_(torch.tensor(x), None)
+
+    model = nn.RNNCell(
+        input_size,
+        hidden_size,
+        device=device,
+        bias=bias,
+        nonlinearity=nonlinearity,
+    )
+    model.W_ih = Tensor(
+        model_.weight_ih.detach().numpy().transpose(), device=device
+    )
+    model.W_hh = Tensor(
+        model_.weight_hh.detach().numpy().transpose(), device=device
+    )
+    if bias:
+        model.bias_ih = Tensor(model_.bias_ih.detach().numpy(), device=device)
+        model.bias_hh = Tensor(model_.bias_hh.detach().numpy(), device=device)
+    if init_hidden:
+        h = model(Tensor(x, device=device), Tensor(h0, device=device))
+    else:
+        h = model(Tensor(x, device=device), None)
+    assert h.device == device
+    np.testing.assert_allclose(
+        h_.detach().numpy(), h.numpy(), atol=1e-5, rtol=1e-5
+    )
+    h.sum().backward()
+    h_.sum().backward()
+    np.testing.assert_allclose(
+        model_.weight_ih.grad.detach().numpy().transpose(),
+        model.W_ih.grad.numpy(),
+        atol=1e-5,
+        rtol=1e-5,
+    )
