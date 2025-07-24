@@ -103,6 +103,7 @@ from typing import Sequence
 from . import init
 from .backend_selection import NDArray, array_api
 from .tensor import Tensor, TensorOp, TensorTuple, TensorTupleOp
+from .utils import tuplify
 
 
 class MakeTensorTuple(TensorTupleOp):
@@ -247,7 +248,7 @@ class ScalarMul(TensorOp):
         self.scalar = scalar
 
     def compute(self, x: NDArray):
-        return self.scalar * x
+        return x * self.scalar
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad * self.scalar
@@ -286,7 +287,8 @@ class EWiseMul(TensorOp):
         return x * y
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
-        return out_grad * out_node.inputs[1], out_grad * out_node.inputs[0]
+        lhs, rhs = out_node.inputs
+        return out_grad * rhs, out_grad * lhs
 
 
 def multiply(a, b):
@@ -319,7 +321,7 @@ class Negate(TensorOp):
     """
 
     def compute(self, x: NDArray):
-        return array_api.negative(x)
+        return -x
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return -out_grad
@@ -485,9 +487,8 @@ class EWiseDivide(TensorOp):
         return x / y
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
-        return out_grad / out_node.inputs[1], out_grad * (
-            -out_node.inputs[0] / out_node.inputs[1] ** 2
-        )
+        lhs, rhs = out_node.inputs
+        return out_grad / rhs, out_grad * (-lhs / rhs**2)
 
 
 def divide(a, b):
@@ -528,10 +529,10 @@ class Reshape(TensorOp):
         self.shape = shape
 
     def compute(self, x: NDArray):
-        return array_api.reshape(x, self.shape)
+        return x.compact().reshape(self.shape)
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
-        return Reshape(out_node.inputs[0].shape)(out_grad)
+        return out_grad.reshape(out_node.inputs[0].shape)
 
 
 def reshape(a, shape):
@@ -572,14 +573,25 @@ class Summation(TensorOp):
         self.axes = axes
 
     def compute(self, a):
-        return array_api.sum(a, self.axes)
+        # Our sum method/func in ndarray only sums over either all axes
+        # Or one axis -> If we are summing over multiple axes (not all)
+        # We need to sum one axis at a time starting from most outer
+        # axes to inner axes
+        if isinstance(self.axes, (tuple, list)) and len(self.axes) > 1:
+            for axis in reversed(sorted(self.axes)):
+                a = a.sum(axis=axis)
+            return a
+        return a.sum(self.axes)
 
     def gradient(self, out_grad, node):
         input_shape = node.inputs[0].shape
-        axes = self.axes if self.axes else tuple(range(len(input_shape)))
-        tmp_shape = [1 if i in axes else x for i, x in enumerate(input_shape)]
-        tmp_out = Reshape(tuple(tmp_shape))(out_grad)
-        return BroadcastTo(input_shape)(tmp_out)
+        axes = (
+            tuplify(self.axes)
+            if self.axes is not None
+            else tuple(range(len(input_shape)))
+        )
+        new_shape = [1 if i in axes else x for i, x in enumerate(input_shape)]
+        return out_grad.reshape(new_shape).broadcast_to(input_shape)
 
 
 def summation(a, axes=None):
@@ -620,18 +632,24 @@ class BroadcastTo(TensorOp):
         self.shape = shape
 
     def compute(self, a):
-        return array_api.broadcast_to(a, self.shape)
+        if a.shape == self.shape:
+            return a
+        return a.broadcast_to(self.shape).compact()
 
     def gradient(self, out_grad, node):
         input_shape = node.inputs[0].shape
+        if input_shape == out_grad.shape:
+            return out_grad
+        # Assuming here that axis that would be broadcasted should already
+        # exist NOT creating new axes -> If axes don't exist, user must first
+        # reshape the array to have the same dimensions with 1 for all new axes
+        # Then call broadcast
         axes = [
             i
             for i, x in enumerate(zip_longest(input_shape, out_grad.shape))
             if x[0] == 1 or not x[0]
         ]
-        out = Summation(tuple(axes))(out_grad)
-        out = Reshape(input_shape)(out)
-        return out
+        return out_grad.sum(axes).reshape(input_shape)
 
 
 def broadcast_to(a, shape):
@@ -681,7 +699,7 @@ class Transpose(TensorOp):
         return a.permute(permute_axes)
 
     def gradient(self, out_grad, node):
-        return Transpose(self.axes[::-1])(out_grad)
+        return out_grad.transpose(self.axes)
 
 
 def transpose(a, axes=None):
@@ -718,14 +736,14 @@ class MatMul(TensorOp):
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         x, y = out_node.inputs
-        lhs = out_grad @ Transpose()(y)
-        rhs = Transpose()(x) @ out_grad
-        if lhs.shape != x.shape:
+        lhs = out_grad @ y.transpose()
+        rhs = x.transpose() @ out_grad
+        if x.shape < lhs.shape:
             lhs_sum_axis = len(lhs.shape) - len(x.shape)
-            lhs = Summation(axes=tuple(range(lhs_sum_axis)))(lhs)
-        if rhs.shape != y.shape:
+            lhs = lhs.sum(tuple([i for i in range(lhs_sum_axis)]))
+        if y.shape < rhs.shape:
             rhs_sum_axis = len(rhs.shape) - len(y.shape)
-            rhs = Summation(axes=tuple(range(rhs_sum_axis)))(rhs)
+            rhs = rhs.sum(tuple([i for i in range(rhs_sum_axis)]))
         return lhs, rhs
 
 
@@ -796,7 +814,7 @@ class Exp(TensorOp):
         return array_api.exp(x)
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
-        return out_grad * Exp()(out_node.inputs[0])
+        return out_grad * exp(out_node.inputs[0])
 
 
 def exp(a):
@@ -830,7 +848,9 @@ class ReLU(TensorOp):
         return array_api.maximum(x, 0)
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
-        return out_grad * (out_node.realize_cached_data() > 0)
+        return out_grad * Tensor(
+            out_node.realize_cached_data() > 0, device=out_grad.device
+        )
 
 
 def relu(a):
@@ -869,7 +889,7 @@ class LogSumExp(TensorOp):
         self.axes = axes
 
     def compute(self, Z):
-        self.max = array_api.max(Z, axis=self.axes)
+        self.max = Z.max(axis=self.axes, keepdims=True)
         if self.axes is None:
             axes = tuple(range(len(Z.shape)))
             self.max = array_api.array([self.max], dtype=Z.dtype)
@@ -1011,7 +1031,7 @@ def stack(arrays: Sequence[Tensor], axis: int) -> Tensor:
         The stacked tensor with one more dimension than the input tensors.
     """
     # return Stack(axis)(make_tuple(*arrays))
-    return Stack(axis)(*arrays)
+    return Stack(axis)(make_tuple(*arrays))
 
 
 class Split(TensorTupleOp):
