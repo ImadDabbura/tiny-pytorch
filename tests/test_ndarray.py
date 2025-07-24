@@ -203,7 +203,6 @@ def test_setitem_scalar(params, device):
     _A = np.random.randn(*shape)
     A = nd.array(_A, device=device)
     # probably tear these out using lambdas
-    print(slices)
     start_ptr = A._handle.ptr()
     _A[slices] = 4.0
     A[slices] = 4.0
