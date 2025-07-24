@@ -153,7 +153,7 @@ def constant(*shape, c=1.0, device=None, dtype="float32", requires_grad=False):
     >>> constant(2, 2, device=gpu(), c=2.0)  # 2x2 tensor on GPU filled with 2
     """
     device = tiny_pytorch.cpu() if device is None else device
-    array = device.ones(shape, dtype=dtype) * c  # note: can change dtype
+    array = device.full(shape, c, dtype=dtype)
     return Tensor(
         array, device=device, dtype=dtype, requires_grad=requires_grad
     )
