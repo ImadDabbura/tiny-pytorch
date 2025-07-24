@@ -672,9 +672,13 @@ class Transpose(TensorOp):
         self.axes = axes
 
     def compute(self, a):
-        if self.axes is None:
-            self.axes = list(range(len(a.shape)))[-2:]
-        return array_api.swapaxes(a, *self.axes)
+        if self.axes:
+            ax0, ax1 = self.axes[0], self.axes[1]
+        else:
+            ax0, ax1 = a.ndim - 2, a.ndim - 1
+        permute_axes = list(range(a.ndim))
+        permute_axes[ax0], permute_axes[ax1] = ax1, ax0
+        return a.permute(permute_axes)
 
     def gradient(self, out_grad, node):
         return Transpose(self.axes[::-1])(out_grad)
