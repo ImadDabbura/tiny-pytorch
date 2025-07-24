@@ -33,6 +33,8 @@ from functools import reduce
 from operator import mul
 from typing import Any
 
+import numpy as np
+
 from . import init, ops
 from .tensor import Tensor
 
@@ -708,3 +710,173 @@ class Embedding(Module):
         return (
             x_one_hot.reshape((T * B, self.vocab_sz)) @ self.weight
         ).reshape((T, B, self.embedding_dim))
+
+
+class RNNCell(Module):
+    """
+    Applies a single RNN cell with a specified nonlinearity (tanh or ReLU).
+
+    Parameters
+    ----------
+    input_size : int
+        The number of expected features in the input X.
+    hidden_size : int
+        The number of features in the hidden state h.
+    bias : bool, optional
+        If False, then the layer does not use bias weights. Default is True.
+    nonlinearity : str, optional
+        The non-linearity to use. Can be either 'tanh' or 'relu'. Default is 'tanh'.
+    device : Device, optional
+        Device on which to place the weights. Default is None (uses default device).
+    dtype : str, optional
+        Data type of the weights. Default is "float32".
+
+    Attributes
+    ----------
+    W_ih : Parameter
+        The learnable input-hidden weights of shape (input_size, hidden_size).
+    W_hh : Parameter
+        The learnable hidden-hidden weights of shape (hidden_size, hidden_size).
+    bias_ih : Parameter or None
+        The learnable input-hidden bias of shape (hidden_size,). None if bias is False.
+    bias_hh : Parameter or None
+        The learnable hidden-hidden bias of shape (hidden_size,). None if bias is False.
+    nonlinearity : Module
+        The nonlinearity module (Tanh or ReLU).
+    device : Device or None
+        Device on which the parameters are allocated.
+    dtype : str
+        Data type of the parameters.
+    hidden_size : int
+        The number of features in the hidden state h.
+
+    Methods
+    -------
+    forward(X: Tensor, h: Tensor | None = None) -> Tensor
+        Compute the next hidden state given input X and previous hidden state h.
+    """
+
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        bias: bool = True,
+        nonlinearity: str = "tanh",
+        device=None,
+        dtype: str = "float32",
+    ) -> None:
+        """
+        Applies an RNN cell with tanh or ReLU nonlinearity.
+
+        Parameters:
+        input_size: The number of expected features in the input X
+        hidden_size: The number of features in the hidden state h
+        bias: If False, then the layer does not use bias weights
+        nonlinearity: The non-linearity to use. Can be either 'tanh' or 'relu'.
+
+        Variables:
+        W_ih: The learnable input-hidden weights of shape (input_size, hidden_size).
+        W_hh: The learnable hidden-hidden weights of shape (hidden_size, hidden_size).
+        bias_ih: The learnable input-hidden bias of shape (hidden_size,).
+        bias_hh: The learnable hidden-hidden bias of shape (hidden_size,).
+
+        Weights and biases are initialized from U(-sqrt(k), sqrt(k)) where k = 1/hidden_size
+        """
+        super().__init__()
+        self.device = device
+        self.dtype = dtype
+        self.bias = bias
+        self.hidden_size = hidden_size
+        bound = np.sqrt(1 / hidden_size)
+        self.W_ih = Parameter(
+            init.rand(
+                input_size,
+                hidden_size,
+                low=-bound,
+                high=bound,
+                device=device,
+                dtype=dtype,
+                requires_grad=True,
+            )
+        )
+        self.W_hh = Parameter(
+            init.rand(
+                hidden_size,
+                hidden_size,
+                low=-bound,
+                high=bound,
+                device=device,
+                dtype=dtype,
+                requires_grad=True,
+            )
+        )
+        if bias:
+            self.bias_ih = Parameter(
+                init.rand(
+                    hidden_size,
+                    low=-bound,
+                    high=bound,
+                    device=device,
+                    dtype=dtype,
+                    requires_grad=True,
+                )
+            )
+            self.bias_hh = Parameter(
+                init.rand(
+                    hidden_size,
+                    low=-bound,
+                    high=bound,
+                    device=device,
+                    dtype=dtype,
+                    requires_grad=True,
+                )
+            )
+        else:
+            self.bias_ih = None
+            self.bias_hh = None
+        if nonlinearity == "tanh":
+            self.nonlinearity = Tanh()
+        elif nonlinearity == "relu":
+            self.nonlinearity = ReLU()
+        else:
+            raise ValueError(
+                "unsupported nonlinearity function. Only support ReLU and Tanh."
+            )
+
+    def forward(self, X: Tensor, h: Tensor | None = None) -> Tensor:
+        """
+        Compute the next hidden state for a batch of inputs.
+
+        Parameters
+        ----------
+        X : Tensor
+            Input tensor of shape (batch_size, input_size).
+        h : Tensor or None, optional
+            Initial hidden state for each element in the batch, of shape (batch_size, hidden_size). If None, defaults to zeros.
+
+        Returns
+        -------
+        Tensor
+            Next hidden state tensor of shape (batch_size, hidden_size).
+        """
+        batch_size, _ = X.shape
+        if h is None:
+            h = init.zeros(
+                batch_size,
+                self.hidden_size,
+                device=self.device,
+                dtype=self.dtype,
+            )
+        if self.bias:
+            return self.nonlinearity(
+                X @ self.W_ih
+                + self.bias_ih.reshape((1, self.hidden_size)).broadcast_to(
+                    (batch_size, self.hidden_size)
+                )
+                + h @ self.W_hh
+                + self.bias_hh.reshape((1, self.hidden_size)).broadcast_to(
+                    (batch_size, self.hidden_size)
+                )
+            )
+        else:
+            return self.nonlinearity(X @ self.W_ih + h @ self.W_hh)
