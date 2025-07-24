@@ -257,6 +257,45 @@ class ReLU(Module):
         return ops.ReLU()(x)
 
 
+class Tanh(Module):
+    """
+    Applies the hyperbolic tangent (tanh) activation function element-wise.
+
+    The tanh function maps any real-valued number to the range (-1, 1).
+    It is defined as: tanh(x) = (e^x - e^(-x)) / (e^x + e^(-x))
+
+    Attributes
+    ----------
+    None
+        This module has no learnable parameters.
+
+    Examples
+    --------
+    >>> tanh = Tanh()
+    >>> x = Tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
+    >>> output = tanh(x)
+    >>> print(output)
+    Tensor([-0.9640, -0.7616, 0.0000, 0.7616, 0.9640], device=cpu_numpy())
+    """
+
+    def forward(self, x: Tensor) -> Tensor:
+        """
+        Forward pass of the tanh activation function.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of any shape.
+
+        Returns
+        -------
+        Tensor
+            Output tensor with the same shape as input, with tanh activation
+            applied element-wise. Values are in the range (-1, 1).
+        """
+        return ops.tanh(x)
+
+
 class Sequential(Module):
     """
     Applies a sequence of modules to the input.
