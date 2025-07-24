@@ -948,3 +948,138 @@ def tanh(a: Tensor) -> Tensor:
         Hyperbolic tangent of input tensor elements.
     """
     return Tanh()(a)
+
+
+class Stack(TensorOp):
+    """Stack a sequence of arrays along a new axis.
+
+    Parameters
+    ----------
+    axis : int
+        The axis along which to stack. The new axis will be inserted
+        at this position in the result array shape.
+
+    Methods
+    -------
+    compute(args: list[NDArray]) -> NDArray
+        Stack the input arrays along the specified axis.
+    gradient(out_grad: Tensor, node: Tensor) -> Tensor
+        Compute the gradient of the stack operation (returns split of out_grad along axis).
+    """
+
+    def __init__(self, axis: int) -> None:
+        self.axis = axis
+
+    def compute(self, *arrays: list[NDArray]) -> NDArray:
+        n = len(arrays)
+        assert n > 0, "Stack needs at least one array!"
+        shape = arrays[0].shape
+        for arr in arrays:
+            assert (
+                shape == arr.shape
+            ), "All arrays need to be of the same size!"
+        new_shape = list(shape)
+        new_shape.insert(self.axis, n)
+        slices = [slice(0, s) for s in new_shape]
+        out = array_api.empty(new_shape, device=arrays[0].device)
+        for i, arr in enumerate(arrays):
+            # index at the new dimension is always an integer which
+            # is the index of the to-be inserted array in the list of
+            # arrays passed as argument
+            slices[self.axis] = slice(i, i + 1)
+            out[tuple(slices)] = arr
+        return out
+
+    def gradient(self, out_grad: Tensor, node: Tensor) -> Tensor:
+        # Gradient of stack is split and vice versa
+        return split(out_grad, self.axis)
+
+
+def stack(arrays: Sequence[Tensor], axis: int) -> Tensor:
+    """Stack a sequence of tensors along a new axis.
+
+    Parameters
+    ----------
+    arrays : list of Tensor
+        Sequence of tensors to stack. All tensors must have the same shape.
+    axis : int
+        The axis along which to stack. The new axis will be inserted at this position in the result tensor shape.
+
+    Returns
+    -------
+    Tensor
+        The stacked tensor with one more dimension than the input tensors.
+    """
+    # return Stack(axis)(make_tuple(*arrays))
+    return Stack(axis)(*arrays)
+
+
+class Split(TensorTupleOp):
+    """Split a tensor along an axis into a tuple of tensors.
+
+    This operation is the inverse of Stack. It splits a tensor along a specified axis
+    into multiple tensors, each with one less dimension than the input tensor.
+
+    Parameters
+    ----------
+    axis : int
+        The axis along which to split the tensor. The axis dimension will be removed
+        from each resulting tensor.
+
+    Methods
+    -------
+    compute(A: NDArray) -> tuple[NDArray, ...]
+        Split the input array along the specified axis.
+    gradient(out_grad: TensorTuple, node: Tensor) -> Tensor
+        Compute the gradient of the split operation (returns stack of out_grad tensors).
+    """
+
+    def __init__(self, axis: int) -> None:
+        self.axis = axis
+
+    def compute(self, A: NDArray) -> tuple[NDArray, ...]:
+        n = A.shape[self.axis]
+        new_shape = list(A.shape)
+        new_shape.pop(self.axis)
+        slices = [slice(0, s) for s in A.shape]
+        splits = []
+        for i in range(n):
+            slices[self.axis] = slice(i, i + 1)
+            splits.append(A[slices].compact().reshape(new_shape))
+        return tuple(splits)
+
+    def gradient(self, out_grad: TensorTuple, node: Tensor) -> Tensor:
+        return stack(out_grad, self.axis)
+
+
+def split(a: Tensor, axis: int) -> TensorTuple:
+    """Split a tensor along an axis into a tuple of tensors.
+
+    This function splits a tensor along a specified axis into multiple tensors.
+    Each resulting tensor has one less dimension than the input tensor.
+
+    Parameters
+    ----------
+    a : Tensor
+        Input tensor to split.
+    axis : int
+        The axis along which to split the tensor. The axis dimension will be removed
+        from each resulting tensor.
+
+    Returns
+    -------
+    TensorTuple
+        A tuple of tensors, each with the specified axis dimension removed.
+        The number of tensors in the tuple equals the size of the input tensor
+        along the specified axis.
+
+    Examples
+    --------
+    >>> x = Tensor([[1, 2, 3], [4, 5, 6]])
+    >>> result = split(x, axis=0)
+    >>> len(result)  # Returns 2 tensors
+    2
+    >>> result[0].shape  # Each tensor has shape (3,)
+    (3,)
+    """
+    return Split(axis)(a)
