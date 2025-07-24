@@ -57,24 +57,7 @@ jobs:
           export TINY_PYTORCH_BACKEND=np
           poetry run pytest
 
-      # - name: Test with CPU backend (C++ extension)
-      # run: |
-      # export TINY_PYTORCH_BACKEND=nd
-      # poetry run python -c "
-      # from tiny_pytorch.backend_selection import NDArray, cpu
-      # device = cpu()
-      # arr = NDArray([1, 2, 3, 4], device=device)
-      # result = arr + arr
-      # print(f'✅ CPU backend test passed: {result}')
-      # "
-
       - name: Test with NDArray backend
         run: |
-          export TINY_PYTORCH_BACKEND=np
-          poetry run python -c "
-          from tiny_pytorch.backend_selection import NDArray, cpu
-          device = cpu()
-          arr = NDArray([1, 2, 3, 4])
-          result = arr + arr
-          print(f'✅ NDArray backend test passed: {result}')
-          "
+          export TINY_PYTORCH_BACKEND=nd
+          poetry run pytest
