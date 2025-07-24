@@ -296,6 +296,56 @@ class Tanh(Module):
         return ops.tanh(x)
 
 
+class Sigmoid(Module):
+    """
+    Applies the sigmoid activation function element-wise.
+
+    The sigmoid function maps any real-valued number to the range (0, 1).
+    It is defined as: sigmoid(x) = 1 / (1 + e^(-x))
+
+    The sigmoid function is commonly used in binary classification problems
+    and as a gating mechanism in neural networks.
+
+    Attributes
+    ----------
+    None
+        This module has no learnable parameters.
+
+    Examples
+    --------
+    >>> sigmoid = Sigmoid()
+    >>> x = Tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
+    >>> output = sigmoid(x)
+    >>> print(output)
+    Tensor([0.1192, 0.2689, 0.5000, 0.7311, 0.8808], device=cpu_numpy())
+    """
+
+    def __init__(self):
+        """
+        Initialize the Sigmoid module.
+
+        This module has no learnable parameters and requires no initialization.
+        """
+        super().__init__()
+
+    def forward(self, x: Tensor) -> Tensor:
+        """
+        Forward pass of the sigmoid activation function.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of any shape.
+
+        Returns
+        -------
+        Tensor
+            Output tensor with the same shape as input, with sigmoid activation
+            applied element-wise. Values are in the range (0, 1).
+        """
+        return (1 + ops.exp(-x)) ** (-1)
+
+
 class Sequential(Module):
     """
     Applies a sequence of modules to the input.
