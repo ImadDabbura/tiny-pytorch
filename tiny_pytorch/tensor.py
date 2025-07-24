@@ -8,6 +8,7 @@ import numpy as np
 
 import tiny_pytorch
 
+from . import init
 from .backend_selection import Device, NDArray, array_api, default_device
 from .utils import listify, tuplify
 
@@ -520,7 +521,11 @@ class Tensor:
             This method updates the `grad` attribute of the tensor and its dependencies with the computed gradients.
         """
         out_grad = (
-            out_grad if out_grad else Tensor(self.device.ones(self.shape))
+            out_grad
+            if out_grad
+            else Tensor(
+                init.ones(*self.shape, dtype=self.dtype, device=self.device)
+            )
         )
         compute_gradients(self, out_grad)
 
