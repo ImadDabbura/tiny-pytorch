@@ -66,7 +66,7 @@ class Op:
         """
         raise NotImplementedError()
 
-    def gradient(self, out_grad, out_node):
+    def gradient(self, out_grad: Tensor, out_node: Tensor):
         """Compute the gradient of the operation.
 
         Parameters
@@ -87,6 +87,27 @@ class Op:
             This method must be implemented by subclasses.
         """
         raise NotImplementedError()
+
+    def gradient_as_tuple(
+        self, out_grad: Tensor, node: Tensor
+    ) -> tuple[Tensor]:
+        """Convenience method to always return a tuple from gradient call"""
+        out = self.gradient(out_grad, node)
+        return tuplify(out)
+
+
+class TensorOp(Op):
+    """Op class specialized to output tensors, will be alterate subclasses for other structures"""
+
+    def __call__(self, *args):
+        return Tensor.from_operation(self, args)
+
+
+class TensorTupleOp(Op):
+    """Op class specialized to output TensorTuple"""
+
+    def __call__(self, *args):
+        return TensorTuple.from_operation(self, args)
 
 
 class Tensor:
@@ -510,6 +531,40 @@ class Tensor:
     __rsub__ = __sub__
     __rmul__ = __mul__
     __rmatmul__ = __matmul__
+
+
+class TensorTuple(Tensor):
+    """Represent a tuple of tensors.
+
+    To keep things simple, we do not support nested tuples.
+    """
+
+    def __len__(self):
+        cdata = self.realize_cached_data()
+        return len(cdata)
+
+    def __getitem__(self, index: int):
+        return tiny_pytorch.ops.tuple_get_item(self, index)
+
+    def tuple(self):
+        return tuple([x for x in self])
+
+    def __repr__(self):
+        return "tiny_pytorch.TensorTuple" + str(self.tuple())
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __add__(self, other):
+        assert isinstance(other, TensorTuple)
+        assert len(self) == len(other)
+        return tiny_pytorch.ops.make_tuple(
+            *[self[i] + other[i] for i in range(len(self))]
+        )
+
+    def detach(self):
+        """Create a new tensor that shares the data but detaches from the graph."""
+        return TensorTuple.make_const(self.realize_cached_data())
 
 
 def compute_gradients(out_tensor, out_grad):

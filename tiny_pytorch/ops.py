@@ -2,49 +2,51 @@
 
 This module provides a collection of fundamental tensor operations that form the building blocks
 of the computational graph in tiny-pytorch. Each operation is implemented as a class that
-inherits from the Op base class, with corresponding helper functions for easier usage.
+inherits from the (TensorOp) base class, with corresponding helper functions for easier usage.
 
 The module includes element-wise operations, matrix operations, and various mathematical
 functions commonly used in deep learning.
 
 Classes
 -------
-ScalarAdd : Op
+ScalarAdd : (TensorOp)
     Addition of a scalar to a tensor.
-EWiseAdd : Op
+EWiseAdd : (TensorOp)
     Element-wise addition of two tensors.
-ScalarMul : Op
+ScalarMul : (TensorOp)
     Multiplication of a tensor by a scalar.
-EWiseMul : Op
+EWiseMul : (TensorOp)
     Element-wise multiplication of two tensors.
-Negate : Op
+Negate : (TensorOp)
     Negation of a tensor.
-ScalarPower : Op
+ScalarPower : (TensorOp)
     Raising tensor elements to a scalar power.
-EWisePower : Op
+EWisePower : (TensorOp)
     Element-wise power operation between two tensors.
-ScalarDivide : Op
+ScalarDivide : (TensorOp)
     Division of a tensor by a scalar.
-EWiseDivide : Op
+EWiseDivide : (TensorOp)
     Element-wise division of two tensors.
-Reshape : Op
+Reshape : (TensorOp)
     Reshaping a tensor to a new shape.
-Summation : Op
+Summation : (TensorOp)
     Summing tensor elements along specified axes.
-BroadcastTo : Op
+BroadcastTo : (TensorOp)
     Broadcasting a tensor to a larger shape.
-Transpose : Op
+Transpose : (TensorOp)
     Transposing a tensor along specified axes.
-MatMul : Op
+MatMul : (TensorOp)
     Matrix multiplication between two tensors.
-Log : Op
+Log : (TensorOp)
     Natural logarithm of tensor elements.
-Exp : Op
+Exp : (TensorOp)
     Exponential of tensor elements.
-ReLU : Op
+ReLU : (TensorOp)
     Rectified Linear Unit activation function.
-LogSumExp : Op
+LogSumExp : (TensorOp)
     Log-sum-exp operation, commonly used in softmax computation.
+Stack : (TensorOp)
+    Stack a sequence of arrays along a new axis.
 
 Functions
 ---------
@@ -84,6 +86,8 @@ relu(a)
     ReLU activation function.
 logsumexp(a, axes=None)
     Log-sum-exp operation.
+stack(arrays, axis)
+    Stack a sequence of arrays along a new axis.
 
 Notes
 -----
@@ -94,12 +98,56 @@ making them suitable for building and training neural networks.
 from __future__ import annotations
 
 from itertools import zip_longest
+from typing import Sequence
 
+from . import init
 from .backend_selection import NDArray, array_api
-from .tensor import Op, Tensor
+from .tensor import Tensor, TensorOp, TensorTuple, TensorTupleOp
 
 
-class ScalarAdd(Op):
+class MakeTensorTuple(TensorTupleOp):
+    def compute(self, *args) -> tuple:
+        return tuple(args)
+
+    def gradient(self, out_grad, node):
+        assert isinstance(out_grad, TensorTuple)
+        return tuple([out_grad[i] for i in range(len(out_grad))])
+
+
+def make_tuple(*args):
+    return MakeTensorTuple()(*args)
+
+
+class TupleGetItem(TensorOp):
+    def __init__(self, index):
+        self.index = index
+
+    def __call__(self, a: TensorTuple, fold_const=True) -> Tensor:
+        assert isinstance(a, TensorTuple)
+        # constant folding
+        if fold_const and isinstance(a.op, MakeTensorTuple):
+            return a.inputs[self.index]
+        return Tensor.from_operation(self, [a])
+
+    def compute(self, a):
+        return a[self.index]
+
+    def gradient(self, out_grad, node):
+        index = self.index
+        in_grad = []
+        for i, value in enumerate(node.inputs[0]):
+            if i != index:
+                in_grad.append(init.zeros_like(value))
+            else:
+                in_grad.append(out_grad)
+        return MakeTensorTuple()(*in_grad)
+
+
+def tuple_get_item(value, index):
+    return TupleGetItem(index)(value)
+
+
+class ScalarAdd(TensorOp):
     """Add a scalar to a tensor.
 
     Parameters
@@ -119,7 +167,7 @@ class ScalarAdd(Op):
         self.scalar = scalar
 
     def compute(self, x: NDArray):
-        return self.scalar + x
+        return x + self.scalar
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad
@@ -143,7 +191,7 @@ def add_scalar(a, scalar):
     return ScalarAdd(scalar)(a)
 
 
-class EWiseAdd(Op):
+class EWiseAdd(TensorOp):
     """Element-wise addition of two tensors.
 
     Methods
@@ -179,7 +227,7 @@ def add(a, b):
     return EWiseAdd()(a, b)
 
 
-class ScalarMul(Op):
+class ScalarMul(TensorOp):
     """Multiply a tensor by a scalar.
 
     Parameters
@@ -223,7 +271,7 @@ def mul_scalar(a, scalar):
     return ScalarMul(scalar)(a)
 
 
-class EWiseMul(Op):
+class EWiseMul(TensorOp):
     """Element-wise multiplication of two tensors.
 
     Methods
@@ -259,7 +307,7 @@ def multiply(a, b):
     return EWiseMul()(a, b)
 
 
-class Negate(Op):
+class Negate(TensorOp):
     """Negate a tensor element-wise.
 
     Methods
@@ -293,7 +341,7 @@ def negate(a):
     return Negate()(a)
 
 
-class ScalarPower(Op):
+class ScalarPower(TensorOp):
     """Raise tensor elements to a scalar power.
 
     Parameters
@@ -337,7 +385,7 @@ def power_scalar(a, scalar):
     return ScalarPower(scalar)(a)
 
 
-class EWisePower(Op):
+class EWisePower(TensorOp):
     """Element-wise power operation between two tensors.
 
     Methods
@@ -378,7 +426,7 @@ def power(a, b):
     return EWisePower()(a, b)
 
 
-class ScalarDivide(Op):
+class ScalarDivide(TensorOp):
     """Divide a tensor by a scalar.
 
     Parameters
@@ -422,7 +470,7 @@ def divide_scalar(a, scalar):
     return ScalarDivide(scalar)(a)
 
 
-class EWiseDivide(Op):
+class EWiseDivide(TensorOp):
     """Element-wise division of two tensors.
 
     Methods
@@ -460,7 +508,7 @@ def divide(a, b):
     return EWiseDivide()(a, b)
 
 
-class Reshape(Op):
+class Reshape(TensorOp):
     """Reshape a tensor to a new shape.
 
     Parameters
@@ -504,7 +552,7 @@ def reshape(a, shape):
     return Reshape(shape)(a)
 
 
-class Summation(Op):
+class Summation(TensorOp):
     """Sum tensor elements along specified axes.
 
     Parameters
@@ -552,7 +600,7 @@ def summation(a, axes=None):
     return Summation(axes)(a)
 
 
-class BroadcastTo(Op):
+class BroadcastTo(TensorOp):
     """Broadcast a tensor to a larger shape.
 
     Parameters
@@ -604,13 +652,13 @@ def broadcast_to(a, shape):
     return BroadcastTo(shape)(a)
 
 
-class Transpose(Op):
+class Transpose(TensorOp):
     """Transpose a tensor along specified axes.
 
     Parameters
     ----------
     axes : tuple or None, optional
-        Permutation of the dimensions. If None, reverse the dimensions.
+        Permutation of the dimensions. If None, reverse the last two dimensions.
 
     Methods
     -------
@@ -650,7 +698,7 @@ def transpose(a, axes=None):
     return Transpose(axes)(a)
 
 
-class MatMul(Op):
+class MatMul(TensorOp):
     """Matrix multiplication between two tensors.
 
     Methods
@@ -695,7 +743,7 @@ def matmul(a, b):
     return MatMul()(a, b)
 
 
-class Log(Op):
+class Log(TensorOp):
     """Natural logarithm of tensor elements.
 
     Methods
@@ -729,7 +777,7 @@ def log(a):
     return Log()(a)
 
 
-class Exp(Op):
+class Exp(TensorOp):
     """Exponential of tensor elements.
 
     Methods
@@ -763,7 +811,7 @@ def exp(a):
     return Exp()(a)
 
 
-class ReLU(Op):
+class ReLU(TensorOp):
     """Rectified Linear Unit activation function.
 
     Methods
@@ -775,7 +823,7 @@ class ReLU(Op):
     """
 
     def compute(self, x: NDArray):
-        return array_api.maximum(0, x)
+        return array_api.maximum(x, 0)
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         return out_grad * (out_node.realize_cached_data() > 0)
@@ -797,7 +845,7 @@ def relu(a):
     return ReLU()(a)
 
 
-class LogSumExp(Op):
+class LogSumExp(TensorOp):
     """Log-sum-exp operation, commonly used in softmax computation.
 
     Parameters
@@ -828,7 +876,7 @@ class LogSumExp(Op):
         self.broadcasted_max = array_api.broadcast_to(tmp_max, Z.shape)
         return (
             array_api.log(
-                array_api.sum(
+                array_api.summation(
                     array_api.exp(Z - self.broadcasted_max), self.axes
                 )
             )
@@ -864,7 +912,7 @@ def logsumexp(a, axes=None):
     return LogSumExp(axes=axes)(a)
 
 
-class Tanh(Op):
+class Tanh(TensorOp):
     """Hyperbolic tangent activation function.
 
     Methods
