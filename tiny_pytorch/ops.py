@@ -1184,3 +1184,102 @@ def flip(a: Tensor, axes: tuple[int, ...] | None = None) -> Tensor:
     Tensor([[4, 3], [2, 1]])
     """
     return Flip(axes)(a)
+
+
+class Dilate(TensorOp):
+    """Dilate a tensor by inserting zeros between elements along specified axes.
+
+    This operation inserts zeros between elements along the specified axes, effectively
+    increasing the size of the tensor in those dimensions. This is commonly used in
+    convolutional neural networks for dilated convolutions.
+
+    Parameters
+    ----------
+    axes : tuple[int, ...]
+        The axes along which to apply dilation. Each axis index must be valid for the tensor's dimensions.
+    dilation : int
+        The dilation factor. For each element in the original tensor, `dilation` zeros
+        will be inserted after it along the specified axes.
+
+    Methods
+    -------
+    compute(a: NDArray) -> NDArray
+        Compute the dilation operation on the input NDArray.
+    gradient(out_grad: Tensor, node: Tensor) -> Tensor
+        Compute the gradient of the dilation operation (returns undilated gradient).
+
+    Examples
+    --------
+    >>> x = Tensor([[1, 2], [3, 4]])
+    >>> Dilate((0,), 1)(x)
+    Tensor([[1, 2], [0, 0], [3, 4]])
+    >>> Dilate((1,), 1)(x)
+    Tensor([[1, 0, 2], [3, 0, 4]])
+    >>> Dilate((0, 1), 1)(x)
+    Tensor([[1, 0, 2], [0, 0, 0], [3, 0, 4]])
+    """
+
+    def __init__(self, axes: tuple[int, ...], dilation: int):
+        self.axes = axes
+        self.dilation = dilation
+
+    def compute(self, a: NDArray) -> NDArray:
+        new_shape = tuple(
+            (
+                a.shape[i] * (self.dilation + 1)
+                if i in self.axes and i < a.ndim
+                else a.shape[i]
+            )
+            for i in range(a.ndim)
+        )
+        arr = a.device.full(new_shape, 0)
+        slices = tuple(
+            (
+                slice(0, arr.shape[i], self.dilation + 1)
+                if i in self.axes and i < a.ndim
+                else slice(0, n)
+            )
+            for i, n in enumerate(a.shape)
+        )
+        arr[tuple(slices)] = a
+        return arr
+
+    def gradient(self, out_grad: Tensor, node: Tensor) -> Tensor:
+        # For now, return the gradient as-is since UnDilate is not implemented
+        # TODO: Implement UnDilate class for proper gradient computation
+        return out_grad
+
+
+def dilate(a: Tensor, axes: tuple[int, ...], dilation: int) -> Tensor:
+    """Dilate a tensor by inserting zeros between elements along specified axes.
+
+    This function inserts zeros between elements along the specified axes, effectively
+    increasing the size of the tensor in those dimensions. This is commonly used in
+    convolutional neural networks for dilated convolutions.
+
+    Parameters
+    ----------
+    a : Tensor
+        Input tensor to be dilated.
+    axes : tuple[int, ...]
+        The axes along which to apply dilation. Each axis index must be valid for the tensor's dimensions.
+    dilation : int
+        The dilation factor. For each element in the original tensor, `dilation` zeros
+        will be inserted after it along the specified axes.
+
+    Returns
+    -------
+    Tensor
+        A dilated tensor with zeros inserted along the specified axes.
+
+    Examples
+    --------
+    >>> x = Tensor([[1, 2], [3, 4]])
+    >>> dilate(x, (0,), 1)
+    Tensor([[1, 2], [0, 0], [3, 4]])
+    >>> dilate(x, (1,), 1)
+    Tensor([[1, 0, 2], [3, 0, 4]])
+    >>> dilate(x, (0, 1), 1)
+    Tensor([[1, 0, 2], [0, 0, 0], [3, 0, 4]])
+    """
+    return Dilate(axes, dilation)(a)

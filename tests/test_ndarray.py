@@ -522,3 +522,112 @@ def test_flip_forward(params, device):
     B = ops.flip(A, axes=axes)
 
     assert np.linalg.norm(B.numpy() - _B) < 1e-4
+
+
+@pytest.mark.parametrize("device", _DEVICES)
+def test_dilate_forward(device):
+    np.random.seed(0)
+    # device = ndl.cpu()
+
+    _A = np.random.randint(1, 10, size=(2, 5))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=0, axes=(0,)).numpy()
+            - np.array([[6.0, 1.0, 4.0, 4.0, 8.0], [4.0, 6.0, 3.0, 5.0, 8.0]])
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 5))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=1, axes=(0,)).numpy()
+            - np.array(
+                [
+                    [7.0, 9.0, 9.0, 2.0, 7.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0],
+                    [8.0, 8.0, 9.0, 2.0, 6.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 5))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=1, axes=(1,)).numpy()
+            - np.array(
+                [
+                    [9.0, 0.0, 5.0, 0.0, 4.0, 0.0, 1.0, 0.0, 4.0, 0.0],
+                    [6.0, 0.0, 1.0, 0.0, 3.0, 0.0, 4.0, 0.0, 9.0, 0.0],
+                ]
+            )
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 5))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=1, axes=(0, 1)).numpy()
+            - np.array(
+                [
+                    [2.0, 0.0, 4.0, 0.0, 4.0, 0.0, 4.0, 0.0, 8.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [1.0, 0.0, 2.0, 0.0, 1.0, 0.0, 5.0, 0.0, 8.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 2))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=2, axes=(0, 1)).numpy()
+            - np.array(
+                [
+                    [4.0, 0.0, 0.0, 3.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [8.0, 0.0, 0.0, 3.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 2, 2, 2))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=1, axes=(1, 2)).numpy()
+            - np.array(
+                [
+                    [
+                        [[1.0, 1.0], [0.0, 0.0], [5.0, 6.0], [0.0, 0.0]],
+                        [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                        [[6.0, 7.0], [0.0, 0.0], [9.0, 5.0], [0.0, 0.0]],
+                        [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    ],
+                    [
+                        [[2.0, 5.0], [0.0, 0.0], [9.0, 2.0], [0.0, 0.0]],
+                        [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                        [[2.0, 8.0], [0.0, 0.0], [4.0, 7.0], [0.0, 0.0]],
+                        [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    ],
+                ]
+            )
+        )
+        < 1e-5
+    )
