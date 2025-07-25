@@ -272,23 +272,23 @@ class Tensor:
         )
         self.cached_data = data.realize_cached_data()
 
-    @staticmethod
-    def from_constant(data, requires_grad: bool = False):
+    @classmethod
+    def from_constant(cls, data, requires_grad: bool = False):
         """Creates a leaf node Tensor from the given `data`."""
-        tensor = Tensor.__new__(Tensor)
+        tensor = Tensor.__new__(cls)
         tensor._init(
             cached_data=data.realize_cached_data(),
             requires_grad=requires_grad,
         )
         return tensor
 
-    @staticmethod
-    def from_operation(op: Op, inputs: tuple[Tensor]):
+    @classmethod
+    def from_operation(cls, op: Op, inputs: tuple[Tensor]):
         """
         Creates a node Tensor by applying the `op` operation on the `inputs`
         Tensors.
         """
-        tensor = Tensor.__new__(Tensor)
+        tensor = Tensor.__new__(cls)
         tensor._init(inputs, op)
         if not LAZY_MODE:
             if not tensor.requires_grad:
