@@ -1064,7 +1064,7 @@ class Split(TensorTupleOp):
         splits = []
         for i in range(n):
             slices[self.axis] = slice(i, i + 1)
-            splits.append(A[slices].compact().reshape(new_shape))
+            splits.append(A[tuple(slices)].compact().reshape(new_shape))
         return tuple(splits)
 
     def gradient(self, out_grad: TensorTuple, node: Tensor) -> Tensor:
