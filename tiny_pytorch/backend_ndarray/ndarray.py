@@ -665,11 +665,19 @@ class NDArray:
         AssertionError
             If a slice has negative step, or if number of slices is not equal
             to the number of dimensions.
+        TypeError
+            If an index is not an int or slice.
         """
         idxs = tuplify(idxs)
         assert (
             len(idxs) == self.ndim
         ), "Need indexes equal to number of dimensions"
+        # Type check for each index
+        for s in idxs:
+            if not isinstance(s, (int, slice)):
+                raise TypeError(
+                    f"Invalid index type: {type(s)}. Only int or slice allowed."
+                )
         idxs = tuple(self._process_idx(s, i) for i, s in enumerate(idxs))
         shape = tuple(int((s.stop - s.start - 1) / s.step) + 1 for s in idxs)
         strides = tuple(
