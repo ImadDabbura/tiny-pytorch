@@ -1570,3 +1570,58 @@ def test_rnn_cell(
         atol=1e-5,
         rtol=1e-5,
     )
+
+
+@pytest.mark.parametrize("batch_size", BATCH_SIZES)
+@pytest.mark.parametrize("input_size", INPUT_SIZES)
+@pytest.mark.parametrize("hidden_size", HIDDEN_SIZES)
+@pytest.mark.parametrize("bias", BIAS)
+@pytest.mark.parametrize("init_hidden", INIT_HIDDEN)
+@pytest.mark.parametrize("device", _DEVICES, ids=["cpu", "cuda"])
+def test_lstm_cell(
+    batch_size, input_size, hidden_size, bias, init_hidden, device
+):
+    x = np.random.randn(batch_size, input_size).astype(np.float32)
+    h0 = np.random.randn(batch_size, hidden_size).astype(np.float32)
+    c0 = np.random.randn(batch_size, hidden_size).astype(np.float32)
+
+    model_ = torch.nn.LSTMCell(input_size, hidden_size, bias=bias)
+    if init_hidden:
+        h_, c_ = model_(torch.tensor(x), (torch.tensor(h0), torch.tensor(c0)))
+    else:
+        h_, c_ = model_(torch.tensor(x), None)
+
+    model = nn.LSTMCell(input_size, hidden_size, device=device, bias=bias)
+
+    model.W_ih = Tensor(
+        model_.weight_ih.detach().numpy().transpose(), device=device
+    )
+    model.W_hh = Tensor(
+        model_.weight_hh.detach().numpy().transpose(), device=device
+    )
+    if bias:
+        model.bias_ih = Tensor(model_.bias_ih.detach().numpy(), device=device)
+        model.bias_hh = Tensor(model_.bias_hh.detach().numpy(), device=device)
+
+    if init_hidden:
+        h, c = model(
+            Tensor(x, device=device),
+            (Tensor(h0, device=device), Tensor(c0, device=device)),
+        )
+    else:
+        h, c = model(Tensor(x, device=device), None)
+    np.testing.assert_allclose(
+        h_.detach().numpy(), h.numpy(), atol=1e-5, rtol=1e-5
+    )
+    np.testing.assert_allclose(
+        c_.detach().numpy(), c.numpy(), atol=1e-5, rtol=1e-5
+    )
+
+    h.sum().backward()
+    h_.sum().backward()
+    np.testing.assert_allclose(
+        model_.weight_ih.grad.detach().numpy().transpose(),
+        model.W_ih.grad.numpy(),
+        atol=1e-5,
+        rtol=1e-5,
+    )
