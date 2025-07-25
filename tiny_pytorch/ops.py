@@ -1245,9 +1245,7 @@ class Dilate(TensorOp):
         return arr
 
     def gradient(self, out_grad: Tensor, node: Tensor) -> Tensor:
-        # For now, return the gradient as-is since UnDilate is not implemented
-        # TODO: Implement UnDilate class for proper gradient computation
-        return out_grad
+        return undilate(out_grad, self.axes, self.dilation)
 
 
 def dilate(a: Tensor, axes: tuple[int, ...], dilation: int) -> Tensor:
@@ -1283,3 +1281,88 @@ def dilate(a: Tensor, axes: tuple[int, ...], dilation: int) -> Tensor:
     Tensor([[1, 0, 2], [0, 0, 0], [3, 0, 4]])
     """
     return Dilate(axes, dilation)(a)
+
+
+class UnDilate(TensorOp):
+    """Undilate a tensor by removing zeros inserted by dilation along specified axes.
+
+    This operation is the inverse of Dilate. It removes the zeros that were inserted
+    during dilation, effectively reducing the size of the tensor in those dimensions.
+    This is commonly used in convolutional neural networks for dilated convolutions.
+
+    Parameters
+    ----------
+    axes : tuple[int, ...]
+        The axes along which to apply undilation. Each axis index must be valid for the tensor's dimensions.
+    dilation : int
+        The dilation factor that was used in the original Dilate operation.
+
+    Methods
+    -------
+    compute(a: NDArray) -> NDArray
+        Compute the undilation operation on the input NDArray.
+    gradient(out_grad: Tensor, node: Tensor) -> Tensor
+        Compute the gradient of the undilation operation (returns dilated gradient).
+
+    Examples
+    --------
+    >>> x = Tensor([[1, 0, 2], [0, 0, 0], [3, 0, 4]])
+    >>> UnDilate((0,), 1)(x)
+    Tensor([[1, 2], [3, 4]])
+    >>> UnDilate((1,), 1)(x)
+    Tensor([[1, 2], [3, 4]])
+    >>> UnDilate((0, 1), 1)(x)
+    Tensor([[1, 2], [3, 4]])
+    """
+
+    def __init__(self, axes: tuple[int, ...], dilation: int):
+        self.axes = axes
+        self.dilation = dilation
+
+    def compute(self, a: NDArray) -> NDArray:
+        slices = tuple(
+            (
+                slice(0, a.shape[i], self.dilation + 1)
+                if i in self.axes and i < a.ndim
+                else slice(0, n)
+            )
+            for i, n in enumerate(a.shape)
+        )
+        return a[slices].compact()
+
+    def gradient(self, out_grad: Tensor, node: Tensor) -> Tensor:
+        return dilate(out_grad, self.axes, self.dilation)
+
+
+def undilate(a: Tensor, axes: tuple[int, ...], dilation: int) -> Tensor:
+    """Undilate a tensor by removing zeros inserted by dilation along specified axes.
+
+    This function is the inverse of dilate. It removes the zeros that were inserted
+    during dilation, effectively reducing the size of the tensor in those dimensions.
+    This is commonly used in convolutional neural networks for dilated convolutions.
+
+    Parameters
+    ----------
+    a : Tensor
+        Input tensor to be undilated.
+    axes : tuple[int, ...]
+        The axes along which to apply undilation. Each axis index must be valid for the tensor's dimensions.
+    dilation : int
+        The dilation factor that was used in the original dilate operation.
+
+    Returns
+    -------
+    Tensor
+        An undilated tensor with zeros removed along the specified axes.
+
+    Examples
+    --------
+    >>> x = Tensor([[1, 0, 2], [0, 0, 0], [3, 0, 4]])
+    >>> undilate(x, (0,), 1)
+    Tensor([[1, 2], [3, 4]])
+    >>> undilate(x, (1,), 1)
+    Tensor([[1, 2], [3, 4]])
+    >>> undilate(x, (0, 1), 1)
+    Tensor([[1, 2], [3, 4]])
+    """
+    return UnDilate(axes, dilation)(a)

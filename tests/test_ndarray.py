@@ -4,6 +4,7 @@ import torch
 
 import tiny_pytorch.backend_ndarray.ndarray as nd
 from tiny_pytorch import Tensor, ops
+from tiny_pytorch.tensor import TensorTuple
 
 _DEVICES = [
     nd.cpu(),
@@ -630,4 +631,70 @@ def test_dilate_forward(device):
             )
         )
         < 1e-5
+    )
+
+
+def backward_check(f, *args, **kwargs):
+    eps = 1e-3
+    out = f(*args, **kwargs)
+    c = np.random.randn(*out.shape)
+    is_stacked = False
+    if isinstance(args[0], list):
+        args = args[0]
+        is_stacked = True
+    numerical_grad = [np.zeros(a.shape) for a in args]
+    num_args = len(args)
+    for i in range(num_args):
+        for j in range(args[i].realize_cached_data().size):
+            args[i].realize_cached_data().flat[j] += eps
+            if is_stacked:
+                f1 = (f(args, **kwargs).numpy() * c).sum()
+            else:
+                f1 = (f(*args, **kwargs).numpy() * c).sum()
+            args[i].realize_cached_data().flat[j] -= 2 * eps
+            if is_stacked:
+                f2 = (f(args, **kwargs).numpy() * c).sum()
+            else:
+                f2 = (f(*args, **kwargs).numpy() * c).sum()
+            args[i].realize_cached_data().flat[j] += eps
+            numerical_grad[i].flat[j] = (f1 - f2) / (2 * eps)
+    backward_grad = out.op.gradient_as_tuple(
+        Tensor(c, device=args[0].device), out
+    )
+    if isinstance(backward_grad[0], TensorTuple):  # TODO keep this?
+        backward_grad = backward_grad[0].tuple()
+    error = sum(
+        np.linalg.norm(backward_grad[i].numpy() - numerical_grad[i])
+        for i in range(len(args))
+    )
+    assert error < 1e-2
+    return [g.numpy() for g in backward_grad]
+
+
+dilate_backward_params = [
+    {"shape": (2, 5), "d": 1, "axes": (0,)},
+    {"shape": (2, 5), "d": 2, "axes": (1,)},
+    {"shape": (2, 5), "d": 1, "axes": (0, 1)},
+    {"shape": (2, 5), "d": 0, "axes": (0, 1)},
+    {"shape": (2, 3, 3, 4), "d": 2, "axes": (0, 1)},
+    {"shape": (3, 3, 6, 4), "d": 3, "axes": (0, 1)},
+    {"shape": (2, 3, 3, 4), "d": 0, "axes": (1, 2)},
+    {"shape": (2, 3, 3, 4), "d": 1, "axes": (1, 2)},
+    {"shape": (3, 3, 6, 4), "d": 1, "axes": (1, 2)},
+    {"shape": (2, 3, 3, 4), "d": 1, "axes": (2, 3)},
+    {"shape": (3, 3, 6, 4), "d": 1, "axes": (2, 3)},
+    {"shape": (2, 3, 3, 4), "d": 1, "axes": (0, 1, 2, 3)},
+]
+
+
+@pytest.mark.parametrize("device", _DEVICES)
+@pytest.mark.parametrize("params", dilate_backward_params)
+def test_dilate_backward(params, device):
+    np.random.seed(0)
+    shape, d, axes = params["shape"], params["d"], params["axes"]
+    backward_check(
+        ops.dilate,
+        Tensor(np.random.randn(*shape), device=device),
+        dilation=d,
+        axes=axes,
     )
