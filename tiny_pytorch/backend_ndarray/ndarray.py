@@ -925,6 +925,50 @@ class NDArray:
         )
         return out
 
+    def pad(self, axes: tuple[tuple[int, int], ...]) -> "NDArray":
+        """
+        Pad the array with zeros along each axis according to the specified padding widths.
+
+        Parameters
+        ----------
+        axes : tuple[tuple[int, int], ...]
+            A tuple specifying the number of values padded to the edges of each axis.
+            Each element should be a tuple of two integers (pad_before, pad_after),
+            where pad_before is the number of values padded before the first element
+            and pad_after is the number of values padded after the last element for that axis.
+            The length of axes must match the number of dimensions of the array.
+
+        Returns
+        -------
+        NDArray
+            A new NDArray with the specified padding applied, filled with zeros in the padded regions.
+
+        Raises
+        ------
+        AssertionError
+            If the length of axes does not match the number of dimensions of the array.
+
+        Examples
+        --------
+        >>> a = NDArray([[1, 2], [3, 4]])
+        >>> a.pad(((1, 1), (2, 2)))
+        NDArray(
+            [[0, 0, 0, 0, 0, 0],
+             [0, 0, 1, 2, 0, 0],
+             [0, 0, 3, 4, 0, 0],
+             [0, 0, 0, 0, 0, 0]], device=cpu_numpy())
+        """
+        assert len(axes) == len(
+            self.shape
+        ), "Each dimension should have its own tuple of left and right padding"
+        new_shape = tuple([l + r + n for (l, r), n in zip(axes, self.shape)])
+        arr = self.device.full(new_shape, 0)
+        old_idxs = tuple(
+            [slice(l, n - r) for (l, r), n in zip(axes, new_shape)]
+        )
+        arr[old_idxs] = self
+        return arr
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):

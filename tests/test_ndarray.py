@@ -477,3 +477,21 @@ def test_stack(shape, axis, length, device):
     np.testing.assert_allclose(
         out_t.numpy(), out.numpy(), atol=1e-5, rtol=1e-5
     )
+
+
+pad_params = [
+    {"shape": (10, 32, 32, 8), "padding": ((0, 0), (2, 2), (2, 2), (0, 0))},
+    {"shape": (10, 32, 32, 8), "padding": ((0, 0), (0, 0), (0, 0), (0, 0))},
+]
+
+
+@pytest.mark.parametrize("device", [nd.cpu()])
+@pytest.mark.parametrize("params", pad_params)
+def test_pad_forward(params, device):
+    np.random.seed(0)
+    shape, padding = params["shape"], params["padding"]
+    _A = np.random.randn(*shape)
+    _B = np.pad(_A, padding)
+    A = nd.NDArray(_A, device=device)
+    B = A.pad(padding)
+    assert np.linalg.norm(B.numpy() - _B) < 1e-4
