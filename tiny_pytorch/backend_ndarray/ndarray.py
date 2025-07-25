@@ -49,8 +49,14 @@ summation
 
 from math import prod
 from numbers import Number
+from typing import cast
 
 import numpy as np
+
+try:
+    from numpy.core._exceptions import AxisError
+except ImportError:
+    AxisError = IndexError  # Fallback if numpy is too old
 
 from ..utils import tuplify
 from . import ndarray_backend_numpy
@@ -527,7 +533,11 @@ class NDArray:
             return self
         out = NDArray.make(self.shape, device=self.device)
         self.device.compact(
-            self._handle, out._handle, self.shape, self.strides, self._offset
+            self._handle,
+            out._handle,
+            list(self.shape),
+            list(self.strides),
+            self._offset,
         )
         return out
 
@@ -665,11 +675,19 @@ class NDArray:
         AssertionError
             If a slice has negative step, or if number of slices is not equal
             to the number of dimensions.
+        TypeError
+            If an index is not an int or slice.
         """
         idxs = tuplify(idxs)
         assert (
             len(idxs) == self.ndim
         ), "Need indexes equal to number of dimensions"
+        # Type check for each index
+        for s in idxs:
+            if not isinstance(s, (int, slice)):
+                raise TypeError(
+                    f"Invalid index type: {type(s)}. Only int or slice allowed."
+                )
         idxs = tuple(self._process_idx(s, i) for i, s in enumerate(idxs))
         shape = tuple(int((s.stop - s.start - 1) / s.step) + 1 for s in idxs)
         strides = tuple(
@@ -925,6 +943,111 @@ class NDArray:
         )
         return out
 
+    def pad(self, axes: tuple[tuple[int, int], ...]) -> "NDArray":
+        """
+        Pad the array with zeros along each axis according to the specified padding widths.
+
+        Parameters
+        ----------
+        axes : tuple[tuple[int, int], ...]
+            A tuple specifying the number of values padded to the edges of each axis.
+            Each element should be a tuple of two integers (pad_before, pad_after),
+            where pad_before is the number of values padded before the first element
+            and pad_after is the number of values padded after the last element for that axis.
+            The length of axes must match the number of dimensions of the array.
+
+        Returns
+        -------
+        NDArray
+            A new NDArray with the specified padding applied, filled with zeros in the padded regions.
+
+        Raises
+        ------
+        AssertionError
+            If the length of axes does not match the number of dimensions of the array.
+
+        Examples
+        --------
+        >>> a = NDArray([[1, 2], [3, 4]])
+        >>> a.pad(((1, 1), (2, 2)))
+        NDArray(
+            [[0, 0, 0, 0, 0, 0],
+             [0, 0, 1, 2, 0, 0],
+             [0, 0, 3, 4, 0, 0],
+             [0, 0, 0, 0, 0, 0]], device=cpu_numpy())
+        """
+        assert len(axes) == len(
+            self.shape
+        ), "Each dimension should have its own tuple of left and right padding"
+        new_shape = tuple([l + r + n for (l, r), n in zip(axes, self.shape)])
+        arr = self.device.full(new_shape, 0)
+        old_idxs = tuple(
+            [slice(l, n - r) for (l, r), n in zip(axes, new_shape)]
+        )
+        arr[old_idxs] = self
+        return arr
+
+    def flip(self, axes: tuple[int, ...] | None = None) -> "NDArray":
+        """
+        Reverse (flip) the order of elements in the array along the specified axes.
+
+        Parameters
+        ----------
+        axes : tuple[int, ...] or None, optional
+            Axes along which to flip the array. Each axis index must be valid for the array's dimensions.
+            If None, flip over all axes (reverse the array in every dimension).
+
+        Returns
+        -------
+        NDArray
+            A view of the array with the entries reversed along the specified axes.
+
+        Notes
+        -----
+        This operation does not copy the data; it returns a view with modified strides and offset.
+        The result is compacted before being returned.
+
+        Raises
+        ------
+        numpy.AxisError
+            If the number of axes is greater than the number of dimensions, or if any axis is out of bounds.
+
+        Examples
+        --------
+        >>> a = NDArray([[1, 2], [3, 4]])
+        >>> a.flip((0,))
+        NDArray([[3, 4], [1, 2]], device=cpu_numpy())
+        >>> a.flip((1,))
+        NDArray([[2, 1], [4, 3]], device=cpu_numpy())
+        >>> a.flip((0, 1))
+        NDArray([[4, 3], [2, 1]], device=cpu_numpy())
+        >>> a.flip()  # or a.flip(None)
+        NDArray([[4, 3], [2, 1]], device=cpu_numpy())
+        """
+        if axes is None:
+            axes = tuple(range(self.ndim))
+        axes = cast(tuple[int, ...], axes)
+        if len(axes) > self.ndim:
+            raise AxisError(
+                f"Too many axes for array: {len(axes)} > {self.ndim}"
+            )
+        for axis in axes:
+            if axis < 0 or axis >= self.ndim:
+                raise AxisError(
+                    f"Axis {axis} is out of bounds for array of dimension {self.ndim}"
+                )
+
+        new_strides = tuple(
+            self.strides[i] * -1 if i in axes else self.strides[i]
+            for i in range(self.ndim)
+        )
+        new_offset = sum(
+            (self.shape[axis] - 1) * self.strides[axis] for axis in axes
+        )
+        return NDArray.make(
+            self.shape, new_strides, self._device, self._handle, new_offset
+        ).compact()
+
 
 # Convenience methods to match numpy a bit more closely.
 def array(a, dtype="float32", device=None):
@@ -1161,3 +1284,45 @@ def negative(a: NDArray) -> NDArray:
     NDArray([[-1.0, -2.0], [-3.0, -4.0]], device=cpu_numpy())
     """
     return -a
+
+
+def flip(a, axes):
+    """
+    Reverse (flip) the order of elements in an array along the specified axes.
+
+    Parameters
+    ----------
+    a : NDArray
+        Input array to be flipped.
+    axes : tuple[int, ...] or None
+        Axes along which to flip the array. Each axis index must be valid for the array's dimensions.
+        If None, flip over all axes (reverse the array in every dimension).
+
+    Returns
+    -------
+    NDArray
+        A view of the array with the entries reversed along the specified axes.
+
+    Notes
+    -----
+    This operation does not copy the data; it returns a view with modified strides and offset.
+    The result is compacted before being returned.
+
+    Raises
+    ------
+    numpy.AxisError
+        If the number of axes is greater than the number of dimensions, or if any axis is out of bounds.
+
+    Examples
+    --------
+    >>> a = NDArray([[1, 2], [3, 4]])
+    >>> flip(a, (0,))
+    NDArray([[3, 4], [1, 2]], device=cpu_numpy())
+    >>> flip(a, (1,))
+    NDArray([[2, 1], [4, 3]], device=cpu_numpy())
+    >>> flip(a, (0, 1))
+    NDArray([[4, 3], [2, 1]], device=cpu_numpy())
+    >>> flip(a, None)
+    NDArray([[4, 3], [2, 1]], device=cpu_numpy())
+    """
+    return a.flip(axes)

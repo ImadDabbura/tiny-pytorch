@@ -141,7 +141,7 @@ void EwiseTanh(const AlignedArray &a, AlignedArray *out) {
 enum strided_mode { INDEX_IN, INDEX_OUT, INDEX_SET };
 
 void _set_noncompact(const AlignedArray *a, AlignedArray *out,
-                     std::vector<uint32_t> shape, std::vector<uint32_t> strides,
+                     std::vector<int32_t> shape, std::vector<int32_t> strides,
                      size_t offset, int mode, int val = 0) {
   /*
    * Utility function that would iterate over non_compact array `a` using
@@ -180,7 +180,7 @@ void _set_noncompact(const AlignedArray *a, AlignedArray *out,
 }
 
 void Compact(const AlignedArray &a, AlignedArray *out,
-             std::vector<uint32_t> shape, std::vector<uint32_t> strides,
+             std::vector<int32_t> shape, std::vector<int32_t> strides,
              size_t offset) {
   /**
    * Compact an array in memory
@@ -200,7 +200,7 @@ void Compact(const AlignedArray &a, AlignedArray *out,
 }
 
 void EwiseSetitem(const AlignedArray &a, AlignedArray *out,
-                  std::vector<uint32_t> shape, std::vector<uint32_t> strides,
+                  std::vector<int32_t> shape, std::vector<int32_t> strides,
                   size_t offset) {
   /**
    * Set items in a (non-compact) array
@@ -217,7 +217,7 @@ void EwiseSetitem(const AlignedArray &a, AlignedArray *out,
 }
 
 void ScalarSetitem(const size_t size, scalar_t val, AlignedArray *out,
-                   std::vector<uint32_t> shape, std::vector<uint32_t> strides,
+                   std::vector<int32_t> shape, std::vector<int32_t> strides,
                    size_t offset) {
   /**
    * Set items is a (non-compact) array

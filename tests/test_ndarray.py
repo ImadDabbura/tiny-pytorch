@@ -4,6 +4,7 @@ import torch
 
 import tiny_pytorch.backend_ndarray.ndarray as nd
 from tiny_pytorch import Tensor, ops
+from tiny_pytorch.tensor import TensorTuple
 
 _DEVICES = [
     nd.cpu(),
@@ -476,4 +477,224 @@ def test_stack(shape, axis, length, device):
     out_t = torch.stack(A_t, dim=axis)
     np.testing.assert_allclose(
         out_t.numpy(), out.numpy(), atol=1e-5, rtol=1e-5
+    )
+
+
+pad_params = [
+    {"shape": (10, 32, 32, 8), "padding": ((0, 0), (2, 2), (2, 2), (0, 0))},
+    {"shape": (10, 32, 32, 8), "padding": ((0, 0), (0, 0), (0, 0), (0, 0))},
+]
+
+
+@pytest.mark.parametrize("device", [nd.cpu()])
+@pytest.mark.parametrize("params", pad_params)
+def test_pad_forward(params, device):
+    np.random.seed(0)
+    shape, padding = params["shape"], params["padding"]
+    _A = np.random.randn(*shape)
+    _B = np.pad(_A, padding)
+    A = nd.NDArray(_A, device=device)
+    B = A.pad(padding)
+    assert np.linalg.norm(B.numpy() - _B) < 1e-4
+
+
+flip_forward_params = [
+    {"shape": (10, 5), "axes": (0,)},
+    {"shape": (10, 5), "axes": (1,)},
+    {"shape": (10, 5), "axes": (0, 1)},
+    {"shape": (10, 32, 32, 8), "axes": (0, 1)},
+    {"shape": (3, 3, 6, 8), "axes": (0, 1)},
+    {"shape": (10, 32, 32, 8), "axes": (1, 2)},
+    {"shape": (3, 3, 6, 8), "axes": (1, 2)},
+    {"shape": (10, 32, 32, 8), "axes": (2, 3)},
+    {"shape": (3, 3, 6, 8), "axes": (2, 3)},
+    {"shape": (10, 32, 32, 8), "axes": (0, 1, 2, 3)},
+]
+
+
+@pytest.mark.parametrize("device", _DEVICES)
+@pytest.mark.parametrize("params", flip_forward_params)
+def test_flip_forward(params, device):
+    np.random.seed(0)
+    shape, axes = params["shape"], params["axes"]
+    _A = np.random.randn(*shape)
+    _B = np.flip(_A, axes)
+    A = Tensor(_A, device=device)
+    B = ops.flip(A, axes=axes)
+
+    assert np.linalg.norm(B.numpy() - _B) < 1e-4
+
+
+@pytest.mark.parametrize("device", _DEVICES)
+def test_dilate_forward(device):
+    np.random.seed(0)
+    # device = ndl.cpu()
+
+    _A = np.random.randint(1, 10, size=(2, 5))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=0, axes=(0,)).numpy()
+            - np.array([[6.0, 1.0, 4.0, 4.0, 8.0], [4.0, 6.0, 3.0, 5.0, 8.0]])
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 5))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=1, axes=(0,)).numpy()
+            - np.array(
+                [
+                    [7.0, 9.0, 9.0, 2.0, 7.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0],
+                    [8.0, 8.0, 9.0, 2.0, 6.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 5))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=1, axes=(1,)).numpy()
+            - np.array(
+                [
+                    [9.0, 0.0, 5.0, 0.0, 4.0, 0.0, 1.0, 0.0, 4.0, 0.0],
+                    [6.0, 0.0, 1.0, 0.0, 3.0, 0.0, 4.0, 0.0, 9.0, 0.0],
+                ]
+            )
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 5))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=1, axes=(0, 1)).numpy()
+            - np.array(
+                [
+                    [2.0, 0.0, 4.0, 0.0, 4.0, 0.0, 4.0, 0.0, 8.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [1.0, 0.0, 2.0, 0.0, 1.0, 0.0, 5.0, 0.0, 8.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 2))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=2, axes=(0, 1)).numpy()
+            - np.array(
+                [
+                    [4.0, 0.0, 0.0, 3.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [8.0, 0.0, 0.0, 3.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        )
+        < 1e-5
+    )
+
+    _A = np.random.randint(1, 10, size=(2, 2, 2, 2))
+    A = Tensor(_A, device=device)
+    assert (
+        np.linalg.norm(
+            ops.dilate(A, dilation=1, axes=(1, 2)).numpy()
+            - np.array(
+                [
+                    [
+                        [[1.0, 1.0], [0.0, 0.0], [5.0, 6.0], [0.0, 0.0]],
+                        [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                        [[6.0, 7.0], [0.0, 0.0], [9.0, 5.0], [0.0, 0.0]],
+                        [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    ],
+                    [
+                        [[2.0, 5.0], [0.0, 0.0], [9.0, 2.0], [0.0, 0.0]],
+                        [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                        [[2.0, 8.0], [0.0, 0.0], [4.0, 7.0], [0.0, 0.0]],
+                        [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    ],
+                ]
+            )
+        )
+        < 1e-5
+    )
+
+
+def backward_check(f, *args, **kwargs):
+    eps = 1e-3
+    out = f(*args, **kwargs)
+    c = np.random.randn(*out.shape)
+    is_stacked = False
+    if isinstance(args[0], list):
+        args = args[0]
+        is_stacked = True
+    numerical_grad = [np.zeros(a.shape) for a in args]
+    num_args = len(args)
+    for i in range(num_args):
+        for j in range(args[i].realize_cached_data().size):
+            args[i].realize_cached_data().flat[j] += eps
+            if is_stacked:
+                f1 = (f(args, **kwargs).numpy() * c).sum()
+            else:
+                f1 = (f(*args, **kwargs).numpy() * c).sum()
+            args[i].realize_cached_data().flat[j] -= 2 * eps
+            if is_stacked:
+                f2 = (f(args, **kwargs).numpy() * c).sum()
+            else:
+                f2 = (f(*args, **kwargs).numpy() * c).sum()
+            args[i].realize_cached_data().flat[j] += eps
+            numerical_grad[i].flat[j] = (f1 - f2) / (2 * eps)
+    backward_grad = out.op.gradient_as_tuple(
+        Tensor(c, device=args[0].device), out
+    )
+    if isinstance(backward_grad[0], TensorTuple):  # TODO keep this?
+        backward_grad = backward_grad[0].tuple()
+    error = sum(
+        np.linalg.norm(backward_grad[i].numpy() - numerical_grad[i])
+        for i in range(len(args))
+    )
+    assert error < 1e-2
+    return [g.numpy() for g in backward_grad]
+
+
+dilate_backward_params = [
+    {"shape": (2, 5), "d": 1, "axes": (0,)},
+    {"shape": (2, 5), "d": 2, "axes": (1,)},
+    {"shape": (2, 5), "d": 1, "axes": (0, 1)},
+    {"shape": (2, 5), "d": 0, "axes": (0, 1)},
+    {"shape": (2, 3, 3, 4), "d": 2, "axes": (0, 1)},
+    {"shape": (3, 3, 6, 4), "d": 3, "axes": (0, 1)},
+    {"shape": (2, 3, 3, 4), "d": 0, "axes": (1, 2)},
+    {"shape": (2, 3, 3, 4), "d": 1, "axes": (1, 2)},
+    {"shape": (3, 3, 6, 4), "d": 1, "axes": (1, 2)},
+    {"shape": (2, 3, 3, 4), "d": 1, "axes": (2, 3)},
+    {"shape": (3, 3, 6, 4), "d": 1, "axes": (2, 3)},
+    {"shape": (2, 3, 3, 4), "d": 1, "axes": (0, 1, 2, 3)},
+]
+
+
+@pytest.mark.parametrize("device", _DEVICES)
+@pytest.mark.parametrize("params", dilate_backward_params)
+def test_dilate_backward(params, device):
+    np.random.seed(0)
+    shape, d, axes = params["shape"], params["d"], params["axes"]
+    backward_check(
+        ops.dilate,
+        Tensor(np.random.randn(*shape), device=device),
+        dilation=d,
+        axes=axes,
     )
