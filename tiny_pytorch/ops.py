@@ -98,7 +98,7 @@ making them suitable for building and training neural networks.
 from __future__ import annotations
 
 from itertools import zip_longest
-from typing import Sequence
+from typing import Optional, Sequence
 
 from . import init
 from .backend_selection import NDArray, array_api
@@ -1102,3 +1102,85 @@ def split(a: Tensor, axis: int) -> TensorTuple:
     (3,)
     """
     return Split(axis)(a)
+
+
+class Flip(TensorOp):
+    """
+    Reverse (flip) the order of elements in a tensor along the specified axes.
+
+    Parameters
+    ----------
+    axes : tuple[int, ...] or None, optional
+        Axes along which to flip the tensor. Each axis index must be valid for the tensor's dimensions.
+        If None, flip over all axes (reverse the tensor in every dimension).
+
+    Methods
+    -------
+    compute(a: NDArray) -> NDArray
+        Compute the flip operation on the input NDArray.
+    gradient(out_grad: Tensor, node: Tensor) -> Tensor
+        Compute the gradient of the flip operation (flip the gradient along the same axes).
+
+    Raises
+    ------
+    numpy.AxisError
+        If the number of axes is greater than the number of dimensions, or if any axis is out of bounds.
+
+    Examples
+    --------
+    >>> x = Tensor([[1, 2], [3, 4]])
+    >>> Flip((0,))(x)
+    Tensor([[3, 4], [1, 2]])
+    >>> Flip((1,))(x)
+    Tensor([[2, 1], [4, 3]])
+    >>> Flip((0, 1))(x)
+    Tensor([[4, 3], [2, 1]])
+    >>> Flip()(x)
+    Tensor([[4, 3], [2, 1]])
+    """
+
+    def __init__(self, axes: tuple[int, ...] | None = None):
+        self.axes = axes
+
+    def compute(self, a: NDArray) -> NDArray:
+        return a.flip(self.axes)
+
+    def gradient(self, out_grad: Tensor, node: Tensor) -> Tensor:
+        return flip(out_grad, self.axes)
+
+
+def flip(a: Tensor, axes: tuple[int, ...] | None = None) -> Tensor:
+    """
+    Reverse (flip) the order of elements in a tensor along the specified axes.
+
+    Parameters
+    ----------
+    a : Tensor
+        Input tensor to be flipped.
+    axes : tuple[int, ...] or None, optional
+        Axes along which to flip the tensor. Each axis index must be valid for the tensor's dimensions.
+        If None, flip over all axes (reverse the tensor in every dimension).
+
+    Returns
+    -------
+    Tensor
+        A tensor with the entries reversed along the specified axes.
+
+    Raises
+    ------
+    numpy.AxisError
+        If the number of axes is greater than the number of dimensions, or if any axis is out of bounds.
+
+    Examples
+    --------
+    >>> x = Tensor([[1, 2], [3, 4]])
+    >>> flip(x, (0,))
+    Tensor([[3, 4], [1, 2]])
+    >>> flip(x, (1,))
+    Tensor([[2, 1], [4, 3]])
+    >>> flip(x, (0, 1))
+    Tensor([[4, 3], [2, 1]])
+    >>> flip(x)
+    Tensor([[4, 3], [2, 1]])
+    """
+    return Flip(axes)(a)
