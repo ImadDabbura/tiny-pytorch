@@ -495,3 +495,30 @@ def test_pad_forward(params, device):
     A = nd.NDArray(_A, device=device)
     B = A.pad(padding)
     assert np.linalg.norm(B.numpy() - _B) < 1e-4
+
+
+flip_forward_params = [
+    {"shape": (10, 5), "axes": (0,)},
+    {"shape": (10, 5), "axes": (1,)},
+    {"shape": (10, 5), "axes": (0, 1)},
+    {"shape": (10, 32, 32, 8), "axes": (0, 1)},
+    {"shape": (3, 3, 6, 8), "axes": (0, 1)},
+    {"shape": (10, 32, 32, 8), "axes": (1, 2)},
+    {"shape": (3, 3, 6, 8), "axes": (1, 2)},
+    {"shape": (10, 32, 32, 8), "axes": (2, 3)},
+    {"shape": (3, 3, 6, 8), "axes": (2, 3)},
+    {"shape": (10, 32, 32, 8), "axes": (0, 1, 2, 3)},
+]
+
+
+@pytest.mark.parametrize("device", _DEVICES)
+@pytest.mark.parametrize("params", flip_forward_params)
+def test_flip_forward(params, device):
+    np.random.seed(0)
+    shape, axes = params["shape"], params["axes"]
+    _A = np.random.randn(*shape)
+    _B = np.flip(_A, axes)
+    A = Tensor(_A, device=device)
+    B = ops.flip(A, axes=axes)
+
+    assert np.linalg.norm(B.numpy() - _B) < 1e-4
