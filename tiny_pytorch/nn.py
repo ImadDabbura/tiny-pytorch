@@ -1393,3 +1393,130 @@ class LSTM(Module):
             ops.stack(h_n, 0).detach(),
             ops.stack(c_n, 0).detach(),
         )
+
+
+class Conv(Module):
+    """
+    Multi-channel 2D convolutional layer.
+
+    This module applies a 2D convolution over an input signal composed of several
+    input planes. The input is expected to be in NCHW format (batch, channels, height, width)
+    and the output will also be in NCHW format.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input image.
+    out_channels : int
+        Number of channels produced by the convolution.
+    kernel_size : int or tuple of int
+        Size of the convolving kernel. If a single int is provided, it is used
+        for both height and width dimensions. Only square kernels are supported.
+    stride : int or tuple of int, optional
+        Stride of the convolution. If a single int is provided, it is used for
+        both height and width dimensions. Default is 1.
+    bias : bool, optional
+        If True, adds a learnable bias to the output. Default is True.
+    device : Device, optional
+        Device on which to place the weights. Default is None (uses default device).
+    dtype : str, optional
+        Data type of the weights. Default is "float32".
+
+    Attributes
+    ----------
+    in_channels : int
+        Number of channels in the input image.
+    out_channels : int
+        Number of channels produced by the convolution.
+    kernel_size : int
+        Size of the convolving kernel (square kernel).
+    stride : int
+        Stride of the convolution.
+    padding : int
+        Padding added to both sides of the input. Automatically calculated as
+        (kernel_size - 1) // 2 to maintain same output size.
+    weight : Parameter
+        The learnable weights of the module of shape
+        (kernel_size, kernel_size, in_channels, out_channels).
+    bias : Parameter or None
+        The learnable bias of the module of shape (out_channels,). None if bias is False.
+
+    Notes
+    -----
+    - Only supports padding='same' (automatic padding to maintain output size).
+    - No grouped convolution or dilation support.
+    - Only supports square kernels.
+    - Input and output are in NCHW format.
+
+    Examples
+    --------
+    >>> conv = Conv(3, 64, kernel_size=3, stride=1)
+    >>> x = Tensor.randn(1, 3, 32, 32)  # batch_size=1, channels=3, height=32, width=32
+    >>> output = conv(x)  # shape: (1, 64, 32, 32)
+    """
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int | tuple[int, int],
+        stride: int | tuple[int, int] = 1,
+        bias: bool = True,
+        device=None,
+        dtype: str = "float32",
+    ):
+        super().__init__()
+        if isinstance(kernel_size, tuple):
+            kernel_size = kernel_size[0]
+        if isinstance(stride, tuple):
+            stride = stride[0]
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = (kernel_size - 1) // 2
+        self.weight = Parameter(
+            init.kaiming_uniform(
+                in_channels * kernel_size * kernel_size,
+                out_channels * kernel_size * kernel_size,
+                shape=(kernel_size, kernel_size, in_channels, out_channels),
+                device=device,
+            )
+        )
+        if bias:
+            bias_bound = 1 / (in_channels * kernel_size**2) ** 0.5
+            self.bias = Parameter(
+                init.rand(
+                    self.out_channels,
+                    low=-bias_bound,
+                    high=bias_bound,
+                    device=device,
+                )
+            )
+        else:
+            self.bias = None
+
+    def forward(self, x: Tensor) -> Tensor:
+        """
+        Forward pass of the 2D convolution.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of shape (batch_size, in_channels, height, width) in NCHW format.
+
+        Returns
+        -------
+        Tensor
+            Output tensor of shape (batch_size, out_channels, height, width) in NCHW format.
+        """
+        nhwc_x = x.transpose((1, 2)).transpose((2, 3))
+        out = ops.conv(
+            nhwc_x, self.weight, stride=self.stride, padding=self.padding
+        )
+        if self.bias:
+            out += self.bias.reshape(
+                (1, 1, 1, self.out_channels)
+            ).broadcast_to(out.shape)
+        out = out.transpose((2, 3)).transpose((1, 2))
+        return out
