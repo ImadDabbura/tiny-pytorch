@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="images/logo.png" height="300px" width="300px">
+</p>
+
 # **Tiny-PyTorch: Build Your Own Deep Learning Universe 🌌**
 
 Hello, fellow builders and curious minds. I'm an AI scientist, and like many of you, I've spent countless hours marveling at the power of frameworks like PyTorch and TensorFlow. They are the engines of modern AI, capable of incredible feats. But have you ever found yourself wondering what truly lies beneath the sleek `model.fit()` or `loss.backward()` commands?

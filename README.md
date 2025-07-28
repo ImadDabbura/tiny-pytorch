@@ -6,6 +6,10 @@
 
 ---
 
+<p align="center">
+  <img src="./logo.png" width="300" height="200" />
+</p>
+
 # Tiny-PyTorch 🧠
 
 **Unravel the magic of modern deep learning by building a PyTorch-like framework from the ground up.**
