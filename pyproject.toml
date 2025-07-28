@@ -1,6 +1,6 @@
 [project]
 name = "tiny-pytorch"
-version = "0.0.4"
+version = "0.0.6"
 description = "Mini Deep Learning framework similar to PyTorch"
 authors = [
     {name = "Imad Dabbura", email = "imad.dabbura@hotmail.com"}

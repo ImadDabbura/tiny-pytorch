@@ -31,6 +31,13 @@ Examples
 >>> print(x.grad)
 """
 
+import importlib.metadata
+
 from . import ops
 from .backend_selection import *
 from .tensor import Tensor
+
+try:
+    __version__ = importlib.metadata.version(__package__ or __name__)
+except importlib.metadata.PackageNotFoundError:
+    __version__ = "0.0.0+unknown"  # Or a more descriptive dev version
