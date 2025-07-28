@@ -1366,3 +1366,140 @@ def undilate(a: Tensor, axes: tuple[int, ...], dilation: int) -> Tensor:
     Tensor([[1, 2], [3, 4]])
     """
     return UnDilate(axes, dilation)(a)
+
+
+class Conv(TensorOp):
+    """2D convolution operation between input tensor and kernel.
+
+    This operation performs 2D convolution between an input tensor and a kernel tensor.
+    The input is expected to be in NHWC format (batch, height, width, channels) and
+    the kernel in KKCC format (kernel_height, kernel_width, input_channels, output_channels).
+
+    Parameters
+    ----------
+    stride : int, optional
+        The stride of the convolution. Default is 1.
+    padding : int, optional
+        The amount of padding to apply to the input. Default is 0.
+
+    Methods
+    -------
+    compute(A: NDArray, B: NDArray) -> NDArray
+        Compute the 2D convolution operation using im2col and matrix multiplication.
+    gradient(out_grad: Tensor, node: Tensor) -> tuple[Tensor, Tensor]
+        Compute the gradient with respect to both input and kernel tensors.
+
+    Notes
+    -----
+    - Input tensor A should have shape (N, H, W, C_in)
+    - Kernel tensor B should have shape (K, K, C_in, C_out) where K is the kernel size
+    - Output tensor will have shape (N, out_H, out_W, C_out)
+    - Uses im2col transformation for efficient computation
+    """
+
+    def __init__(self, stride: int = 1, padding: int = 0):
+        self.stride = stride
+        self.padding = padding
+
+    def compute(self, A: NDArray, B: NDArray) -> NDArray:
+        A = A.pad(
+            (
+                (0, 0),
+                (self.padding, self.padding),
+                (self.padding, self.padding),
+                (0, 0),
+            )
+        )
+        N, H, W, C_in = A.shape
+        K, K_, C_in_, C_out = B.shape
+        Ns, Hs, Ws, Cs = A.strides
+        assert K == K_, "Only supports square kernels!"
+        assert (
+            C_in == C_in_
+        ), "Input channel and kernel channel should be equal!"
+
+        inner_dim = K * K * C_in
+        # out_H, out_W = (H - +2 * self.padding + K) // self.stride + 1, (
+        #     W - +2 * self.padding + K
+        # ) // self.stride + 1
+        out_H, out_W = (H - K) // self.stride + 1, (W - K) // self.stride + 1
+        im2col = (
+            A.as_strided(
+                shape=(N, out_H, out_W, K, K, C_in),
+                strides=(Ns, Hs * self.stride, Ws * self.stride, Hs, Ws, Cs),
+            )
+            .compact()
+            .reshape(
+                (N * out_H * out_W, inner_dim)
+            )  # Same as reshape(-1, inner_dim)
+        )
+        out = im2col @ B.compact().reshape((K * K_ * C_in_, C_out))
+        return out.compact().reshape((N, out_H, out_W, C_out))
+
+    def gradient(
+        self, out_grad: Tensor, node: Tensor
+    ) -> tuple[Tensor, Tensor]:
+        X, W = node.inputs
+        K, _, _, _ = W.shape
+
+        if self.stride > 1:
+            out_grad = dilate(out_grad, (1, 2), self.stride - 1)
+        W_permute = transpose(flip(W, (0, 1)), (2, 3))  # K * K * C_out * C_in
+        # out_grad: # N * (H+2P-K+1) * (W+2P-K+1) * C_out
+        X_grad = conv(out_grad, W_permute, padding=K - 1 - self.padding)
+
+        X_permute = transpose(X, (0, 3))  # C_in * H * W * N
+        grad_permute = transpose(
+            transpose(out_grad, (0, 1)), (1, 2)
+        )  # (H+2P-K+1) * (W+2P-K+1) * N * C_out
+        W_grad = conv(
+            X_permute, grad_permute, padding=self.padding
+        )  # C_in * H * W * C_out
+        W_grad = transpose(
+            transpose(W_grad, (0, 1)), (1, 2)
+        )  # H * W * C_in * C_out
+
+        return X_grad, W_grad
+
+
+def conv(a: Tensor, b: Tensor, stride: int = 1, padding: int = 1) -> Tensor:
+    """Perform 2D convolution between input tensor and kernel.
+
+    This function performs 2D convolution between an input tensor and a kernel tensor.
+    The input is expected to be in NHWC format (batch, height, width, channels) and
+    the kernel in KKCC format (kernel_height, kernel_width, input_channels, output_channels).
+
+    Parameters
+    ----------
+    a : Tensor
+        Input tensor with shape (N, H, W, C_in) in NHWC format.
+    b : Tensor
+        Kernel tensor with shape (K, K, C_in, C_out) where K is the kernel size.
+    stride : int, optional
+        The stride of the convolution. Default is 1.
+    padding : int, optional
+        The amount of padding to apply to the input. Default is 1.
+
+    Returns
+    -------
+    Tensor
+        Convolved tensor with shape (N, out_H, out_W, C_out) where:
+        - out_H = (H + 2*padding - K) // stride + 1
+        - out_W = (W + 2*padding - K) // stride + 1
+
+    Notes
+    -----
+    - Uses im2col transformation for efficient computation
+    - Supports automatic differentiation through gradient computation
+    - Kernel must be square (K x K)
+    - Input and kernel channel dimensions must match
+
+    Examples
+    --------
+    >>> x = Tensor.randn(1, 32, 32, 3)  # 1 batch, 32x32 image, 3 channels
+    >>> kernel = Tensor.randn(3, 3, 3, 16)  # 3x3 kernel, 3 input channels, 16 output channels
+    >>> result = conv(x, kernel, stride=1, padding=1)
+    >>> result.shape  # (1, 32, 32, 16)
+    (1, 32, 32, 16)
+    """
+    return Conv(stride, padding)(a, b)
