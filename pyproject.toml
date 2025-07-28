@@ -27,6 +27,7 @@ pytest = "^8.3"
 isort = "^6.0"
 flake8 = "^7.1"
 pre-commit = "^4.1"
+torch = "^2.7"
 
 
 [tool.poetry.group.docs.dependencies]
