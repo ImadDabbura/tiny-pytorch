@@ -2,23 +2,86 @@
 
 This module provides a NumPy-based backend for tiny-pytorch, implementing
 device abstractions and tensor operations using NumPy arrays. It serves as
-a simple, pure Python backend that's useful for development and testing.
+a simple, pure Python backend that's useful for development, testing, and
+educational purposes.
+
+The module provides a complete device abstraction layer that wraps NumPy
+functionality, making it easy to create and manipulate tensors using
+standard NumPy operations. This backend is particularly useful when you
+want to avoid external dependencies or need a simple, portable implementation.
+
+Key Features
+-----------
+- Pure Python implementation using NumPy
+- Device abstraction for tensor operations
+- Standard tensor creation methods (zeros, ones, randn, rand)
+- One-hot encoding support
+- Uniform interface with other backends
+- No external dependencies beyond NumPy
 
 Classes
 -------
 Device
     Base class for device abstractions.
+    Defines the interface that all device implementations must follow.
+    Devices represent where tensor data is stored and provide methods
+    for creating tensors on that device.
 CPUDevice
     CPU device implementation using NumPy arrays.
+    Represents data that sits in CPU memory, using NumPy as the underlying
+    computational engine. Provides methods for creating tensors with
+    different initializations and distributions.
 
 Functions
 ---------
-cpu
-    Returns a CPU device instance.
-default_device
-    Returns the default device (CPU).
-all_devices
-    Returns a list of all available devices.
+cpu() -> CPUDevice
+    Returns a CPU device instance using NumPy backend.
+default_device() -> CPUDevice
+    Returns the default device (CPU with NumPy backend).
+all_devices() -> list[CPUDevice]
+    Returns a list of all available devices (only CPU for this backend).
+
+Notes
+-----
+This backend implementation is designed to be simple and portable, making
+it ideal for development, testing, and educational purposes. It provides
+the same interface as other backends (CPU, CUDA) but uses NumPy arrays
+as the underlying storage and computation engine.
+
+The backend automatically handles data type conversions and provides
+consistent behavior across different platforms. All tensor operations
+are performed using NumPy's optimized C implementations, ensuring
+good performance for most use cases.
+
+This backend is particularly useful when:
+- You need a simple, portable implementation
+- You want to avoid external dependencies
+- You're developing or testing code
+- You're in an educational environment
+
+Examples
+--------
+>>> import tiny_pytorch as tp
+>>>
+>>> # Create a CPU device using NumPy backend
+>>> device = tp.backend_numpy.cpu()
+>>>
+>>> # Create tensors on the device
+>>> x = device.zeros((3, 4), dtype="float32")
+>>> y = device.ones((3, 4), dtype="float32")
+>>> z = device.randn(3, 4)  # Random normal distribution
+>>> w = device.rand(3, 4)   # Random uniform distribution
+>>>
+>>> # Create one-hot encoded tensor
+>>> one_hot = device.one_hot(10, 5, dtype="float32")
+>>>
+>>> # Use the default device
+>>> default_dev = tp.backend_numpy.default_device()
+>>> tensor = default_dev.full((2, 2), 3.14, dtype="float32")
+>>>
+>>> # Check available devices
+>>> devices = tp.backend_numpy.all_devices()
+>>> print(f"Available devices: {devices}")
 """
 
 from typing import Sequence

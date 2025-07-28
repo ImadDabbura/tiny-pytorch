@@ -1,32 +1,112 @@
-"""
-This module provides a set of classes and functions for building neural networks.
+"""Neural network module for tiny-pytorch implementation.
+
+This module provides a comprehensive set of classes and functions for building
+neural networks. It includes fundamental building blocks like layers, activation
+functions, normalization modules, and specialized components for various types
+of neural network architectures.
+
+The module is designed to work seamlessly with the automatic differentiation
+system, allowing for easy construction and training of complex neural networks.
+All modules inherit from the base `Module` class, providing consistent interfaces
+for parameter management, training mode control, and forward pass computation.
+
+Key Features
+-----------
+- Automatic parameter management and gradient tracking
+- Training/evaluation mode switching
+- Modular design for easy network construction
+- Support for various neural network architectures
+- Built-in activation functions and loss functions
+- Normalization layers (BatchNorm, LayerNorm)
+- Recurrent neural network components (RNN, LSTM)
+- Convolutional neural network layers
+- Embedding layers for sequence processing
 
 Classes
 -------
 Module
-    Base class for all neural network modules.
+    Base class for all neural network modules. Provides common functionality
+    for parameter management, training mode control, and forward pass computation.
 Parameter
-    A special kind of tensor that represents parameters. It acts as a marker
-    so modules can be able to identify learnable parameters. All `Parameter`
-    tensors have require_grad set to True.
-BatchNorm1d
-    Batch normalization module.
-LayerNorm1d
-    Layer normalization module.
-Dropout
-    Dropout module.
-Linear
-    Linear transformation module.
-Sequential
-    Sequential container module.
-Residual
-    Residual connection module.
+    A special kind of tensor that represents learnable parameters. Acts as a marker
+    so modules can identify trainable parameters. All Parameter tensors have
+    require_grad set to True.
 ReLU
-    ReLU activation module.
-SoftmaxLoss
-    Softmax loss module.
+    Rectified Linear Unit activation function.
+Tanh
+    Hyperbolic tangent activation function.
+Sigmoid
+    Sigmoid activation function.
+Linear
+    Linear transformation layer (fully connected layer).
 Flatten
-    Flatten module.
+    Flattens the input tensor into a 2D tensor.
+BatchNorm1d
+    1D batch normalization layer for fully connected networks.
+BatchNorm2d
+    2D batch normalization layer for convolutional networks.
+LayerNorm1d
+    1D layer normalization layer.
+Dropout
+    Dropout layer for regularization during training.
+Sequential
+    Sequential container that applies modules in order.
+Residual
+    Residual connection that adds input to the output of a module.
+SoftmaxLoss
+    Softmax cross-entropy loss function.
+RNNCell
+    Single RNN cell with tanh or ReLU nonlinearity.
+RNN
+    Multi-layer RNN with tanh or ReLU nonlinearity.
+LSTMCell
+    Single LSTM cell with forget, input, and output gates.
+LSTM
+    Multi-layer LSTM network.
+Conv
+    2D convolutional layer with support for padding and stride.
+Embedding
+    Embedding layer for converting indices to dense vectors.
+
+Notes
+-----
+All modules support automatic differentiation through the tensor system.
+Parameters are automatically tracked and gradients are computed during
+backward passes. The training mode affects the behavior of certain modules
+like Dropout and BatchNorm, which behave differently during training and
+evaluation.
+
+The module system is designed to be composable, allowing complex networks
+to be built from simple building blocks. The Sequential and Residual
+containers provide convenient ways to combine multiple modules.
+
+Examples
+--------
+>>> import tiny_pytorch as tp
+>>>
+>>> # Create a simple feedforward network
+>>> model = tp.nn.Sequential(
+...     tp.nn.Linear(784, 128),
+...     tp.nn.ReLU(),
+...     tp.nn.Dropout(0.5),
+...     tp.nn.Linear(128, 10)
+... )
+>>>
+>>> # Create a convolutional network
+>>> conv_model = tp.nn.Sequential(
+...     tp.nn.Conv(3, 64, kernel_size=3),
+...     tp.nn.BatchNorm2d(64),
+...     tp.nn.ReLU(),
+...     tp.nn.Flatten(),
+...     tp.nn.Linear(64 * 28 * 28, 10)
+... )
+>>>
+>>> # Create an RNN for sequence processing
+>>> rnn = tp.nn.RNN(input_size=100, hidden_size=64, num_layers=2)
+>>>
+>>> # Use the model
+>>> x = tp.Tensor.randn(32, 784)  # batch_size=32, features=784
+>>> output = model(x)  # Forward pass
 """
 
 from functools import reduce

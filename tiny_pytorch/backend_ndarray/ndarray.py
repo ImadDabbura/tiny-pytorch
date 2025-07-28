@@ -2,13 +2,13 @@
 
 This module provides the core NDArray class that supports multiple backends
 including NumPy, CPU, and CUDA. The NDArray class is a Python wrapper for
-handling operations on n-dimensional arrays with strided memory layout.
+handling operations on n-dimensional arrays with strided memory layout,
+enabling efficient memory usage and fast operations.
 
-The module includes:
-- BackendDevice class for device abstraction
-- NDArray class with strided array operations
-- Device factory functions (cpu, cuda, etc.)
-- Array creation utilities
+The module implements a flexible array system that can work with different
+computational backends while maintaining a consistent interface. It supports
+advanced features like broadcasting, strided memory access, and device
+abstraction for cross-platform compatibility.
 
 Key Features
 -----------
@@ -17,34 +17,79 @@ Key Features
 - Broadcasting and reshaping without memory copying
 - Element-wise and scalar operations
 - Matrix operations and reductions
+- Device abstraction for cross-platform compatibility
+- Memory-efficient views and slicing operations
+- Automatic memory management and optimization
 
 Classes
 -------
 BackendDevice
     Device abstraction that wraps backend implementation modules.
+    Provides a unified interface for different computational backends.
 NDArray
     Multi-dimensional array with strided memory layout.
+    Supports efficient operations on n-dimensional data with automatic
+    memory optimization and device management.
 
 Functions
 ---------
-cpu_numpy, cpu, cuda
-    Device factory functions.
-array, empty, full
-    Array creation utilities.
-broadcast_to
-    Broadcasting utility function.
-reshape
-    Reshape utility function.
-maximum
-    Element-wise maximum function.
-log
-    Natural logarithm function.
-exp
-    Exponential function.
-tanh
-    Hyperbolic tangent function.
-summation
-    Sum of array elements over a given axis.
+cpu_numpy() -> BackendDevice
+    Create a NumPy-based CPU device.
+cpu() -> BackendDevice
+    Create a native CPU device.
+cuda() -> BackendDevice
+    Create a CUDA device for GPU computation.
+default_device() -> BackendDevice
+    Get the default computational device.
+array(a, dtype="float32", device=None) -> NDArray
+    Create an NDArray from array-like input.
+empty(shape, dtype="float32", device=None) -> NDArray
+    Create an uninitialized NDArray with given shape.
+full(shape, fill_value, dtype="float32", device=None) -> NDArray
+    Create an NDArray filled with a constant value.
+broadcast_to(array, new_shape) -> NDArray
+    Broadcast an array to a new shape without copying memory.
+reshape(array, new_shape) -> NDArray
+    Reshape an array without copying memory.
+maximum(a, b) -> NDArray
+    Element-wise maximum of two arrays.
+log(a) -> NDArray
+    Natural logarithm of array elements.
+exp(a) -> NDArray
+    Exponential of array elements.
+tanh(a) -> NDArray
+    Hyperbolic tangent of array elements.
+summation(a, axis=None, keepdims=False) -> NDArray
+    Sum of array elements over specified axes.
+negative(a) -> NDArray
+    Element-wise negation of array.
+flip(a, axes) -> NDArray
+    Reverse the order of elements along specified axes.
+
+Notes
+-----
+The NDArray system is designed for efficiency and flexibility. It uses strided
+memory layout to enable operations like transposing and reshaping without
+copying data. The backend device system allows seamless switching between
+different computational platforms while maintaining consistent behavior.
+
+All operations are optimized for the current backend and automatically handle
+memory management, device transfers, and computational optimization.
+
+Examples
+--------
+>>> import tiny_pytorch as tp
+>>> # Create arrays on different devices
+>>> x = tp.array([1, 2, 3], device=tp.cpu())
+>>> y = tp.array([4, 5, 6], device=tp.cuda())
+>>>
+>>> # Perform operations
+>>> z = x + y  # Element-wise addition
+>>> w = x @ y  # Matrix multiplication
+>>>
+>>> # Shape manipulation
+>>> reshaped = x.reshape((3, 1))
+>>> broadcasted = x.broadcast_to((2, 3))
 """
 
 from math import prod

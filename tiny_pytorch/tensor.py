@@ -1,5 +1,83 @@
-r"""
-Core data structures for multi-dimensional tensors.
+"""Core data structures for multi-dimensional tensors.
+
+This module provides the fundamental Tensor class and related components that form
+the backbone of the tiny-pytorch framework. It implements automatic differentiation,
+computation graph management, and tensor operations with support for multiple
+backends and devices.
+
+The module includes the core Tensor class, operation abstractions, and gradient
+computation utilities that enable building and training neural networks with
+automatic differentiation capabilities.
+
+Key Features
+-----------
+- Automatic differentiation with gradient tracking
+- Computation graph construction and management
+- Support for multiple backends (NumPy, CPU, CUDA)
+- Lazy evaluation mode for memory efficiency
+- Tensor operations with automatic broadcasting
+- Gradient computation and backpropagation
+- Device and dtype management
+
+Classes
+-------
+Op
+    Base class for all tensor operations. Defines the interface for operations
+    that can be applied to tensors to create new tensors in the computation graph.
+TensorOp : Op
+    Base class for operations that produce single tensors.
+TensorTupleOp : Op
+    Base class for operations that produce tuples of tensors.
+Tensor
+    Multi-dimensional tensor with automatic differentiation support.
+    The core data structure for representing inputs, outputs, and intermediate
+    results in neural network computations.
+TensorTuple : Tensor
+    Specialized tensor class for representing tuples of tensors.
+
+Functions
+---------
+compute_gradients(out_tensor, out_grad) -> None
+    Compute gradients for all tensors in the computation graph.
+find_topo_sort(node_list) -> list[Tensor]
+    Find topological sort of tensors in the computation graph.
+_topo_sort_dfs(node, visited, topo_list) -> None
+    Depth-first search for topological sorting.
+
+Notes
+-----
+The Tensor system implements automatic differentiation through a computation graph
+where each tensor operation creates a new tensor node that tracks its inputs and
+the operation that produced it. When backward() is called on a tensor, gradients
+are computed and propagated through the graph using the chain rule.
+
+The system supports both eager and lazy evaluation modes. In eager mode (default),
+tensor values are computed immediately. In lazy mode, computation is deferred
+until the tensor value is actually needed.
+
+All tensor operations are designed to work seamlessly with the automatic
+differentiation system, automatically tracking gradients when requires_grad=True.
+
+Examples
+--------
+>>> import tiny_pytorch as tp
+>>>
+>>> # Create tensors
+>>> x = tp.Tensor([1, 2, 3], requires_grad=True)
+>>> y = tp.Tensor([4, 5, 6], requires_grad=True)
+>>>
+>>> # Perform operations
+>>> z = x * y + 2  # Automatic gradient tracking
+>>> loss = z.sum()
+>>>
+>>> # Compute gradients
+>>> loss.backward()
+>>> print(x.grad)  # Gradient with respect to x
+>>> print(y.grad)  # Gradient with respect to y
+>>>
+>>> # Use different devices
+>>> x_cpu = tp.Tensor([1, 2, 3], device=tp.cpu())
+>>> x_cuda = tp.Tensor([1, 2, 3], device=tp.cuda())
 """
 
 from __future__ import annotations

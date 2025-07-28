@@ -1,26 +1,108 @@
 """Data loading and processing utilities.
 
-This module provides utilities for loading and processing data in the tiny-pytorch
-framework. It includes dataset abstractions, data loading functionality, and
-transform operations similar to PyTorch's data utilities.
+This module provides comprehensive utilities for loading, processing, and
+transforming data in the tiny-pytorch framework. It includes dataset abstractions,
+data loading functionality, and transform operations similar to PyTorch's data
+utilities, designed to work seamlessly with the Tensor system.
 
 The module provides base classes for datasets and transforms, as well as concrete
-implementations for specific data types and transformations.
+implementations for specific data types and transformations commonly used in
+machine learning workflows.
+
+Key Features
+-----------
+- Dataset abstractions for various data types
+- Efficient data loading with batching and shuffling
+- Data augmentation and transformation pipelines
+- Multiprocessing support for parallel data loading
+- Memory-efficient data handling
+- Integration with Tensor operations
 
 Classes
 -------
 Dataset
     Base class that provides common dataset functionality.
-NDArrayDataset
-    Dataset implementation for numpy arrays.
+    Defines the interface for accessing data samples and applying transforms.
+NDArrayDataset : Dataset
+    Dataset implementation for numpy arrays and tensors.
+    Supports multiple arrays that will be returned as tuples when indexed.
+Sampler
+    Base class for sampling strategies from datasets.
+    Provides functionality for sequential and random sampling.
+BatchSampler
+    Wraps a sampler to yield batches of indices.
+    Handles batch creation with optional dropping of incomplete batches.
 DataLoader
     Iterates over a dataset in batches with optional multiprocessing.
+    Provides efficient data loading with support for shuffling and transforms.
 Transform
     Base class for all data transformations.
-RandomCrop
-    Randomly crops data to specified size.
-RandomFlipHorizontal
+    Defines the interface for data augmentation and preprocessing operations.
+RandomFlipHorizontal : Transform
     Randomly flips data horizontally with given probability.
+    Commonly used for image data augmentation.
+RandomCrop : Transform
+    Randomly crops data to specified size.
+    Useful for image data augmentation and regularization.
+
+Functions
+---------
+collate(idxs, ds) -> tuple[Tensor, Tensor]
+    Collate function for combining multiple samples into a batch.
+    Default collation function used by DataLoader.
+
+Notes
+-----
+The data loading system is designed to be efficient and flexible. Datasets can
+be easily extended by inheriting from the base Dataset class and implementing
+the required methods. Transforms can be chained together to create complex
+data augmentation pipelines.
+
+The DataLoader class provides efficient batch loading with support for
+multiprocessing, which can significantly speed up data loading for large
+datasets. The system automatically handles device placement and tensor
+conversion for seamless integration with the neural network modules.
+
+All transforms are designed to work with both individual samples and batches,
+making them suitable for use in data augmentation pipelines.
+
+Examples
+--------
+>>> import tiny_pytorch as tp
+>>> import numpy as np
+>>>
+>>> # Create a simple dataset
+>>> X = np.random.randn(1000, 784)  # Features
+>>> y = np.random.randint(0, 10, 1000)  # Labels
+>>> dataset = tp.data.NDArrayDataset(X, y)
+>>>
+>>> # Create a data loader with transforms
+>>> transforms = [
+...     tp.data.RandomFlipHorizontal(p=0.5),
+...     tp.data.RandomCrop(padding=3)
+... ]
+>>> dataloader = tp.data.DataLoader(
+...     dataset, batch_size=32, shuffle=True, n_workers=2
+... )
+>>>
+>>> # Iterate over batches
+>>> for batch_x, batch_y in dataloader:
+...     # batch_x and batch_y are Tensor objects
+...     print(f"Batch shape: {batch_x.shape}")
+...     break
+>>>
+>>> # Custom dataset example
+>>> class CustomDataset(tp.data.Dataset):
+...     def __init__(self, data, transforms=None):
+...         super().__init__(transforms)
+...         self.data = data
+...
+...     def __getitem__(self, index):
+...         sample = self.data[index]
+...         return self.apply_transforms(sample)
+...
+...     def __len__(self):
+...         return len(self.data)
 """
 
 import itertools

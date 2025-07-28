@@ -1,98 +1,149 @@
 """Tensor operations module for tiny-pytorch implementation.
 
-This module provides a collection of fundamental tensor operations that form the building blocks
-of the computational graph in tiny-pytorch. Each operation is implemented as a class that
-inherits from the (TensorOp) base class, with corresponding helper functions for easier usage.
+This module provides a comprehensive collection of fundamental tensor operations that form
+the building blocks of the computational graph in tiny-pytorch. Each operation is implemented
+as a class that inherits from the TensorOp base class, with corresponding helper functions
+for easier usage.
 
-The module includes element-wise operations, matrix operations, and various mathematical
-functions commonly used in deep learning.
+The module includes element-wise operations, matrix operations, reduction operations,
+activation functions, and various mathematical functions commonly used in deep learning
+and neural network computations.
+
+Key Features
+-----------
+- Automatic differentiation support through gradient methods
+- Element-wise and scalar operations
+- Matrix operations (multiplication, transpose)
+- Reduction operations (summation, log-sum-exp)
+- Activation functions (ReLU, tanh)
+- Shape manipulation (reshape, broadcast, stack, split)
+- Convolutional operations
+- Memory-efficient operations with strided arrays
 
 Classes
 -------
-ScalarAdd : (TensorOp)
+TensorOp
+    Base class for all tensor operations.
+TensorTupleOp
+    Base class for operations that return tensor tuples.
+ScalarAdd
     Addition of a scalar to a tensor.
-EWiseAdd : (TensorOp)
+EWiseAdd
     Element-wise addition of two tensors.
-ScalarMul : (TensorOp)
+ScalarMul
     Multiplication of a tensor by a scalar.
-EWiseMul : (TensorOp)
+EWiseMul
     Element-wise multiplication of two tensors.
-Negate : (TensorOp)
+Negate
     Negation of a tensor.
-ScalarPower : (TensorOp)
+ScalarPower
     Raising tensor elements to a scalar power.
-EWisePower : (TensorOp)
+EWisePower
     Element-wise power operation between two tensors.
-ScalarDivide : (TensorOp)
+ScalarDivide
     Division of a tensor by a scalar.
-EWiseDivide : (TensorOp)
+EWiseDivide
     Element-wise division of two tensors.
-Reshape : (TensorOp)
+Reshape
     Reshaping a tensor to a new shape.
-Summation : (TensorOp)
+Summation
     Summing tensor elements along specified axes.
-BroadcastTo : (TensorOp)
+BroadcastTo
     Broadcasting a tensor to a larger shape.
-Transpose : (TensorOp)
+Transpose
     Transposing a tensor along specified axes.
-MatMul : (TensorOp)
+MatMul
     Matrix multiplication between two tensors.
-Log : (TensorOp)
+Log
     Natural logarithm of tensor elements.
-Exp : (TensorOp)
+Exp
     Exponential of tensor elements.
-ReLU : (TensorOp)
+ReLU
     Rectified Linear Unit activation function.
-LogSumExp : (TensorOp)
+LogSumExp
     Log-sum-exp operation, commonly used in softmax computation.
-Stack : (TensorOp)
+Tanh
+    Hyperbolic tangent activation function.
+Stack
     Stack a sequence of arrays along a new axis.
+Split
+    Split a tensor along a specified axis.
+Flip
+    Reverse the order of elements along specified axes.
+Dilate
+    Insert zeros between elements along specified axes.
+UnDilate
+    Remove zeros inserted by dilation along specified axes.
+Conv
+    2D convolution operation.
 
 Functions
 ---------
-add_scalar(a, scalar)
+add_scalar(a, scalar) -> Tensor
     Add a scalar to a tensor.
-add(a, b)
+add(a, b) -> Tensor
     Add two tensors element-wise.
-mul_scalar(a, scalar)
+mul_scalar(a, scalar) -> Tensor
     Multiply a tensor by a scalar.
-multiply(a, b)
+multiply(a, b) -> Tensor
     Multiply two tensors element-wise.
-negate(a)
+negate(a) -> Tensor
     Negate a tensor.
-power_scalar(a, scalar)
+power_scalar(a, scalar) -> Tensor
     Raise tensor elements to a scalar power.
-power(a, b)
+power(a, b) -> Tensor
     Element-wise power operation.
-divide_scalar(a, scalar)
+divide_scalar(a, scalar) -> Tensor
     Divide a tensor by a scalar.
-divide(a, b)
+divide(a, b) -> Tensor
     Element-wise division of tensors.
-reshape(a, shape)
+reshape(a, shape) -> Tensor
     Reshape a tensor.
-summation(a, axes=None)
+summation(a, axes=None) -> Tensor
     Sum tensor elements along specified axes.
-broadcast_to(a, shape)
+broadcast_to(a, shape) -> Tensor
     Broadcast tensor to a larger shape.
-transpose(a, axes=None)
+transpose(a, axes=None) -> Tensor
     Transpose tensor axes.
-matmul(a, b)
+matmul(a, b) -> Tensor
     Matrix multiplication.
-log(a)
+log(a) -> Tensor
     Natural logarithm.
-exp(a)
+exp(a) -> Tensor
     Exponential function.
-relu(a)
+relu(a) -> Tensor
     ReLU activation function.
-logsumexp(a, axes=None)
+logsumexp(a, axes=None) -> Tensor
     Log-sum-exp operation.
-stack(arrays, axis)
+tanh(a) -> Tensor
+    Hyperbolic tangent function.
+stack(arrays, axis) -> Tensor
     Stack a sequence of arrays along a new axis.
+split(a, axis) -> TensorTuple
+    Split a tensor along a specified axis.
+flip(a, axes=None) -> Tensor
+    Reverse the order of elements along specified axes.
+dilate(a, axes, dilation) -> Tensor
+    Insert zeros between elements along specified axes.
+undilate(a, axes, dilation) -> Tensor
+    Remove zeros inserted by dilation along specified axes.
+conv(a, b, stride=1, padding=1) -> Tensor
+    2D convolution operation.
 
 Notes
 -----
 All operations support automatic differentiation through their gradient methods,
-making them suitable for building and training neural networks.
+making them suitable for building and training neural networks. The operations
+are designed to work efficiently with the NDArray backend system and support
+multiple devices (CPU, CUDA, NumPy).
+
+Examples
+--------
+>>> import tiny_pytorch as tp
+>>> x = tp.Tensor([1, 2, 3])
+>>> y = tp.Tensor([4, 5, 6])
+>>> z = tp.ops.add(x, y)  # Element-wise addition
+>>> w = tp.ops.matmul(x, y)  # Matrix multiplication
 """
 
 from __future__ import annotations

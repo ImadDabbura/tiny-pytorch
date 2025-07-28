@@ -2,26 +2,92 @@
 
 This module implements various optimization algorithms commonly used in deep
 learning, including Stochastic Gradient Descent (SGD) and Adam. These optimizers
-are used to update model parameters during training to minimize the loss function.
+are used to update model parameters during training to minimize the loss function
+through gradient-based optimization.
 
 The module provides a base Optimizer class that defines the common interface
 for all optimizers, as well as concrete implementations of specific optimization
-algorithms.
+algorithms. All optimizers work seamlessly with the Tensor system and automatic
+differentiation capabilities.
+
+Key Features
+-----------
+- Gradient-based optimization algorithms
+- Support for momentum and weight decay
+- Adaptive learning rate methods
+- Automatic parameter updates
+- Integration with Tensor gradients
+- Memory-efficient optimization
 
 Classes
 -------
 Optimizer
     Base class that provides common optimizer functionality.
-SGD
+    Defines the interface for parameter updates and gradient management.
+SGD : Optimizer
     Stochastic Gradient Descent optimizer with optional momentum.
-Adam
+    Implements the classic gradient descent algorithm with support for
+    momentum and weight decay regularization.
+Adam : Optimizer
     Adaptive Moment Estimation optimizer.
+    Implements the Adam algorithm with adaptive learning rates for each
+    parameter, combining the benefits of AdaGrad and RMSprop.
+
+Notes
+-----
+All optimizers in this module work with the Tensor system and automatically
+handle gradient computation and parameter updates. The optimizers expect
+parameters to be Tensor objects with gradients computed through the
+automatic differentiation system.
+
+The optimization algorithms implement various techniques to improve training
+stability and convergence speed:
+- Momentum helps accelerate convergence in relevant directions
+- Weight decay provides regularization to prevent overfitting
+- Adaptive learning rates (in Adam) help handle sparse gradients
+
+Optimizers automatically handle gradient accumulation and parameter updates,
+making them easy to use in training loops.
+
+Examples
+--------
+>>> import tiny_pytorch as tp
+>>>
+>>> # Create a simple model
+>>> model = tp.nn.Sequential(
+...     tp.nn.Linear(784, 128),
+...     tp.nn.ReLU(),
+...     tp.nn.Linear(128, 10)
+... )
+>>>
+>>> # Create an optimizer
+>>> optimizer = tp.optim.SGD(
+...     model.parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4
+... )
+>>>
+>>> # Training loop
+>>> for epoch in range(num_epochs):
+...     for batch_x, batch_y in dataloader:
+...         # Forward pass
+...         output = model(batch_x)
+...         loss = tp.nn.SoftmaxLoss()(output, batch_y)
+...
+...         # Backward pass
+...         loss.backward()
+...
+...         # Update parameters
+...         optimizer.step()
+...         optimizer.reset_grad()
+>>>
+>>> # Using Adam optimizer
+>>> adam_optimizer = tp.optim.Adam(
+...     model.parameters(), lr=0.001, beta1=0.9, beta2=0.999
+... )
 
 See Also
 --------
-[`tensor.Tensor`][tiny_pytorch.tensor.Tensor] : The Tensor class used for parameter optimization.
-
-[`nn`][tiny_pytorch.nn] : Neural network modules whose parameters are optimized.
+tensor.Tensor : The Tensor class used for parameter optimization.
+nn : Neural network modules whose parameters are optimized.
 """
 
 import numpy as np
