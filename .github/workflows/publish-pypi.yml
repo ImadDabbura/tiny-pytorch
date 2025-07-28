@@ -61,7 +61,7 @@ jobs:
       - name: Store build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: python-package-distributions # Renamed artifact to be generic
+          name: python-package-distributions-${{ matrix.os }}
           path: dist/
 
   publish-to-testpypi:
@@ -76,18 +76,21 @@ jobs:
 
     steps:
       - name: Create dist directory
-        run: mkdir -p dist/
-
-      - name: Download all build artifacts
-        uses: actions/download-artifact@v4
+        run: mkdir -p combined-dist/
+      - name: Download Ubuntu build artifacts
+        uses: actions/download-artifact@v3
         with:
-          name: python-package-distributions
-          path: dist/
-
+          name: python-package-distributions-ubuntu-latest
+          path: combined-dist/
+      - name: Download macOS build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package-distributions-macos-latest
+          path: combined-dist/
       - name: List downloaded files (for debugging)
-        run: ls -R dist/
-
+        run: ls -R combined-dist/
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+          path: combined-dist/
