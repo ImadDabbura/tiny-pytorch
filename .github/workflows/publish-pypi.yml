@@ -1,0 +1,103 @@
+name: Publish Python 🐍 distribution 📦 to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.13"]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install system dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+
+    - name: Install system dependencies (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        # macOS comes with Xcode Command Line Tools by default
+        # but we ensure they're available
+        xcode-select --install || true
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Install dependencies
+      run: poetry install --no-interaction --no-root
+
+    - name: Ensure setuptools is installed
+      # This step might be redundant if poetry handles everything, but keep if needed for your setup.
+      run: poetry run pip install setuptools
+
+    - name: Build C++ extension
+      # Ensure setup.py is configured to build correctly for both platforms and creates artifacts in dist/
+      run: poetry run python setup.py build_ext --inplace
+
+    - name: Install package in development mode
+      run: poetry run pip install -e .
+
+    - name: Test C++ extension import
+      run: poetry run python -c "import tiny_pytorch.ndarray_backend_cpu; print('✅ C++ extension imported successfully')"
+
+    - name: Build package
+      # This will create your sdist and wheel(s) in the dist/ directory
+      run: poetry build
+
+    - name: Store build artifacts
+      # Use a generic name for the artifact, as we'll download all of them later
+      uses: actions/upload-artifact@v3
+      with:
+        name: python-package-distributions # Renamed artifact to be generic
+        path: dist/
+        # Optional: You might consider adding a unique hash to the path if you expect very high concurrency
+        # with:
+        #   name: python-package-distributions-${{ github.run_id }}-${{ github.run_attempt }}
+        #   path: dist/
+
+  publish-to-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/tiny-pytorch
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Create dist directory
+      run: mkdir -p dist/
+
+    - name: Download all build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions # Download all artifacts named this
+        path: dist/ # All artifacts will be downloaded into this single directory
+
+    - name: List downloaded files (for debugging)
+      run: ls -R dist/
+
+    - name: Publish to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
