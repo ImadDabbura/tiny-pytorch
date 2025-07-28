@@ -1,6 +1,6 @@
 [project]
 name = "tiny-pytorch"
-version = "0.0.6"
+version = "0.0.7"
 description = "Mini Deep Learning framework similar to PyTorch"
 authors = [
     {name = "Imad Dabbura", email = "imad.dabbura@hotmail.com"}
@@ -28,6 +28,7 @@ isort = "^6.0"
 flake8 = "^7.1"
 pre-commit = "^4.1"
 torch = "^2.7"
+cibuildwheel = "^3.1.1"
 
 
 [tool.poetry.group.docs.dependencies]
