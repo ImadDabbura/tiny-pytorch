@@ -620,6 +620,114 @@ class BatchNorm1d(Module):
         return weight.data * x + bias.data
 
 
+class BatchNorm2d(BatchNorm1d):
+    """
+    Applies batch normalization to 2D input tensors.
+
+    This module applies batch normalization over a 4D input (a mini-batch of 2D inputs
+    with additional channel dimension) as described in the paper
+    "Batch Normalization: Accelerating Deep Network Training by Reducing Internal
+    Covariate Shift".
+
+    The input is expected to be in NCHW format (batch, channels, height, width).
+    For each channel, this layer computes the mean and variance over the batch
+    and spatial dimensions, then normalizes the input and applies learnable
+    scale and shift parameters.
+
+    Parameters
+    ----------
+    num_features : int
+        Number of features/channels in the input tensor.
+    eps : float, optional
+        Value added to the denominator for numerical stability. Default is 1e-5.
+    momentum : float, optional
+        Momentum for the moving average. Default is 0.1.
+    device : Device, optional
+        Device on which to place the parameters. Default is None (uses default device).
+    dtype : str, optional
+        Data type of the parameters. Default is "float32".
+
+    Attributes
+    ----------
+    num_features : int
+        Number of features/channels in the input tensor.
+    eps : float
+        Value added to the denominator for numerical stability.
+    momentum : float
+        Momentum for the moving average.
+    weight : Parameter
+        Learnable weight parameter of shape (num_features,).
+    bias : Parameter
+        Learnable bias parameter of shape (num_features,).
+    running_mean : Tensor
+        Running mean of the input tensor of shape (num_features,).
+    running_var : Tensor
+        Running variance of the input tensor of shape (num_features,).
+
+    Notes
+    -----
+    - Input is expected to be in NCHW format (batch, channels, height, width).
+    - During training, this layer keeps a running estimate of its computed mean
+      and variance, which is then used for normalization during evaluation.
+    - The running estimates are kept with a default momentum of 0.1.
+    - Internally converts to channel-last format for efficient computation,
+      similar to PyTorch's implementation.
+
+    Examples
+    --------
+    >>> bn = BatchNorm2d(64)
+    >>> x = Tensor.randn(32, 64, 28, 28)  # batch_size=32, channels=64, height=28, width=28
+    >>> output = bn(x)  # shape: (32, 64, 28, 28)
+    """
+
+    def __init__(
+        self,
+        num_features: int,
+        eps: float = 1e-5,
+        momentum: float = 0.1,
+        device=None,
+        dtype: str = "float32",
+    ) -> None:
+        """
+        Initialize the BatchNorm2d module.
+
+        Parameters
+        ----------
+        num_features : int
+            Number of features/channels in the input tensor.
+        eps : float, optional
+            Value added to the denominator for numerical stability. Default is 1e-5.
+        momentum : float, optional
+            Momentum for the moving average. Default is 0.1.
+        device : Device, optional
+            Device on which to place the parameters. Default is None (uses default device).
+        dtype : str, optional
+            Data type of the parameters. Default is "float32".
+        """
+        super().__init__(num_features, eps, momentum, device, dtype)
+
+    def forward(self, x: Tensor) -> Tensor:
+        """
+        Forward pass of the 2D batch normalization.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of shape (batch_size, num_features, height, width) in NCHW format.
+
+        Returns
+        -------
+        Tensor
+            Normalized tensor of shape (batch_size, num_features, height, width) in NCHW format.
+        """
+        # It is more efficient to use channel-last in the case
+        # of batchnorm (similar to pytorch)
+        b, c_in, h, w = x.shape
+        new_x = x.transpose((1, 2)).transpose((2, 3)).reshape((b, c_in, h, w))
+        y = super().forward(new_x).reshape((b, c_in, h, w))
+        return y.transpose((2, 3)).transpose((1, 2))
+
+
 class Embedding(Module):
     """A lookup table that stores embeddings of a fixed dictionary and size.
 
