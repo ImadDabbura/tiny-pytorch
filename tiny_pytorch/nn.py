@@ -808,6 +808,119 @@ class BatchNorm2d(BatchNorm1d):
         return y.transpose((2, 3)).transpose((1, 2))
 
 
+class ConvBN(Module):
+    """
+    A composite module that combines convolution, batch normalization, and ReLU activation.
+
+    This module is a common building block in convolutional neural networks, particularly
+    in architectures like ResNet. It applies a 2D convolution followed by batch normalization
+    and ReLU activation in sequence. This combination helps with training stability and
+    convergence speed.
+
+    The module consists of three components applied in order:
+    1. Conv: 2D convolutional layer
+    2. BatchNorm2d: 2D batch normalization layer
+    3. ReLU: Rectified Linear Unit activation function
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input image.
+    out_channels : int
+        Number of channels produced by the convolution.
+    kernel_size : int or tuple[int, int]
+        Size of the convolving kernel. If a single int is provided, it is used
+        for both height and width dimensions. Only square kernels are supported.
+    stride : int or tuple[int, int], optional
+        Stride of the convolution. If a single int is provided, it is used for
+        both height and width dimensions. Default is 1.
+    device : Device, optional
+        Device on which to place the parameters. Default is None (uses default device).
+
+    Attributes
+    ----------
+    conv : Conv
+        The 2D convolutional layer.
+    bn : BatchNorm2d
+        The 2D batch normalization layer.
+    relu : ReLU
+        The ReLU activation function.
+
+    Notes
+    -----
+    - Input is expected to be in NCHW format (batch, channels, height, width).
+    - Output maintains the same format as input.
+    - The convolution uses padding='same' to maintain spatial dimensions.
+    - Batch normalization is applied per-channel across the batch and spatial dimensions.
+    - ReLU activation is applied element-wise after batch normalization.
+
+    Examples
+    --------
+    >>> convbn = ConvBN(3, 64, kernel_size=3, stride=1)
+    >>> x = Tensor.randn(32, 3, 28, 28)  # batch_size=32, channels=3, height=28, width=28
+    >>> output = convbn(x)  # shape: (32, 64, 28, 28)
+    """
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int | tuple[int, int],
+        stride: int | tuple[int, int] = 1,
+        device=None,
+    ) -> None:
+        """
+        Initialize the ConvBN module.
+
+        Parameters
+        ----------
+        in_channels : int
+            Number of channels in the input image.
+        out_channels : int
+            Number of channels produced by the convolution.
+        kernel_size : int or tuple[int, int]
+            Size of the convolving kernel. If a single int is provided, it is used
+            for both height and width dimensions.
+        stride : int or tuple[int, int], optional
+            Stride of the convolution. If a single int is provided, it is used for
+            both height and width dimensions. Default is 1.
+        device : Device, optional
+            Device on which to place the parameters. Default is None (uses default device).
+        """
+        super().__init__()
+        self.conv = Conv(
+            in_channels,
+            out_channels,
+            kernel_size,
+            stride=stride,
+            device=device,
+        )
+        self.bn = BatchNorm2d(out_channels, device=device)
+        self.relu = ReLU()
+
+    def forward(self, x: Tensor) -> Tensor:
+        """
+        Forward pass of the ConvBN module.
+
+        Applies convolution, batch normalization, and ReLU activation in sequence.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of shape (batch_size, in_channels, height, width) in NCHW format.
+
+        Returns
+        -------
+        Tensor
+            Output tensor of shape (batch_size, out_channels, height, width) in NCHW format.
+            The output has been processed through convolution, batch normalization, and ReLU.
+        """
+        x = self.conv(x)
+        x = self.bn(x)
+        x = self.relu(x)
+        return x
+
+
 class Embedding(Module):
     """A lookup table that stores embeddings of a fixed dictionary and size.
 
