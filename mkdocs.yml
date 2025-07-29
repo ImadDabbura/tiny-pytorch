@@ -10,6 +10,8 @@ nav:
   - Data: data.md
   - Operators: ops.md
   - Backend Numpy: backend_numpy.md
+  - Vision:
+      - Models: vision-models.md
 
 plugins:
   - search

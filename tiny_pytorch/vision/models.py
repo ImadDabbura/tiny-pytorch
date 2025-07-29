@@ -15,15 +15,12 @@ Key Features
 - Efficient implementations optimized for the tiny-pytorch framework
 - Educational models that demonstrate modern CNN design patterns
 
-Available Models
----------------
+Classes
+-------
 ResNet9
     A lightweight ResNet architecture designed for efficient training and inference
     on smaller datasets. Features residual connections and progressive channel
     expansion for 10-class classification tasks.
-
-Components
-----------
 ResidualBlock
     A utility function that creates residual blocks with two ConvBN layers and
     skip connections, essential for building deep residual networks.
