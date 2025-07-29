@@ -143,7 +143,7 @@ The project is developed in two main phases. Our current progress is tracked bel
   - [x] CPU Backend (C++)
   - [x] CUDA Backend (GPU)
   - [x] Advanced CNN operations (e.g., `padding`, `dilation`).
-  - [ ] ResNet implementation.
+  - [x] ResNet implementation.
   - [x] RNN and LSTM layers.
   - [ ] A simple transformer-based Large Language Model (LLM).
 

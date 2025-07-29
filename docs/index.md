@@ -139,7 +139,7 @@ This project has been a marathon, not a sprint. It's built in two main phases, a
   - [x] CUDA Backend (GPU)
   - [x] Advanced CNN Operations
   - [x] RNN and LSTM Layers
-  - [ ] ResNet Implementation
+  - [x] ResNet Implementation
   - [ ] A Simple Transformer-based LLM
 
 ---
