@@ -1,8 +1,61 @@
+"""Vision models for tiny-pytorch implementation.
+
+This module provides pre-built neural network architectures for computer vision tasks,
+specifically designed for image classification. The models are built using the core
+neural network components from the tiny-pytorch framework.
+
+The module includes implementations of popular architectures adapted for the tiny-pytorch
+ecosystem, focusing on efficiency and educational value while maintaining compatibility
+with the framework's tensor operations and automatic differentiation system.
+
+Key Features
+-----------
+- Pre-built vision models for image classification
+- Residual network architectures with skip connections
+- Efficient implementations optimized for the tiny-pytorch framework
+- Educational models that demonstrate modern CNN design patterns
+
+Available Models
+---------------
+ResNet9
+    A lightweight ResNet architecture designed for efficient training and inference
+    on smaller datasets. Features residual connections and progressive channel
+    expansion for 10-class classification tasks.
+
+Components
+----------
+ResidualBlock
+    A utility function that creates residual blocks with two ConvBN layers and
+    skip connections, essential for building deep residual networks.
+
+Notes
+-----
+All models in this module are designed to work with the tiny-pytorch tensor system
+and support automatic differentiation. Input tensors should be in NCHW format
+(batch, channels, height, width) and models output classification logits.
+
+Examples
+--------
+>>> from tiny_pytorch.vision.models import ResNet9
+>>>
+>>> # Create a ResNet-9 model for image classification
+>>> model = ResNet9()
+>>>
+>>> # Prepare input data (batch_size=32, channels=3, height=32, width=32)
+>>> x = Tensor.randn(32, 3, 32, 32)
+>>>
+>>> # Forward pass to get classification logits
+>>> output = model(x)  # shape: (32, 10)
+>>>
+>>> # The model is ready for training with appropriate loss functions
+>>> # and optimizers from the tiny-pytorch framework
+"""
+
 from typing import Optional
 
 import tiny_pytorch.nn as nn
 
-from .tensor import Tensor
+from ..tensor import Tensor
 
 
 def ResidualBlock(

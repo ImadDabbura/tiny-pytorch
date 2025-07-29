@@ -19,7 +19,7 @@ Key Features
 - Built-in activation functions and loss functions
 - Normalization layers (BatchNorm, LayerNorm)
 - Recurrent neural network components (RNN, LSTM)
-- Convolutional neural network layers
+- Convolutional neural network layers and composite blocks
 - Embedding layers for sequence processing
 
 Classes
@@ -55,6 +55,11 @@ Residual
     Residual connection that adds input to the output of a module.
 SoftmaxLoss
     Softmax cross-entropy loss function.
+Conv
+    2D convolutional layer with support for padding and stride.
+ConvBN
+    Composite module combining convolution, batch normalization, and ReLU activation.
+    Common building block in modern CNN architectures like ResNet.
 RNNCell
     Single RNN cell with tanh or ReLU nonlinearity.
 RNN
@@ -63,8 +68,6 @@ LSTMCell
     Single LSTM cell with forget, input, and output gates.
 LSTM
     Multi-layer LSTM network.
-Conv
-    2D convolutional layer with support for padding and stride.
 Embedding
     Embedding layer for converting indices to dense vectors.
 
