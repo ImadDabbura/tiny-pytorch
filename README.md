@@ -7,7 +7,7 @@
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ImadDabbura/tiny-pytorch/refs/heads/publish-pypi/logo.png" width="300" height="200" />
+  <img src="https://raw.githubusercontent.com/ImadDabbura/tiny-pytorch/main/logo.png" width="300" height="200" />
 </p>
 
 # Tiny-PyTorch 🧠
