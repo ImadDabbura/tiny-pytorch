@@ -186,4 +186,4 @@ As an educational project, Tiny-PyTorch has some intentional simplifications:
 
 ## License
 
-Tiny-PyTorch is licensed under the Apache License 2.0. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.---
+Tiny-PyTorch is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
