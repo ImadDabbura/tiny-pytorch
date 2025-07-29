@@ -145,7 +145,7 @@ The project is developed in two main phases. Our current progress is tracked bel
   - [x] Advanced CNN operations (e.g., `padding`, `dilation`).
   - [x] ResNet implementation.
   - [x] RNN and LSTM layers.
-  - [ ] A simple transformer-based Large Language Model (LLM).
+  - [x] A simple Language Model.
 
 ---
 

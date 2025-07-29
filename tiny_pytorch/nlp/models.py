@@ -1,3 +1,74 @@
+"""Natural Language Processing models for tiny-pytorch implementation.
+
+This module provides pre-built neural network architectures for natural language
+processing tasks, specifically designed for sequence modeling and language
+understanding. The models are built using the core neural network components
+from the tiny-pytorch framework.
+
+The module includes implementations of popular language model architectures
+adapted for the tiny-pytorch ecosystem, focusing on efficiency and educational
+value while maintaining compatibility with the framework's tensor operations
+and automatic differentiation system.
+
+Key Features
+-----------
+- Pre-built language models for sequence prediction
+- Support for both RNN and LSTM sequence models
+- Configurable embedding and hidden layer dimensions
+- Multi-layer sequence model architectures
+- Efficient implementations optimized for the tiny-pytorch framework
+- Educational models that demonstrate modern NLP design patterns
+
+Available Models
+---------------
+LanguageModel
+    A complete language model architecture for sequence prediction tasks.
+    Features an embedding layer, configurable sequence model (RNN/LSTM),
+    and output projection layer. Designed for next-word prediction,
+    text generation, and other sequence modeling applications.
+
+Model Architecture
+-----------------
+The LanguageModel consists of three main components:
+1. Embedding Layer: Converts token indices to dense vector representations
+2. Sequence Model: Processes the embedded sequence (RNN or LSTM)
+3. Output Layer: Projects hidden states to vocabulary logits
+
+Notes
+-----
+All models in this module are designed to work with the tiny-pytorch tensor system
+and support automatic differentiation. Input sequences should be provided as
+token indices, and models output logits for next-token prediction.
+
+The sequence models support both single and multi-layer architectures, with
+configurable hidden dimensions. The embedding layer maps from vocabulary size
+to a learned embedding space, while the output layer projects back to vocabulary
+size for next-token prediction.
+
+Examples
+--------
+>>> from tiny_pytorch.nlp.models import LanguageModel
+>>>
+>>> # Create a language model for text generation
+>>> model = LanguageModel(
+...     embedding_size=128,
+...     output_size=1000,  # vocabulary size
+...     hidden_size=256,
+...     num_layers=2,
+...     seq_model='lstm'
+... )
+>>>
+>>> # Prepare input data (seq_len=10, batch_size=32)
+>>> x = Tensor.randint(0, 1000, (10, 32))
+>>>
+>>> # Forward pass to get next-token predictions
+>>> logits, hidden = model(x)
+>>> print(logits.shape)  # (320, 1000) - (seq_len*batch_size, vocab_size)
+>>>
+>>> # The model is ready for training with appropriate loss functions
+>>> # and optimizers from the tiny-pytorch framework
+"""
+
 from typing import Optional, Tuple, Union
 
 from .. import nn

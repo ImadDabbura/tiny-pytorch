@@ -10,6 +10,8 @@ nav:
   - Data: data.md
   - Operators: ops.md
   - Backend Numpy: backend_numpy.md
+  - NLP:
+      - Models: nlp-models.md
   - Vision:
       - Models: vision-models.md
 
