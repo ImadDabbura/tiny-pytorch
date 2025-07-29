@@ -19,20 +19,13 @@ Key Features
 - Efficient implementations optimized for the tiny-pytorch framework
 - Educational models that demonstrate modern NLP design patterns
 
-Available Models
----------------
+Classes
+-------
 LanguageModel
     A complete language model architecture for sequence prediction tasks.
     Features an embedding layer, configurable sequence model (RNN/LSTM),
     and output projection layer. Designed for next-word prediction,
     text generation, and other sequence modeling applications.
-
-Model Architecture
------------------
-The LanguageModel consists of three main components:
-1. Embedding Layer: Converts token indices to dense vector representations
-2. Sequence Model: Processes the embedded sequence (RNN or LSTM)
-3. Output Layer: Projects hidden states to vocabulary logits
 
 Notes
 -----

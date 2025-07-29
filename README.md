@@ -1,18 +1,16 @@
+# Tiny-PyTorch 🧠
+
+## **Unravel the magic of modern deep learning by building a PyTorch-like framework from the ground up.**
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/ImadDabbura/tiny-pytorch/main/logo.png" width="300" height="200">
+</p>
+
 [![Python Versions](https://img.shields.io/badge/python-_3.13-blue.svg)](https://www.python.org/downloads/)
 [![PyPI version](https://img.shields.io/pypi/v/tiny-pytorch.svg)](https://pypi.org/project/tiny-pytorch/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/tiny-pytorch.svg)](https://pypi.org/project/tiny-pytorch/)
 [![codecov](https://codecov.io/gh/imaddabbura/tiny-pytorch/branch/main/graph/badge.svg)](https://codecov.io/gh/imaddabbura/tiny-pytorch)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
----
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/ImadDabbura/tiny-pytorch/main/logo.png" width="300" height="200" />
-</p>
-
-# Tiny-PyTorch 🧠
-
-**Unravel the magic of modern deep learning by building a PyTorch-like framework from the ground up.**
 
 Tiny-PyTorch is an educational deep learning framework built entirely in Python. It demystifies the core machinery of libraries like PyTorch by providing a clean, focused, and from-scratch implementation of the essential components.
 
@@ -76,13 +74,32 @@ graph TD
 
 ## 🚀 Quick Start
 
-First, clone the repository and install it in editable mode.
+To install Tiny-PyTorch, you have two main options:
+
+### Install from PyPI (using pip)
+
+You can install the latest stable version directly from PyPI using pip:
 
 ```bash
-git clone https://github.com/your-username/tiny-pytorch.git
-cd tiny-pytorch
-pip install -e .
+pip install tiny-pytorch
 ```
+
+### Install from Source (GitHub Repository)
+
+To get the very latest development version or if you plan to contribute, you can install from the GitHub repository:
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/tiny-pytorch.git
+    ```
+2.  **Navigate to the project directory:**
+    ```bash
+    cd tiny-pytorch
+    ```
+3.  **Install in editable mode:** This allows you to make changes to the source code and have them reflected without reinstalling.
+    ```bash
+    pip install -e .
+    ```
 
 Here's a simple example of defining a model and running a forward/backward pass.
 
@@ -169,4 +186,4 @@ As an educational project, Tiny-PyTorch has some intentional simplifications:
 
 ## License
 
-Tiny-PyTorch is licensed under the Apache License 2.0. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+Tiny-PyTorch is licensed under the Apache License 2.0. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.---
