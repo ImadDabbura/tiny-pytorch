@@ -1,0 +1,4261 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../tensor/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+    
+    
+      
+        <title>NDArray - tiny_pytorch</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4af4bdda.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tiny_pytorch.backend_ndarray.ndarray" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="tiny_pytorch" class="md-header__button md-logo" aria-label="tiny_pytorch" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            tiny_pytorch
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              NDArray
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ImadDabbura/tiny-pytorch" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ImadDabbura/tiny-pytorch
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="tiny_pytorch" class="md-nav__button md-logo" aria-label="tiny_pytorch" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    tiny_pytorch
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ImadDabbura/tiny-pytorch" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ImadDabbura/tiny-pytorch
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    NDArray
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    NDArray
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray" class="md-nav__link">
+    <span class="md-ellipsis">
+      ndarray
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice" class="md-nav__link">
+    <span class="md-ellipsis">
+      BackendDevice
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BackendDevice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__eq__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __eq__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__getattr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __getattr__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__repr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __repr__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.empty" class="md-nav__link">
+    <span class="md-ellipsis">
+      empty
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.enabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      enabled
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.full" class="md-nav__link">
+    <span class="md-ellipsis">
+      full
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.one_hot" class="md-nav__link">
+    <span class="md-ellipsis">
+      one_hot
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.rand" class="md-nav__link">
+    <span class="md-ellipsis">
+      rand
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.randn" class="md-nav__link">
+    <span class="md-ellipsis">
+      randn
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray" class="md-nav__link">
+    <span class="md-ellipsis">
+      NDArray
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NDArray">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.flat" class="md-nav__link">
+    <span class="md-ellipsis">
+      flat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.__getitem__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __getitem__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.__matmul__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __matmul__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.__setitem__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __setitem__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.as_strided" class="md-nav__link">
+    <span class="md-ellipsis">
+      as_strided
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.broadcast_to" class="md-nav__link">
+    <span class="md-ellipsis">
+      broadcast_to
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.compact" class="md-nav__link">
+    <span class="md-ellipsis">
+      compact
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.compact_strides" class="md-nav__link">
+    <span class="md-ellipsis">
+      compact_strides
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.ewise_or_scalar" class="md-nav__link">
+    <span class="md-ellipsis">
+      ewise_or_scalar
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.fill" class="md-nav__link">
+    <span class="md-ellipsis">
+      fill
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.flip" class="md-nav__link">
+    <span class="md-ellipsis">
+      flip
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.is_compact" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_compact
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.make" class="md-nav__link">
+    <span class="md-ellipsis">
+      make
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.max" class="md-nav__link">
+    <span class="md-ellipsis">
+      max
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.numpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      numpy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.pad" class="md-nav__link">
+    <span class="md-ellipsis">
+      pad
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.permute" class="md-nav__link">
+    <span class="md-ellipsis">
+      permute
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.reduce_view_out" class="md-nav__link">
+    <span class="md-ellipsis">
+      reduce_view_out
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.reshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      reshape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      sum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.to" class="md-nav__link">
+    <span class="md-ellipsis">
+      to
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.all_devices" class="md-nav__link">
+    <span class="md-ellipsis">
+      all_devices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.array" class="md-nav__link">
+    <span class="md-ellipsis">
+      array
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.broadcast_to" class="md-nav__link">
+    <span class="md-ellipsis">
+      broadcast_to
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.cpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      cpu
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.cpu_numpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      cpu_numpy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      cuda
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.default_device" class="md-nav__link">
+    <span class="md-ellipsis">
+      default_device
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.empty" class="md-nav__link">
+    <span class="md-ellipsis">
+      empty
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.exp" class="md-nav__link">
+    <span class="md-ellipsis">
+      exp
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.flip" class="md-nav__link">
+    <span class="md-ellipsis">
+      flip
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.full" class="md-nav__link">
+    <span class="md-ellipsis">
+      full
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.log" class="md-nav__link">
+    <span class="md-ellipsis">
+      log
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.maximum" class="md-nav__link">
+    <span class="md-ellipsis">
+      maximum
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      negative
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.reshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      reshape
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.summation" class="md-nav__link">
+    <span class="md-ellipsis">
+      summation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.tanh" class="md-nav__link">
+    <span class="md-ellipsis">
+      tanh
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tensor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Optimizer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nn/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NN
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../init/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Initialization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ops/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backend_numpy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backend Numpy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    NLP
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            NLP
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nlp-models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Vision
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Vision
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vision-models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray" class="md-nav__link">
+    <span class="md-ellipsis">
+      ndarray
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice" class="md-nav__link">
+    <span class="md-ellipsis">
+      BackendDevice
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BackendDevice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__eq__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __eq__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__getattr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __getattr__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__repr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __repr__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.empty" class="md-nav__link">
+    <span class="md-ellipsis">
+      empty
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.enabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      enabled
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.full" class="md-nav__link">
+    <span class="md-ellipsis">
+      full
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.one_hot" class="md-nav__link">
+    <span class="md-ellipsis">
+      one_hot
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.rand" class="md-nav__link">
+    <span class="md-ellipsis">
+      rand
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice.randn" class="md-nav__link">
+    <span class="md-ellipsis">
+      randn
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray" class="md-nav__link">
+    <span class="md-ellipsis">
+      NDArray
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NDArray">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.flat" class="md-nav__link">
+    <span class="md-ellipsis">
+      flat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.__getitem__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __getitem__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.__matmul__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __matmul__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.__setitem__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __setitem__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.as_strided" class="md-nav__link">
+    <span class="md-ellipsis">
+      as_strided
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.broadcast_to" class="md-nav__link">
+    <span class="md-ellipsis">
+      broadcast_to
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.compact" class="md-nav__link">
+    <span class="md-ellipsis">
+      compact
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.compact_strides" class="md-nav__link">
+    <span class="md-ellipsis">
+      compact_strides
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.ewise_or_scalar" class="md-nav__link">
+    <span class="md-ellipsis">
+      ewise_or_scalar
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.fill" class="md-nav__link">
+    <span class="md-ellipsis">
+      fill
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.flip" class="md-nav__link">
+    <span class="md-ellipsis">
+      flip
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.is_compact" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_compact
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.make" class="md-nav__link">
+    <span class="md-ellipsis">
+      make
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.max" class="md-nav__link">
+    <span class="md-ellipsis">
+      max
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.numpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      numpy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.pad" class="md-nav__link">
+    <span class="md-ellipsis">
+      pad
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.permute" class="md-nav__link">
+    <span class="md-ellipsis">
+      permute
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.reduce_view_out" class="md-nav__link">
+    <span class="md-ellipsis">
+      reduce_view_out
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.reshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      reshape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      sum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.NDArray.to" class="md-nav__link">
+    <span class="md-ellipsis">
+      to
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.all_devices" class="md-nav__link">
+    <span class="md-ellipsis">
+      all_devices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.array" class="md-nav__link">
+    <span class="md-ellipsis">
+      array
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.broadcast_to" class="md-nav__link">
+    <span class="md-ellipsis">
+      broadcast_to
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.cpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      cpu
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.cpu_numpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      cpu_numpy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      cuda
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.default_device" class="md-nav__link">
+    <span class="md-ellipsis">
+      default_device
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.empty" class="md-nav__link">
+    <span class="md-ellipsis">
+      empty
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.exp" class="md-nav__link">
+    <span class="md-ellipsis">
+      exp
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.flip" class="md-nav__link">
+    <span class="md-ellipsis">
+      flip
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.full" class="md-nav__link">
+    <span class="md-ellipsis">
+      full
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.log" class="md-nav__link">
+    <span class="md-ellipsis">
+      log
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.maximum" class="md-nav__link">
+    <span class="md-ellipsis">
+      maximum
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      negative
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.reshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      reshape
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.summation" class="md-nav__link">
+    <span class="md-ellipsis">
+      summation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.backend_ndarray.ndarray.tanh" class="md-nav__link">
+    <span class="md-ellipsis">
+      tanh
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>NDArray</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="tiny_pytorch.backend_ndarray.ndarray"></a>
+    <div class="doc doc-contents first">
+
+        <p>NDArray implementation with multiple backend support.</p>
+<p>This module provides the core NDArray class that supports multiple backends
+including NumPy, CPU, and CUDA. The NDArray class is a Python wrapper for
+handling operations on n-dimensional arrays with strided memory layout,
+enabling efficient memory usage and fast operations.</p>
+<p>The module implements a flexible array system that can work with different
+computational backends while maintaining a consistent interface. It supports
+advanced features like broadcasting, strided memory access, and device
+abstraction for cross-platform compatibility.</p>
+
+
+<details class="key-features" open>
+  <summary>Key Features</summary>
+  <ul>
+<li>Strided memory layout for efficient array operations</li>
+<li>Multiple backend support (NumPy, CPU, CUDA)</li>
+<li>Broadcasting and reshaping without memory copying</li>
+<li>Element-wise and scalar operations</li>
+<li>Matrix operations and reductions</li>
+<li>Device abstraction for cross-platform compatibility</li>
+<li>Memory-efficient views and slicing operations</li>
+<li>Automatic memory management and optimization</li>
+</ul>
+</details>
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Device abstraction that wraps backend implementation modules.
+Provides a unified interface for different computational backends.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Multi-dimensional array with strided memory layout.
+Supports efficient operations on n-dimensional data with automatic
+memory optimization and device management.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="cpu_numpy() (tiny_pytorch.backend_ndarray.ndarray.cpu_numpy)" href="#tiny_pytorch.backend_ndarray.ndarray.cpu_numpy">cpu_numpy</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a NumPy-based CPU device.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="cpu() (tiny_pytorch.backend_ndarray.ndarray.cpu)" href="#tiny_pytorch.backend_ndarray.ndarray.cpu">cpu</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a native CPU device.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="cuda() (tiny_pytorch.backend_ndarray.ndarray.cuda)" href="#tiny_pytorch.backend_ndarray.ndarray.cuda">cuda</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a CUDA device for GPU computation.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="default_device() (tiny_pytorch.backend_ndarray.ndarray.default_device)" href="#tiny_pytorch.backend_ndarray.ndarray.default_device">default_device</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Get the default computational device.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="array(a, dtype='float32', device=None) (tiny_pytorch.backend_ndarray.ndarray.array)" href="#tiny_pytorch.backend_ndarray.ndarray.array">array</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create an NDArray from array-like input.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="empty(shape, dtype='float32', device=None) (tiny_pytorch.backend_ndarray.ndarray.empty)" href="#tiny_pytorch.backend_ndarray.ndarray.empty">empty</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create an uninitialized NDArray with given shape.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="full(shape, fill_value, dtype='float32', device=None) (tiny_pytorch.backend_ndarray.ndarray.full)" href="#tiny_pytorch.backend_ndarray.ndarray.full">full</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create an NDArray filled with a constant value.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="broadcast_to(array, new_shape) (tiny_pytorch.backend_ndarray.ndarray.broadcast_to)" href="#tiny_pytorch.backend_ndarray.ndarray.broadcast_to">broadcast_to</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Broadcast an array to a new shape without copying memory.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="reshape(array, new_shape) (tiny_pytorch.backend_ndarray.ndarray.reshape)" href="#tiny_pytorch.backend_ndarray.ndarray.reshape">reshape</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Reshape an array without copying memory.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="maximum(a, b) (tiny_pytorch.backend_ndarray.ndarray.maximum)" href="#tiny_pytorch.backend_ndarray.ndarray.maximum">maximum</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Element-wise maximum of two arrays.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="log(a) (tiny_pytorch.backend_ndarray.ndarray.log)" href="#tiny_pytorch.backend_ndarray.ndarray.log">log</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Natural logarithm of array elements.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="exp(a) (tiny_pytorch.backend_ndarray.ndarray.exp)" href="#tiny_pytorch.backend_ndarray.ndarray.exp">exp</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Exponential of array elements.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="tanh(a) (tiny_pytorch.backend_ndarray.ndarray.tanh)" href="#tiny_pytorch.backend_ndarray.ndarray.tanh">tanh</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Hyperbolic tangent of array elements.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="summation(a, axis=None, keepdims=False) (tiny_pytorch.backend_ndarray.ndarray.summation)" href="#tiny_pytorch.backend_ndarray.ndarray.summation">summation</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Sum of array elements over specified axes.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="negative(a) (tiny_pytorch.backend_ndarray.ndarray.negative)" href="#tiny_pytorch.backend_ndarray.ndarray.negative">negative</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Element-wise negation of array.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="flip(a, axes) (tiny_pytorch.backend_ndarray.ndarray.flip)" href="#tiny_pytorch.backend_ndarray.ndarray.flip">flip</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Reverse the order of elements along specified axes.</p>
+            </div>
+          </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>The NDArray system is designed for efficiency and flexibility. It uses strided
+memory layout to enable operations like transposing and reshaping without
+copying data. The backend device system allows seamless switching between
+different computational platforms while maintaining consistent behavior.</p>
+<p>All operations are optimized for the current backend and automatically handle
+memory management, device transfers, and computational optimization.</p>
+</details>
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tiny_pytorch</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create arrays on different devices</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">tp</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">tp</span><span class="o">.</span><span class="n">cuda</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Perform operations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>  <span class="c1"># Element-wise addition</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">x</span> <span class="o">@</span> <span class="n">y</span>  <span class="c1"># Matrix multiplication</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Shape manipulation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reshaped</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">broadcasted</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice" class="doc doc-heading">
+            <code>BackendDevice</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+        <p>Backend device that wraps the implementation module for each device.</p>
+<p>This class provides a unified interface for different backend implementations
+(numpy, CPU, CUDA) by forwarding operations to the appropriate module.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.name">name</span></code></b>
+              (<code><span title="str">str</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Name of the device (e.g., "cpu", "cuda", "cpu_numpy").</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.module">module</span></code></b>
+              (<code><span title="object">object</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The backend implementation module that handles actual operations.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__eq__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Check if two devices are equal.</p>
+<p>Two devices are equal if they have the same name.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>other</code></b>
+              (<code><span title="object">object</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Device to compare with.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="bool">bool</span></code>
+          –
+          <div class="doc-md-description">
+            <p>True if devices have the same name.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__getattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__getattr__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Forward attribute access to the implementation module.</p>
+<p>All attempts to get attribute from device will be forwarded to the
+module that implements the device's operations.
+i.e. device.op will become self.module.op</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>name</code></b>
+              (<code><span title="str">str</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Name of the attribute to access.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="object">object</span></code>
+          –
+          <div class="doc-md-description">
+            <p>Attribute from the implementation module.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initialize a new BackendDevice.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>name</code></b>
+              (<code><span title="str">str</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Name of the device.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>module</code></b>
+              (<code><span title="object">object</span></code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Module that implements the device's operations.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.__repr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>String representation of the device.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="str">str</span></code>
+          –
+          <div class="doc-md-description">
+            <p>String representation showing the device name.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.empty" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create an empty array.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>shape</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Shape of the array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>dtype</code></b>
+              (<code><span title="str">str</span></code>, default:
+                  <code>&#39;float32&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Data type of the array. Default is "float32".</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Empty array with the specified shape.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.enabled" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">enabled</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Check if the device is enabled.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="bool">bool</span></code>
+          –
+          <div class="doc-md-description">
+            <p>True if the device has an implementation module.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.full" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create an array filled with a constant value.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>shape</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Shape of the array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>fill_value</code></b>
+              (<code><span title="float">float</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Value to fill the array with.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>dtype</code></b>
+              (<code><span title="str">str</span></code>, default:
+                  <code>&#39;float32&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Data type of the array. Default is "float32".</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Array filled with the specified value.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.one_hot" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">one_hot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create a one-hot encoded array.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>n</code></b>
+              (<code><span title="int">int</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Number of classes.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>i</code></b>
+              (<code><span title="int">int</span> or <a class="autorefs autorefs-internal" title="array(a, dtype='float32', device=None) (tiny_pytorch.backend_ndarray.ndarray.array)" href="#tiny_pytorch.backend_ndarray.ndarray.array">array</a> - <span title="like">like</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Indices to encode.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>dtype</code></b>
+              (<code><span title="str">str</span></code>, default:
+                  <code>&#39;float32&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Data type of the array. Default is "float32".</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>One-hot encoded array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.rand" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Generate random numbers from uniform distribution.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>*shape</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>()</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Shape of the output array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>dtype</code></b>
+              (<code><span title="str">str</span></code>, default:
+                  <code>&#39;float32&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Data type of the array. Default is "float32".</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Array with random values from U[0, 1).</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.BackendDevice.randn" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Generate random numbers from standard normal distribution.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>*shape</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>()</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Shape of the output array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>dtype</code></b>
+              (<code><span title="str">str</span></code>, default:
+                  <code>&#39;float32&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Data type of the array. Default is "float32".</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Array with random values from N(0, 1).</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.NDArray" class="doc doc-heading">
+            <code>NDArray</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+        <p>A generic ND array class that may contain multiple different backends.</p>
+<p>NDArray is basically a Python wrapper for handling operations on
+n-dimensional arrays. The underlying array is just a flat 1D array and the
+backend device will handle all the ops on the 1D array. Strides, shape, and
+offset allows us to map n-dimensional (logical) array to the 1D flat array
+that are physically allocated in memory.</p>
+<p>The high level ops such as broadcasting and transposing are all done in
+Python without touching the underlying array. The other <code>raw</code> ops such as
+addition and matrix-multiplication will be implemented in C/C++ that would
+call highly optimized Kernels for such ops such as CUDA Kernels.</p>
+<p>To make the backend code simpler, we will only operate on compact arrays so
+we need to call <code>compact()</code> before any ops AND we support only float32 data
+type.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.backend_ndarray.ndarray.NDArray.device">device</span></code></b>
+              (<code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Device that handles the operations.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.backend_ndarray.ndarray.NDArray.shape">shape</span></code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Shape of the array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.backend_ndarray.ndarray.NDArray.strides">strides</span></code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Strides for accessing elements in the underlying 1D array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.backend_ndarray.ndarray.NDArray.size">size</span></code></b>
+              (<code><span title="int">int</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Total number of elements in the array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.backend_ndarray.ndarray.NDArray.ndim">ndim</span></code></b>
+              (<code><span title="int">int</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Number of dimensions in the array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.backend_ndarray.ndarray.NDArray.dtype">dtype</span></code></b>
+              (<code><span title="str">str</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Data type of the array (currently only "float32" is supported).</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.flat" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">flat</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return a 1-D view (flattened) of the array.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>A 1-dimensional view of the array with the same data.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">NDArray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flat</span>
+<span class="go">NDArray([1, 2, 3, 4], device=cpu_numpy())</span>
+</code></pre></div>
+
+    </div>
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.__getitem__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__getitem__</span><span class="p">(</span><span class="n">idxs</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>idxs</code></b>
+          –
+          <div class="doc-md-description">
+            <p>Indices to the subset of the n-dimensional array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>NDArray corresponding to the selected subset of elements.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="AssertionError">AssertionError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>If a slice has negative step, or if number of slices is not equal
+to the number of dimensions.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+              <code><span title="TypeError">TypeError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>If an index is not an int or slice.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create NDArray by copying another NDArray/Numpy array OR use Numpy as
+a bridge for all other types of iterables.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>other</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a> or <span title="tiny_pytorch.backend_ndarray.ndarray.NDArray.numpy.ndarray">ndarray</span> or <span title="array_like">array_like</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Source data to create the NDArray from.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>device</code></b>
+              (<code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Device to place the array on. If None, uses default device.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.__matmul__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__matmul__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Matrix multiplication of two arrays.  This requires that both arrays
+be 2D (i.e., we don't handle batch matrix multiplication), and that the
+sizes match up properly for matrix multiplication.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.__setitem__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__setitem__</span><span class="p">(</span><span class="n">idxs</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set the values of a view into an array, using the same semantics as
+<strong>getitem</strong>().</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.as_strided" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">as_strided</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create a strided view of the underlying memory without copying anything.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.broadcast_to" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broadcast_to</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Broadcast an array to a new shape.  <code>new_shape</code>'s elements must be the
+same as the original shape, except for dimensions in the self where
+the size = 1 (which can then be broadcast to any size). This will not
+copy memory, and just achieves broadcasting by manipulating the strides.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>new_shape</code></b>
+          –
+          <div class="doc-md-description">
+            <p>Shape to broadcast to.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+<b><code>NDArray</code></b>          –
+          <div class="doc-md-description">
+            <p>New NDArray object with the new broadcast shape; should
+point to the same memory as the original array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="AssertionError">AssertionError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>If new_shape[i] != shape[i] for all i where shape[i] != 1</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.compact" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compact</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Convert NDArray to be compact if it is not already compact.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.compact_strides" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compact_strides</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Utility function to compute compact strides.</p>
+<p>N-dimensional arrays are represented (with row-major order)
+contiguously from the inner most dimension to the outer most
+dimension.
+Examples:
+  1. 4 x 3 array will be represented physically in memory with first
+  row (3 elements) then the second and so on -&gt; strides = (3, 1)
+  2. 4 x 3 x 2 array will be represented with inner most dimension
+  first until its done (2 in this case), then next outer dimension
+  (3 rows of 2), finally outer most dimension which has 4 (3 x 2)
+  arrays -&gt; strides = (6, 2, 1)</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.ewise_or_scalar" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ewise_or_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ewise_func</span><span class="p">,</span> <span class="n">scalar_func</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Run either an element-wise or scalar version of a function,
+depending on whether "other" is an NDArray or scalar.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.fill" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">fill</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fill in-place with a constant value.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.flip" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">flip</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reverse (flip) the order of elements in the array along the specified axes.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>axes</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...] or None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Axes along which to flip the array. Each axis index must be valid for the array's dimensions.
+If None, flip over all axes (reverse the array in every dimension).</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>A view of the array with the entries reversed along the specified axes.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>This operation does not copy the data; it returns a view with modified strides and offset.
+The result is compacted before being returned.</p>
+</details>
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="tiny_pytorch.backend_ndarray.ndarray.NDArray.numpy.AxisError">AxisError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>If the number of axes is greater than the number of dimensions, or if any axis is out of bounds.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">NDArray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flip</span><span class="p">((</span><span class="mi">0</span><span class="p">,))</span>
+<span class="go">NDArray([[3, 4], [1, 2]], device=cpu_numpy())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flip</span><span class="p">((</span><span class="mi">1</span><span class="p">,))</span>
+<span class="go">NDArray([[2, 1], [4, 3]], device=cpu_numpy())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flip</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">NDArray([[4, 3], [2, 1]], device=cpu_numpy())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>  <span class="c1"># or a.flip(None)</span>
+<span class="go">NDArray([[4, 3], [2, 1]], device=cpu_numpy())</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.is_compact" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_compact</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return true if array is compact in memory and internal size equals
+product of the shape dimensions.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.make" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">make</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create a new NDArray with the given properties. Memory will only be
+allocated if <code>handle</code> is None, otherwise it will use the same
+underlying memory.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.max" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Max either across all axis (when axis=None) or one axis.</p>
+<p>Note: It doesn't support axis being multiple of axes.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.numpy" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">numpy</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Convert the NDArray to a NumPy array.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="tiny_pytorch.backend_ndarray.ndarray.NDArray.numpy.ndarray">ndarray</span></code>
+          –
+          <div class="doc-md-description">
+            <p>NumPy array with the same data.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.pad" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">pad</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Pad the array with zeros along each axis according to the specified padding widths.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>axes</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], ...]</code>)
+          –
+          <div class="doc-md-description">
+            <p>A tuple specifying the number of values padded to the edges of each axis.
+Each element should be a tuple of two integers (pad_before, pad_after),
+where pad_before is the number of values padded before the first element
+and pad_after is the number of values padded after the last element for that axis.
+The length of axes must match the number of dimensions of the array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>A new NDArray with the specified padding applied, filled with zeros in the padded regions.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="AssertionError">AssertionError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>If the length of axes does not match the number of dimensions of the array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">NDArray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">pad</span><span class="p">(((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="go">NDArray(</span>
+<span class="go">    [[0, 0, 0, 0, 0, 0],</span>
+<span class="go">     [0, 0, 1, 2, 0, 0],</span>
+<span class="go">     [0, 0, 3, 4, 0, 0],</span>
+<span class="go">     [0, 0, 0, 0, 0, 0]], device=cpu_numpy())</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.permute" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">permute</span><span class="p">(</span><span class="n">new_axes</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Permute order of the dimensions. <code>new_axes</code> describes a permutation of
+the existing axes, Example:</p>
+<ul>
+<li>If we have an array with dimension "BHWC" then
+    <code>.permute((0,3,1,2))</code>
+    would convert this to "BCHW" order.</li>
+<li>For a 2D array, <code>.permute((1,0))</code> would transpose the array.</li>
+</ul>
+<p>Like <code>reshape</code>, this operation should not copy memory, but achieves the
+permuting by just adjusting the shape/strides of the array.  That is,
+it returns a new array that has the dimensions permuted as desired, but
+which points to the same memory as the original array.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>new_axes</code></b>
+          –
+          <div class="doc-md-description">
+            <p>Permutation order of the dimensions.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="NDarray">NDarray</span></code>
+          –
+          <div class="doc-md-description">
+            <p>New NDArray object with permuted dimensions, pointing to the same
+memory as the original NDArray (i.e., just shape and strides changed).</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.reduce_view_out" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">reduce_view_out</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return a view to the array set up for reduction functions and output
+array.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.reshape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reshape the array without copying memory.  This will return a new array
+(view) that corresponds to a reshaped array but points to the same
+memory as the original array. Therefore, we only change the shape and
+the strides to get the new n-dimensional logical view of the array.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>new_shape</code></b>
+          –
+          <div class="doc-md-description">
+            <p>New shape of the array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Reshaped array; this will point to the same memory as the original
+NDArray.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="ValueError">ValueError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>If product of current shape is not equal to the product of the new
+shape, or if the matrix is not compact.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.sum" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Sum either across all axis (when axis=None) or one axis.</p>
+<p>Note: It doesn't support axis being multiple of axes.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.backend_ndarray.ndarray.NDArray.to" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Move the array to a different device.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>device</code></b>
+              (<code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Target device.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Array on the target device.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.all_devices" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">all_devices</span><span class="p">()</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Get a list of all available devices.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a>]</code>
+          –
+          <div class="doc-md-description">
+            <p>List of all available devices.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.array" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create an NDArray from array-like data.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>a</code></b>
+              (<code><span title="array_like">array_like</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Input data to create the array from.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>dtype</code></b>
+              (<code><span title="str">str</span></code>, default:
+                  <code>&#39;float32&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Data type of the array. Default is "float32".</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>device</code></b>
+              (<code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Device to place the array on. If None, uses default device.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>New NDArray with the specified data.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.broadcast_to" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broadcast_to</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">new_shape</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Broadcast an array to a new shape.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>array</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Array to broadcast.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>new_shape</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Target shape for broadcasting.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Broadcasted array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.cpu" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cpu</span><span class="p">()</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create a CPU device with native backend if available.</p>
+<p>Attempts to use the native CPU backend, falls back to NumPy if
+the C++ extension is not available.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>
+          –
+          <div class="doc-md-description">
+            <p>CPU device with best available backend.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.cpu_numpy" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cpu_numpy</span><span class="p">()</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create a CPU device using NumPy backend.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>
+          –
+          <div class="doc-md-description">
+            <p>CPU device with NumPy backend.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.cuda" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cuda</span><span class="p">()</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create a CUDA device if available.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>
+          –
+          <div class="doc-md-description">
+            <p>CUDA device, or disabled device if CUDA is not available.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.default_device" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">default_device</span><span class="p">()</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the default device (CPU with NumPy backend).</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Default CPU device.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.empty" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create an empty NDArray.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>shape</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Shape of the array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>dtype</code></b>
+              (<code><span title="str">str</span></code>, default:
+                  <code>&#39;float32&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Data type of the array. Default is "float32".</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>device</code></b>
+              (<code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Device to place the array on. If None, uses default device.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Empty NDArray with the specified shape.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.exp" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Exponential, element-wise.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>a</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Input array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Exponential of a, element-wise.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.flip" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">flip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reverse (flip) the order of elements in an array along the specified axes.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>a</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Input array to be flipped.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>axes</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...] or None</code>)
+          –
+          <div class="doc-md-description">
+            <p>Axes along which to flip the array. Each axis index must be valid for the array's dimensions.
+If None, flip over all axes (reverse the array in every dimension).</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>A view of the array with the entries reversed along the specified axes.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>This operation does not copy the data; it returns a view with modified strides and offset.
+The result is compacted before being returned.</p>
+</details>
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="numpy.AxisError">AxisError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>If the number of axes is greater than the number of dimensions, or if any axis is out of bounds.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">NDArray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+<span class="go">NDArray([[3, 4], [1, 2]], device=cpu_numpy())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+<span class="go">NDArray([[2, 1], [4, 3]], device=cpu_numpy())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">NDArray([[4, 3], [2, 1]], device=cpu_numpy())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="go">NDArray([[4, 3], [2, 1]], device=cpu_numpy())</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.full" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create an NDArray filled with a constant value.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>shape</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Shape of the array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>fill_value</code></b>
+              (<code><span title="float">float</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Value to fill the array with.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>dtype</code></b>
+              (<code><span title="str">str</span></code>, default:
+                  <code>&#39;float32&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Data type of the array. Default is "float32".</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>device</code></b>
+              (<code><a class="autorefs autorefs-internal" title="BackendDevice (tiny_pytorch.backend_ndarray.ndarray.BackendDevice)" href="#tiny_pytorch.backend_ndarray.ndarray.BackendDevice">BackendDevice</a></code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Device to place the array on. If None, uses default device.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>NDArray filled with the specified value.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.log" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">log</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Natural logarithm, element-wise.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>a</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Input array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Natural logarithm of a, element-wise.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.maximum" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">maximum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Element-wise maximum of array elements.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>a</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>First array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>b</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a> or <span title="float">float</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Second array or scalar value.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Array containing the element-wise maximum of a and b.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.negative" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">negative</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Numerical negative, element-wise.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>a</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Input array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Returned array or scalar: y = -x.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">NDArray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">negative</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">NDArray([-1.0, 1.0, -2.5], device=cpu_numpy())</span>
+</code></pre></div>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">NDArray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">negative</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="go">NDArray([[-1.0, -2.0], [-3.0, -4.0]], device=cpu_numpy())</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.reshape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">new_shape</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reshape an array to a new shape.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>array</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Array to reshape.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>new_shape</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>)
+          –
+          <div class="doc-md-description">
+            <p>New shape of the array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Reshaped array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="ValueError">ValueError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>If the product of the new shape is not equal to the product of the
+original shape, or if the array is not compact.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.summation" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">summation</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Sum of array elements over a given axis.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>a</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Input array.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>axis</code></b>
+              (<code><span title="int">int</span> or None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Axis along which a sum is performed. The default, axis=None,
+will sum all of the elements of the input array. If axis is negative
+it counts from the last to the first axis.</p>
+<p>Note: Only supports reduction over a single axis or all axes.
+Multiple axes reduction is not supported.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>keepdims</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If this is set to True, the axes which are reduced are left in the
+result as dimensions with size one. With this option, the result will
+broadcast correctly against the input array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>An array with the same shape as a, with the specified axis removed.
+If a is a 0-d array, or if axis is None, a scalar is returned.
+If an output array is specified, a reference to out is returned.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="ValueError">ValueError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>If an empty axis tuple is provided.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.backend_ndarray.ndarray.tanh" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">tanh</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Hyperbolic tangent, element-wise.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>a</code></b>
+              (<code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Input array.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="NDArray (tiny_pytorch.backend_ndarray.ndarray.NDArray)" href="#tiny_pytorch.backend_ndarray.ndarray.NDArray">NDArray</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Hyperbolic tangent of a, element-wise.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ImadDabbura/tiny-pytorch" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/ImadPhd" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/imaddabbura/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5m282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://medium.com/@ImadPhd" target="_blank" rel="noopener" title="medium.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M180.5 74.262C80.813 74.262 0 155.633 0 256s80.819 181.738 180.5 181.738S361 356.373 361 256 280.191 74.262 180.5 74.262m288.25 10.646c-49.845 0-90.245 76.619-90.245 171.095s40.406 171.1 90.251 171.1 90.251-76.619 90.251-171.1H559c0-94.503-40.4-171.095-90.248-171.095Zm139.506 17.821c-17.526 0-31.735 68.628-31.735 153.274s14.2 153.274 31.735 153.274S640 340.631 640 256c0-84.649-14.215-153.271-31.742-153.271Z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://imaddabbura.github.io/" target="_blank" rel="noopener" title="imaddabbura.github.io" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.4c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64h185.3c2.2 20.4 3.3 41.8 3.3 64m28.8-64h123.1c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64m112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6 78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7 10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5 11.6 26 20.9 58.2 27 94.7m-209 0H18.6c30-74.1 93.6-130.9 172-151.6-25.5 34.2-45.3 87.7-55.3 151.6M8.1 192h123.1c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64m186.6 254.6c-11.6-26-20.9-58.2-27-94.6h176.6c-6.1 36.4-15.5 68.6-27 94.6-10.5 23.6-22.2 40.7-33.5 51.5-11.2 10.7-20.5 13.9-27.8 13.9s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6-78.4-20.7-142-77.5-172-151.6zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6 25.5-34.2 45.2-87.7 55.3-151.6h116.7z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

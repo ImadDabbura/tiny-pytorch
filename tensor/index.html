@@ -1,0 +1,3180 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../ndarray/">
+      
+      
+        <link rel="next" href="../utils/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+    
+    
+      
+        <title>Tensor - tiny_pytorch</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4af4bdda.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tiny_pytorch.tensor" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="tiny_pytorch" class="md-header__button md-logo" aria-label="tiny_pytorch" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            tiny_pytorch
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tensor
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ImadDabbura/tiny-pytorch" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ImadDabbura/tiny-pytorch
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="tiny_pytorch" class="md-nav__button md-logo" aria-label="tiny_pytorch" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    tiny_pytorch
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ImadDabbura/tiny-pytorch" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ImadDabbura/tiny-pytorch
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ndarray/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NDArray
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Tensor
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Tensor
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor" class="md-nav__link">
+    <span class="md-ellipsis">
+      tensor
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op" class="md-nav__link">
+    <span class="md-ellipsis">
+      Op
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Op">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op.compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op.gradient" class="md-nav__link">
+    <span class="md-ellipsis">
+      gradient
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op.gradient_as_tuple" class="md-nav__link">
+    <span class="md-ellipsis">
+      gradient_as_tuple
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tensor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tensor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.data" class="md-nav__link">
+    <span class="md-ellipsis">
+      data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.device" class="md-nav__link">
+    <span class="md-ellipsis">
+      device
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.dtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      dtype
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.ndim" class="md-nav__link">
+    <span class="md-ellipsis">
+      ndim
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      shape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__add__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __add__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__matmul__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __matmul__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__mul__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __mul__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__neg__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __neg__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__pow__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __pow__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__repr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __repr__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __str__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__sub__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __sub__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__truediv__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __truediv__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.backward" class="md-nav__link">
+    <span class="md-ellipsis">
+      backward
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.broadcast_to" class="md-nav__link">
+    <span class="md-ellipsis">
+      broadcast_to
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.detach" class="md-nav__link">
+    <span class="md-ellipsis">
+      detach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.from_constant" class="md-nav__link">
+    <span class="md-ellipsis">
+      from_constant
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.from_operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      from_operation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.is_leaf" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_leaf
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.numpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      numpy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.realize_cached_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      realize_cached_data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.reshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      reshape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      sum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.transpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      transpose
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.TensorOp" class="md-nav__link">
+    <span class="md-ellipsis">
+      TensorOp
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.TensorTuple" class="md-nav__link">
+    <span class="md-ellipsis">
+      TensorTuple
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TensorTuple">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.TensorTuple.detach" class="md-nav__link">
+    <span class="md-ellipsis">
+      detach
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.TensorTupleOp" class="md-nav__link">
+    <span class="md-ellipsis">
+      TensorTupleOp
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.compute_gradients" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_gradients
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.find_topo_sort" class="md-nav__link">
+    <span class="md-ellipsis">
+      find_topo_sort
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Optimizer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nn/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NN
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../init/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Initialization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ops/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backend_numpy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backend Numpy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    NLP
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            NLP
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nlp-models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Vision
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Vision
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vision-models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor" class="md-nav__link">
+    <span class="md-ellipsis">
+      tensor
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op" class="md-nav__link">
+    <span class="md-ellipsis">
+      Op
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Op">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op.compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op.gradient" class="md-nav__link">
+    <span class="md-ellipsis">
+      gradient
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Op.gradient_as_tuple" class="md-nav__link">
+    <span class="md-ellipsis">
+      gradient_as_tuple
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tensor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tensor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.data" class="md-nav__link">
+    <span class="md-ellipsis">
+      data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.device" class="md-nav__link">
+    <span class="md-ellipsis">
+      device
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.dtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      dtype
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.ndim" class="md-nav__link">
+    <span class="md-ellipsis">
+      ndim
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      shape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__add__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __add__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__matmul__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __matmul__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__mul__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __mul__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__neg__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __neg__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__pow__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __pow__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__repr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __repr__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __str__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__sub__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __sub__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.__truediv__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __truediv__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.backward" class="md-nav__link">
+    <span class="md-ellipsis">
+      backward
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.broadcast_to" class="md-nav__link">
+    <span class="md-ellipsis">
+      broadcast_to
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.detach" class="md-nav__link">
+    <span class="md-ellipsis">
+      detach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.from_constant" class="md-nav__link">
+    <span class="md-ellipsis">
+      from_constant
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.from_operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      from_operation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.is_leaf" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_leaf
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.numpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      numpy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.realize_cached_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      realize_cached_data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.reshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      reshape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      sum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.Tensor.transpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      transpose
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.TensorOp" class="md-nav__link">
+    <span class="md-ellipsis">
+      TensorOp
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.TensorTuple" class="md-nav__link">
+    <span class="md-ellipsis">
+      TensorTuple
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TensorTuple">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.TensorTuple.detach" class="md-nav__link">
+    <span class="md-ellipsis">
+      detach
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.TensorTupleOp" class="md-nav__link">
+    <span class="md-ellipsis">
+      TensorTupleOp
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.compute_gradients" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_gradients
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiny_pytorch.tensor.find_topo_sort" class="md-nav__link">
+    <span class="md-ellipsis">
+      find_topo_sort
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Tensor</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="tiny_pytorch.tensor"></a>
+    <div class="doc doc-contents first">
+
+        <p>Core data structures for multi-dimensional tensors.</p>
+<p>This module provides the fundamental Tensor class and related components that form
+the backbone of the tiny-pytorch framework. It implements automatic differentiation,
+computation graph management, and tensor operations with support for multiple
+backends and devices.</p>
+<p>The module includes the core Tensor class, operation abstractions, and gradient
+computation utilities that enable building and training neural networks with
+automatic differentiation capabilities.</p>
+
+
+<details class="key-features" open>
+  <summary>Key Features</summary>
+  <ul>
+<li>Automatic differentiation with gradient tracking</li>
+<li>Computation graph construction and management</li>
+<li>Support for multiple backends (NumPy, CPU, CUDA)</li>
+<li>Lazy evaluation mode for memory efficiency</li>
+<li>Tensor operations with automatic broadcasting</li>
+<li>Gradient computation and backpropagation</li>
+<li>Device and dtype management</li>
+</ul>
+</details>
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="Op (tiny_pytorch.tensor.Op)" href="#tiny_pytorch.tensor.Op">Op</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Base class for all tensor operations. Defines the interface for operations
+that can be applied to tensors to create new tensors in the computation graph.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.tensor.TensorOp : Op">TensorOp : Op</span></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Base class for operations that produce single tensors.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.tensor.TensorTupleOp : Op">TensorTupleOp : Op</span></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Base class for operations that produce tuples of tensors.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Multi-dimensional tensor with automatic differentiation support.
+The core data structure for representing inputs, outputs, and intermediate
+results in neural network computations.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.tensor.TensorTuple : Tensor">TensorTuple : Tensor</span></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Specialized tensor class for representing tuples of tensors.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="compute_gradients(out_tensor, out_grad) (tiny_pytorch.tensor.compute_gradients)" href="#tiny_pytorch.tensor.compute_gradients">compute_gradients</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Compute gradients for all tensors in the computation graph.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="find_topo_sort(node_list) (tiny_pytorch.tensor.find_topo_sort)" href="#tiny_pytorch.tensor.find_topo_sort">find_topo_sort</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Find topological sort of tensors in the computation graph.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><span title="tiny_pytorch.tensor._topo_sort_dfs">_topo_sort_dfs</span></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Depth-first search for topological sorting.</p>
+            </div>
+          </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>The Tensor system implements automatic differentiation through a computation graph
+where each tensor operation creates a new tensor node that tracks its inputs and
+the operation that produced it. When backward() is called on a tensor, gradients
+are computed and propagated through the graph using the chain rule.</p>
+<p>The system supports both eager and lazy evaluation modes. In eager mode (default),
+tensor values are computed immediately. In lazy mode, computation is deferred
+until the tensor value is actually needed.</p>
+<p>All tensor operations are designed to work seamlessly with the automatic
+differentiation system, automatically tracking gradients when requires_grad=True.</p>
+</details>
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tiny_pytorch</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tp</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create tensors</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Perform operations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">2</span>  <span class="c1"># Automatic gradient tracking</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loss</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compute gradients</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>  <span class="c1"># Gradient with respect to x</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>  <span class="c1"># Gradient with respect to y</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Use different devices</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">tp</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_cuda</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">tp</span><span class="o">.</span><span class="n">cuda</span><span class="p">())</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="tiny_pytorch.tensor.Op" class="doc doc-heading">
+            <code>Op</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+        <p>Base class for all tensor operations.</p>
+<p>This class defines the interface that all tensor operations must implement.
+Operations are callable objects that can be applied to tensors to create
+new tensors in the computation graph.</p>
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="__call__(*args) (tiny_pytorch.tensor.Op.__call__)" href="#tiny_pytorch.tensor.Op.__call__">__call__</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Apply the operation to the given arguments.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="compute(*args) (tiny_pytorch.tensor.Op.compute)" href="#tiny_pytorch.tensor.Op.compute">compute</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Compute the actual operation on the underlying arrays.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="gradient(out_grad, out_node) (tiny_pytorch.tensor.Op.gradient)" href="#tiny_pytorch.tensor.Op.gradient">gradient</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Compute the gradient of the operation.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Op.__call__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Apply the operation to the given arguments.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>*args</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>, default:
+                  <code>()</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Input tensors to the operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Result of applying the operation to the inputs.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Op.compute" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the actual operation on the underlying arrays.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>*args</code></b>
+              (<code><span title="tuple">tuple</span>[<span title="tiny_pytorch.backend_selection.NDArray">NDArray</span>]</code>, default:
+                  <code>()</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Input arrays to the operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="tiny_pytorch.backend_selection.NDArray">NDArray</span></code>
+          –
+          <div class="doc-md-description">
+            <p>Result of the operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="NotImplementedError">NotImplementedError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>This method must be implemented by subclasses.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Op.gradient" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">gradient</span><span class="p">(</span><span class="n">out_grad</span><span class="p">,</span> <span class="n">out_node</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the gradient of the operation.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>out_grad</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Gradient of the output with respect to the final result.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>out_node</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The output tensor of this operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a> or <span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a>]</code>
+          –
+          <div class="doc-md-description">
+            <p>Gradient(s) with respect to the input(s) of this operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="NotImplementedError">NotImplementedError</span></code>
+            –
+          <div class="doc-md-description">
+            <p>This method must be implemented by subclasses.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Op.gradient_as_tuple" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">gradient_as_tuple</span><span class="p">(</span><span class="n">out_grad</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Convenience method to always return a tuple from gradient call</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="tiny_pytorch.tensor.Tensor" class="doc doc-heading">
+            <code>Tensor</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+        <p>Tensor is the fundamental data structure in tiny_pytorch. It is a multi-dimensional array of numerical values used to represent inputs, outputs, and intermediate results in a computation graph.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.tensor.Tensor.cached_data">cached_data</span></code></b>
+              (<code><span title="list">list</span>[<span title="object">object</span>]</code>)
+          –
+          <div class="doc-md-description">
+            <p>The cached data of the tensor.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.tensor.Tensor.inputs">inputs</span></code></b>
+              (<code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a>]</code>)
+          –
+          <div class="doc-md-description">
+            <p>The input tensors to the operation that produced this tensor.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.tensor.Tensor.op">op</span></code></b>
+              (<code><a class="autorefs autorefs-internal" title="Op (tiny_pytorch.tensor.Op)" href="#tiny_pytorch.tensor.Op">Op</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The operation that produced this tensor.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="tiny_pytorch.tensor.Tensor.requires_grad">requires_grad</span></code></b>
+              (<code><span title="bool">bool</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>If True, the tensor will track gradients.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.data" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">data</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns a detached Tensor with the original data.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.device" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">device</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the device on which the tensor is stored.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+<b><code>device</code></b> (              <code><a class="autorefs autorefs-internal" title="Device (tiny_pytorch.backend_selection.Device)" href="../backend_numpy/#tiny_pytorch.backend_numpy.Device">Device</a></code>
+)          –
+          <div class="doc-md-description">
+            <p>The device on which the tensor is stored.</p>
+          </div>
+        </li>
+    </ul>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.dtype" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">dtype</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the data type of the tensor.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+<b><code>dtype</code></b> (              <code><span title="tiny_pytorch.tensor.Tensor.numpy.dtype">dtype</span></code>
+)          –
+          <div class="doc-md-description">
+            <p>The data type of the tensor.</p>
+          </div>
+        </li>
+    </ul>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.ndim" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ndim</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the number of dimensions of the tensor.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="int">int</span></code>
+          –
+          <div class="doc-md-description">
+            <p>Number of dimensions of the tensor.</p>
+          </div>
+        </li>
+    </ul>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.shape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">shape</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the shape of the tensor as a tuple.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="tuple">tuple</span></code>
+          –
+          <div class="doc-md-description">
+            <p>Shape of the tensor.</p>
+          </div>
+        </li>
+    </ul>
+
+    </div>
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__add__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__add__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Add another tensor or scalar to this tensor.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>other</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a> or <span title="scalar">scalar</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The tensor or scalar to add.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Result of the addition operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Construct a Tensor by copying <code>array</code>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>array</code></b>
+              (<code><span title="object">object</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The array to be copied.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>device</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Device (tiny_pytorch.backend_selection.Device)" href="../backend_numpy/#tiny_pytorch.backend_numpy.Device">Device</a></code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The device on which to place the tensor. Default is None.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>dtype</code></b>
+              (<code><span title="str">str</span></code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The data type of the tensor. Default is None.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>requires_grad</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True, the tensor will track gradients. Default is True.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__matmul__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__matmul__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Matrix multiplication with another tensor.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>other</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The tensor to multiply with.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Result of the matrix multiplication.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__mul__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__mul__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Multiply this tensor by another tensor or scalar.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>other</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a> or <span title="scalar">scalar</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The tensor or scalar to multiply by.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Result of the multiplication operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__neg__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__neg__</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Negate this tensor.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Negated tensor.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__pow__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__pow__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Raise this tensor to the power of another tensor or scalar.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>other</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a> or <span title="scalar">scalar</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The exponent.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Result of the power operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__repr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>String representation of the tensor.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="str">str</span></code>
+          –
+          <div class="doc-md-description">
+            <p>String representation showing the tensor data.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>String representation of the tensor.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="str">str</span></code>
+          –
+          <div class="doc-md-description">
+            <p>String representation of the tensor data.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__sub__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__sub__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Subtract another tensor or scalar from this tensor.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>other</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a> or <span title="scalar">scalar</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The tensor or scalar to subtract.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Result of the subtraction operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.__truediv__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__truediv__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Divide this tensor by another tensor or scalar.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>other</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a> or <span title="scalar">scalar</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The tensor or scalar to divide by.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Result of the division operation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.backward" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">backward</span><span class="p">(</span><span class="n">out_grad</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Computes the gradients of the tensor with respect to the output gradient.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>out_grad</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The gradient of the output with respect to which the gradients are computed. If None, a tensor of ones is used.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code>None</code>
+          –
+          <div class="doc-md-description">
+            <p>This method updates the <code>grad</code> attribute of the tensor and its dependencies with the computed gradients.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.broadcast_to" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broadcast_to</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Broadcasts the tensor to the specified shape.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>shape</code></b>
+              (<code>tuple of ints</code>)
+          –
+          <div class="doc-md-description">
+            <p>The new shape of the tensor.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>A new tensor with the specified shape.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.detach" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">detach</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns a new Tensor with no history (detached from the computation
+graph). The returned Tensor will share the same data with the
+original one.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.from_constant" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_constant</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Creates a leaf node Tensor from the given <code>data</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.from_operation" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_operation</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Creates a node Tensor by applying the <code>op</code> operation on the <code>inputs</code>
+Tensors.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.is_leaf" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_leaf</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All Tensors that have <code>requires_grad</code> set to <code>False</code> OR they were
+created by the user and were not the result of an operation are
+considered leaf Tensors.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.numpy" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">numpy</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns <code>Tensor</code> as Numpy ndarray. The underlying data will be shared
+between Tensor and the Numpy ndarray.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.realize_cached_data" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">realize_cached_data</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Run computation to get the output if the LAZY MODE is on, else return cached data.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.reshape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reshapes the tensor to the specified shape.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>shape</code></b>
+              (<code>tuple of ints</code>)
+          –
+          <div class="doc-md-description">
+            <p>The new shape of the tensor.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>A new tensor with the specified shape.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.sum" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">sum</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the sum of elements over specified axes.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>axes</code></b>
+              (<code>None or int or tuple of ints</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Axis or axes along which a sum is performed. The default is to sum all of the elements of the input tensor.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>A new tensor with the sum of elements over specified axes.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.Tensor.transpose" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">transpose</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Transposes the tensor according to the specified axes.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>axes</code></b>
+              (<code>tuple of ints</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>By default, reverse the dimensions, otherwise permute the axes according to the values given.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>
+          –
+          <div class="doc-md-description">
+            <p>A new tensor with the specified axes transposed.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="tiny_pytorch.tensor.TensorOp" class="doc doc-heading">
+            <code>TensorOp</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Op (tiny_pytorch.tensor.Op)" href="#tiny_pytorch.tensor.Op">Op</a></code></p>
+
+
+        <p>Op class specialized to output tensors, will be alterate subclasses for other structures</p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="tiny_pytorch.tensor.TensorTuple" class="doc doc-heading">
+            <code>TensorTuple</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code></p>
+
+
+        <p>Represent a tuple of tensors.</p>
+<p>To keep things simple, we do not support nested tuples.</p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="tiny_pytorch.tensor.TensorTuple.detach" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">detach</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create a new tensor that shares the data but detaches from the graph.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="tiny_pytorch.tensor.TensorTupleOp" class="doc doc-heading">
+            <code>TensorTupleOp</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Op (tiny_pytorch.tensor.Op)" href="#tiny_pytorch.tensor.Op">Op</a></code></p>
+
+
+        <p>Op class specialized to output TensorTuple</p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.tensor.compute_gradients" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_gradients</span><span class="p">(</span><span class="n">out_tensor</span><span class="p">,</span> <span class="n">out_grad</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute gradients for all nodes in the computation graph.</p>
+<p>This function implements reverse-mode automatic differentiation by
+traversing the computation graph in reverse topological order and
+computing gradients for each node.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>out_tensor</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The output tensor for which gradients are computed.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>out_grad</code></b>
+              (<code><a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The gradient of the output with respect to the final result.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>This function modifies the <code>grad</code> attribute of tensors in the computation
+graph. It stores the computed result in the grad field of each tensor.</p>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="tiny_pytorch.tensor.find_topo_sort" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">find_topo_sort</span><span class="p">(</span><span class="n">node_list</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Find topological sort of nodes in the computation graph.</p>
+<p>Given a list of nodes, return a topological sort list of nodes ending in them.
+A simple algorithm is to do a post-order DFS traversal on the given nodes,
+going backwards based on input edges. Since a node is added to the ordering
+after all its predecessors are traversed due to post-order DFS, we get a topological
+sort.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>node_list</code></b>
+              (<code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a>]</code>)
+          –
+          <div class="doc-md-description">
+            <p>List of tensors to sort topologically.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="Tensor (tiny_pytorch.tensor.Tensor)" href="#tiny_pytorch.tensor.Tensor">Tensor</a>]</code>
+          –
+          <div class="doc-md-description">
+            <p>Topologically sorted list of tensors.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ImadDabbura/tiny-pytorch" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/ImadPhd" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/imaddabbura/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5m282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://medium.com/@ImadPhd" target="_blank" rel="noopener" title="medium.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M180.5 74.262C80.813 74.262 0 155.633 0 256s80.819 181.738 180.5 181.738S361 356.373 361 256 280.191 74.262 180.5 74.262m288.25 10.646c-49.845 0-90.245 76.619-90.245 171.095s40.406 171.1 90.251 171.1 90.251-76.619 90.251-171.1H559c0-94.503-40.4-171.095-90.248-171.095Zm139.506 17.821c-17.526 0-31.735 68.628-31.735 153.274s14.2 153.274 31.735 153.274S640 340.631 640 256c0-84.649-14.215-153.271-31.742-153.271Z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://imaddabbura.github.io/" target="_blank" rel="noopener" title="imaddabbura.github.io" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.4c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64h185.3c2.2 20.4 3.3 41.8 3.3 64m28.8-64h123.1c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64m112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6 78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7 10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5 11.6 26 20.9 58.2 27 94.7m-209 0H18.6c30-74.1 93.6-130.9 172-151.6-25.5 34.2-45.3 87.7-55.3 151.6M8.1 192h123.1c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64m186.6 254.6c-11.6-26-20.9-58.2-27-94.6h176.6c-6.1 36.4-15.5 68.6-27 94.6-10.5 23.6-22.2 40.7-33.5 51.5-11.2 10.7-20.5 13.9-27.8 13.9s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6-78.4-20.7-142-77.5-172-151.6zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6 25.5-34.2 45.2-87.7 55.3-151.6h116.7z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
