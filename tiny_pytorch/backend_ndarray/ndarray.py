@@ -396,8 +396,9 @@ class NDArray:
 
         Parameters
         ----------
-        data : NDArray or numpy.ndarray or array_like
-            Source data to create the NDArray from.
+        data : array_like
+            Source data to create the NDArray from. Can be a scalar, list,
+            numpy array, or another NDArray.
         device : BackendDevice, optional
             Device to place the array on. If None, uses default device.
         """
