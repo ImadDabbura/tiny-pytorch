@@ -152,6 +152,19 @@ class Dataset:
         )
 
     def apply_transforms(self, x):
+        """Apply all transforms to a sample in sequence.
+
+        Parameters
+        ----------
+        x : object
+            Input sample to transform.
+
+        Returns
+        -------
+        object
+            Transformed sample after applying all transforms. Returns the
+            input unchanged if no transforms are set.
+        """
         if self.transforms is not None:
             for tform in self.transforms:
                 x = tform(x)
@@ -308,6 +321,21 @@ class BatchSampler:
 # FIXME: Need to figure out a way to stack xb and yb
 # Currently it returns a tuple of tensors for xb and yb
 def collate(idxs, ds):
+    """Fetch and collate samples from a dataset by indices.
+
+    Parameters
+    ----------
+    idxs : list[int]
+        List of sample indices to fetch from the dataset.
+    ds : Dataset
+        Dataset to fetch samples from.
+
+    Returns
+    -------
+    tuple[tuple, tuple]
+        A pair (xb, yb) where xb contains the inputs and yb contains
+        the targets for the given indices.
+    """
     xb, yb = zip(*[ds[i] for i in idxs])
     return xb, yb
 

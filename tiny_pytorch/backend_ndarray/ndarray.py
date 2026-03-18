@@ -558,13 +558,26 @@ class NDArray:
         return f"NDArray({str(self)}, device={self.device})"
 
     def fill(self, value):
-        """Fill in-place with a constant value."""
+        """Fill the array in-place with a constant value.
+
+        Parameters
+        ----------
+        value : float
+            The value to fill the array with.
+        """
         self.device.fill(self._handle, value)
 
     def is_compact(self):
-        """
-        Return true if array is compact in memory and internal size equals
-        product of the shape dimensions.
+        """Return True if the array is compact (contiguous) in memory.
+
+        An array is compact if its strides match row-major order and the
+        underlying buffer size equals the product of the shape dimensions
+        (i.e., no offset or strided view).
+
+        Returns
+        -------
+        bool
+            True if the array is contiguous in memory, False otherwise.
         """
         # An array is contiguous is it has the same strides as row-major order
         # and offset = 0 (i.e. same size as the original array)
@@ -574,7 +587,14 @@ class NDArray:
         )
 
     def compact(self):
-        """Convert NDArray to be compact if it is not already compact."""
+        """Return a contiguous copy of the array if it is not already compact.
+
+        Returns
+        -------
+        NDArray
+            The original array if already compact, otherwise a new contiguous
+            copy with the same data.
+        """
         if self.is_compact():
             return self
         out = NDArray.make(self.shape, device=self.device)
@@ -588,8 +608,20 @@ class NDArray:
         return out
 
     def as_strided(self, shape, strides):
-        """
-        Create a strided view of the underlying memory without copying anything.
+        """Create a strided view of the underlying memory without copying data.
+
+        Parameters
+        ----------
+        shape : tuple[int, ...]
+            Shape of the new view.
+        strides : tuple[int, ...]
+            Strides of the new view. Must have the same length as shape.
+
+        Returns
+        -------
+        NDArray
+            A new NDArray sharing the same underlying memory with the given
+            shape and strides.
         """
         assert len(shape) == len(strides)
         return NDArray.make(shape, strides, self.device, self._handle)
@@ -773,9 +805,21 @@ class NDArray:
             )
 
     def ewise_or_scalar(self, other, ewise_func, scalar_func):
-        """
-        Run either an element-wise or scalar version of a function,
-        depending on whether "other" is an NDArray or scalar.
+        """Dispatch to element-wise or scalar function based on type of other.
+
+        Parameters
+        ----------
+        other : NDArray or scalar
+            Second operand. If NDArray, must have the same shape as self.
+        ewise_func : callable
+            Function to call when other is an NDArray.
+        scalar_func : callable
+            Function to call when other is a scalar.
+
+        Returns
+        -------
+        NDArray
+            Result of applying the appropriate function.
         """
         out = NDArray.make(self.shape, device=self.device)
         if isinstance(other, NDArray):
@@ -826,11 +870,35 @@ class NDArray:
         return out
 
     def maximum(self, other):
+        """Element-wise maximum of self and other.
+
+        Parameters
+        ----------
+        other : NDArray or scalar
+            Second operand.
+
+        Returns
+        -------
+        NDArray
+            Element-wise maximum of self and other.
+        """
         return self.ewise_or_scalar(
             other, self.device.ewise_maximum, self.device.scalar_maximum
         )
 
     def minimum(self, other):
+        """Element-wise minimum of self and other.
+
+        Parameters
+        ----------
+        other : NDArray or scalar
+            Second operand.
+
+        Returns
+        -------
+        NDArray
+            Element-wise minimum of self and other.
+        """
         return self.ewise_or_scalar(
             other, self.device.ewise_minimum, self.device.scalar_minimum
         )
@@ -858,16 +926,37 @@ class NDArray:
         return 1 - (self > other)
 
     def log(self):
+        """Natural logarithm, element-wise.
+
+        Returns
+        -------
+        NDArray
+            Element-wise natural logarithm of the array.
+        """
         out = NDArray.make(self.shape, device=self.device)
         self.device.ewise_log(self.compact()._handle, out._handle)
         return out
 
     def exp(self):
+        """Exponential, element-wise.
+
+        Returns
+        -------
+        NDArray
+            Element-wise exponential of the array.
+        """
         out = NDArray.make(self.shape, device=self.device)
         self.device.ewise_exp(self.compact()._handle, out._handle)
         return out
 
     def tanh(self):
+        """Hyperbolic tangent, element-wise.
+
+        Returns
+        -------
+        NDArray
+            Element-wise hyperbolic tangent of the array.
+        """
         out = NDArray.make(self.shape, device=self.device)
         self.device.ewise_tanh(self.compact()._handle, out._handle)
         return out
@@ -918,9 +1007,28 @@ class NDArray:
             return out
 
     def reduce_view_out(self, axis, keepdims=False):
-        """
-        Return a view to the array set up for reduction functions and output
-        array.
+        """Prepare a permuted view and output array for a reduction operation.
+
+        Parameters
+        ----------
+        axis : int, tuple[int], or None
+            Axis to reduce over. Only a single axis or None (all axes) is
+            supported. Tuple must contain exactly one element.
+        keepdims : bool, optional
+            If True, the reduced axis is kept as a dimension of size 1.
+            Default is False.
+
+        Returns
+        -------
+        tuple[NDArray, NDArray]
+            A pair (view, out) where view is the array permuted so the
+            reduction axis is last, and out is an empty array with the
+            appropriate output shape.
+
+        Raises
+        ------
+        ValueError
+            If axis is an empty tuple or out of range.
         """
         if isinstance(axis, tuple) and not axis:
             raise ValueError("Empty axis in reduce")
@@ -967,10 +1075,21 @@ class NDArray:
         return view, out
 
     def sum(self, axis=None, keepdims=False):
-        """
-        Sum either across all axis (when axis=None) or one axis.
+        """Sum array elements over a given axis.
 
-        Note: It doesn't support axis being multiple of axes.
+        Parameters
+        ----------
+        axis : int or None, optional
+            Axis along which the sum is computed. If None, sums all elements.
+            Only a single axis is supported. Default is None.
+        keepdims : bool, optional
+            If True, the reduced axis is kept as a dimension of size 1.
+            Default is False.
+
+        Returns
+        -------
+        NDArray
+            Sum of array elements along the specified axis.
         """
         view, out = self.reduce_view_out(axis, keepdims=keepdims)
         self.device.reduce_sum(
@@ -979,10 +1098,22 @@ class NDArray:
         return out
 
     def max(self, axis=None, keepdims=False):
-        """
-        Max either across all axis (when axis=None) or one axis.
+        """Maximum of array elements over a given axis.
 
-        Note: It doesn't support axis being multiple of axes.
+        Parameters
+        ----------
+        axis : int or None, optional
+            Axis along which the maximum is computed. If None, finds the
+            maximum over all elements. Only a single axis is supported.
+            Default is None.
+        keepdims : bool, optional
+            If True, the reduced axis is kept as a dimension of size 1.
+            Default is False.
+
+        Returns
+        -------
+        NDArray
+            Maximum of array elements along the specified axis.
         """
         view, out = self.reduce_view_out(axis, keepdims=keepdims)
         self.device.reduce_max(

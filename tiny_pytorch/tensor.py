@@ -168,7 +168,20 @@ class Op:
     def gradient_as_tuple(
         self, out_grad: Tensor, node: Tensor
     ) -> tuple[Tensor]:
-        """Convenience method to always return a tuple from gradient call"""
+        """Convenience method to always return a tuple from gradient call.
+
+        Parameters
+        ----------
+        out_grad : Tensor
+            Gradient of the output with respect to the final result.
+        node : Tensor
+            The output tensor of this operation.
+
+        Returns
+        -------
+        tuple[Tensor]
+            Gradients with respect to the inputs, always as a tuple.
+        """
         out = self.gradient(out_grad, node)
         return tuplify(out)
 
@@ -254,7 +267,13 @@ class Tensor:
         return array_api.array(array, device=device, dtype=dtype)
 
     def realize_cached_data(self):
-        """Run computation to get the output if the LAZY MODE is on, else return cached data."""
+        """Run computation to get the output if the LAZY MODE is on, else return cached data.
+
+        Returns
+        -------
+        NDArray
+            The computed or cached underlying array data.
+        """
         if self.cached_data is not None:
             return self.cached_data
         self.cached_data = self.op.compute(
@@ -329,6 +348,18 @@ class Tensor:
 
     @data.setter
     def data(self, data):
+        """Replace the underlying data of this tensor in-place.
+
+        Parameters
+        ----------
+        data : Tensor
+            New data to assign. Must be a Tensor with the same dtype.
+
+        Raises
+        ------
+        AssertionError
+            If data is not a Tensor or has a different dtype.
+        """
         assert isinstance(
             data, Tensor
         ), f"data must be of type `Tensor`, {type(data)} is given"
@@ -615,6 +646,13 @@ class TensorTuple(Tensor):
         return tiny_pytorch.ops.tuple_get_item(self, index)
 
     def tuple(self):
+        """Convert TensorTuple to a Python tuple of Tensors.
+
+        Returns
+        -------
+        tuple[Tensor]
+            A Python tuple containing each Tensor element.
+        """
         return tuple([x for x in self])
 
     def __repr__(self):

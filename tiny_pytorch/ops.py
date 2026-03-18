@@ -158,19 +158,61 @@ from .utils import tuplify
 
 
 class MakeTensorTuple(TensorOp):
+    """Pack multiple tensors into a TensorTuple."""
+
     def compute(self, *args) -> tuple:
+        """Pack input arrays into a Python tuple.
+
+        Parameters
+        ----------
+        *args : NDArray
+            Arrays to pack.
+
+        Returns
+        -------
+        tuple[NDArray]
+            Tuple of input arrays.
+        """
         return tuple(args)
 
     def gradient(self, out_grad, node):
+        """Return each element of out_grad as a separate gradient.
+
+        Parameters
+        ----------
+        out_grad : TensorTuple
+            Gradient of the output tuple.
+        node : Tensor
+            Output node of this operation.
+
+        Returns
+        -------
+        tuple[Tensor]
+            Gradient with respect to each input tensor.
+        """
         assert isinstance(out_grad, TensorTuple)
         return tuple([out_grad[i] for i in range(len(out_grad))])
 
 
 def make_tuple(*args):
+    """Pack tensors into a TensorTuple.
+
+    Parameters
+    ----------
+    *args : Tensor
+        Tensors to pack.
+
+    Returns
+    -------
+    TensorTuple
+        Tuple of input tensors.
+    """
     return MakeTensorTuple()(*args)
 
 
 class TupleGetItem(TensorOp):
+    """Extract a single tensor from a TensorTuple by index."""
+
     def __init__(self, index):
         self.index = index
 
@@ -182,9 +224,35 @@ class TupleGetItem(TensorOp):
         return Tensor.from_operation(self, [a])
 
     def compute(self, a):
+        """Extract element at self.index from the input tuple.
+
+        Parameters
+        ----------
+        a : tuple[NDArray]
+            Input tuple of arrays.
+
+        Returns
+        -------
+        NDArray
+            The array at the specified index.
+        """
         return a[self.index]
 
     def gradient(self, out_grad, node):
+        """Return gradient for the indexed element; zeros for all others.
+
+        Parameters
+        ----------
+        out_grad : Tensor
+            Gradient of the output.
+        node : Tensor
+            Output node of this operation.
+
+        Returns
+        -------
+        TensorTuple
+            Tuple with out_grad at the indexed position and zeros elsewhere.
+        """
         index = self.index
         in_grad = []
         for i, value in enumerate(node.inputs[0]):
@@ -196,6 +264,20 @@ class TupleGetItem(TensorOp):
 
 
 def tuple_get_item(value, index):
+    """Extract a single tensor from a TensorTuple by index.
+
+    Parameters
+    ----------
+    value : TensorTuple
+        Input tuple of tensors.
+    index : int
+        Index of the tensor to extract.
+
+    Returns
+    -------
+    Tensor
+        The tensor at the specified index.
+    """
     return TupleGetItem(index)(value)
 
 

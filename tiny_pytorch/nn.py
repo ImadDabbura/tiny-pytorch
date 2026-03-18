@@ -187,6 +187,14 @@ class Module:
 
     @training.setter
     def training(self, value):
+        """Set training mode for this module and all its children recursively.
+
+        Parameters
+        ----------
+        value : bool
+            If True, sets the module to training mode. If False, sets it to
+            evaluation mode.
+        """
         self._training = value
         for module in self.children():
             module.training = value
@@ -311,6 +319,18 @@ class Linear(Module):
             )
 
     def forward(self, X: Tensor) -> Tensor:
+        """Apply linear transformation: X @ W + b.
+
+        Parameters
+        ----------
+        X : Tensor
+            Input tensor of shape (..., in_features).
+
+        Returns
+        -------
+        Tensor
+            Output tensor of shape (..., out_features).
+        """
         out = X @ self.weight
         if self.bias:
             bias = ops.Reshape(
@@ -339,6 +359,18 @@ class ReLU(Module):
     """
 
     def forward(self, x: Tensor) -> Tensor:
+        """Apply ReLU activation element-wise.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of any shape.
+
+        Returns
+        -------
+        Tensor
+            Output tensor with ReLU applied: max(0, x).
+        """
         return ops.ReLU()(x)
 
 
@@ -451,6 +483,18 @@ class Sequential(Module):
         self.modules = modules
 
     def forward(self, x: Tensor) -> Tensor:
+        """Pass input through each module in sequence.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor.
+
+        Returns
+        -------
+        Tensor
+            Output after applying all modules in order.
+        """
         for module in self.modules:
             x = module(x)
         return x
@@ -474,6 +518,20 @@ class SoftmaxLoss(Module):
     """
 
     def forward(self, logits: Tensor, y: Tensor):
+        """Compute softmax cross-entropy loss.
+
+        Parameters
+        ----------
+        logits : Tensor
+            Unnormalized scores of shape (batch_size, num_classes).
+        y : Tensor
+            Ground truth class indices of shape (batch_size,).
+
+        Returns
+        -------
+        Tensor
+            Scalar mean cross-entropy loss over the batch.
+        """
         m, k = logits.shape
         y_one_hot = init.one_hot(k, y.numpy().tolist())
         log_sum_exp = ops.BroadcastTo((m, k))(
@@ -514,6 +572,19 @@ class LayerNorm1d(Module):
         self.bias = Parameter(init.zeros(dim, device=device, dtype=dtype))
 
     def forward(self, x: Tensor) -> Tensor:
+        """Apply layer normalization over the feature dimension.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of shape (batch_size, dim).
+
+        Returns
+        -------
+        Tensor
+            Normalized tensor of shape (batch_size, dim), scaled and shifted
+            by learnable weight and bias parameters.
+        """
         m = x.shape[0]
         mean = ops.Summation((1,))(x) / self.dim
         mean = ops.BroadcastTo((m, self.dim))(ops.Reshape((m, 1))(mean))
@@ -547,6 +618,18 @@ class Flatten(Module):
     """
 
     def forward(self, X):
+        """Flatten all dimensions except the batch dimension.
+
+        Parameters
+        ----------
+        X : Tensor
+            Input tensor of shape (batch_size, d1, d2, ...).
+
+        Returns
+        -------
+        Tensor
+            Flattened tensor of shape (batch_size, d1 * d2 * ...).
+        """
         shape = X.shape
         return ops.Reshape((shape[0], reduce(mul, shape[1:])))(X)
 
@@ -576,6 +659,19 @@ class Dropout(Module):
         self.p = p
 
     def forward(self, x: Tensor) -> Tensor:
+        """Apply dropout to the input tensor.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of any shape.
+
+        Returns
+        -------
+        Tensor
+            During training: input with elements zeroed with probability p,
+            scaled by 1/(1-p). During evaluation: input unchanged.
+        """
         if self.training:
             mask = init.randb(*x.shape, p=(1 - self.p))
             return (mask * x) / (1 - self.p)
@@ -607,6 +703,18 @@ class Residual(Module):
         self.fn = fn
 
     def forward(self, x: Tensor) -> Tensor:
+        """Apply wrapped module and add residual (skip) connection.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor.
+
+        Returns
+        -------
+        Tensor
+            Output of fn(x) + x.
+        """
         return self.fn(x) + x
 
 
@@ -667,6 +775,20 @@ class BatchNorm1d(Module):
         )
 
     def forward(self, x: Tensor) -> Tensor:
+        """Apply batch normalization over the feature dimension.
+
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of shape (batch_size, dim).
+
+        Returns
+        -------
+        Tensor
+            Normalized tensor of shape (batch_size, dim). During training,
+            uses batch statistics and updates running mean/variance. During
+            evaluation, uses stored running statistics.
+        """
         m = x.shape[0]
         if self.training:
             mean = ops.summation(x, 0) / m

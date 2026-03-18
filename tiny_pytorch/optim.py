@@ -126,9 +126,21 @@ class Optimizer:
         self.params = params
 
     def step(self):
+        """Perform a single optimization step (parameter update).
+
+        Raises
+        ------
+        NotImplementedError
+            Must be implemented by subclasses.
+        """
         raise NotImplementedError()
 
     def reset_grad(self):
+        """Zero out the gradients of all parameters.
+
+        Sets the grad attribute of each parameter to None, clearing any
+        accumulated gradients from the previous step.
+        """
         for p in self.params:
             p.grad = None
 
@@ -183,6 +195,11 @@ class SGD(Optimizer):
         self.weight_decay = weight_decay
 
     def step(self):
+        """Perform a single SGD parameter update.
+
+        For each parameter with a gradient, applies the SGD update rule with
+        optional momentum and weight decay.
+        """
         for param in self.params:
             if param.grad is None:
                 continue
@@ -270,6 +287,12 @@ class Adam(Optimizer):
         self.v = {}
 
     def step(self):
+        """Perform a single Adam parameter update.
+
+        Increments the step counter, then for each parameter with a gradient,
+        applies the Adam update rule with bias-corrected first and second
+        moment estimates.
+        """
         self.t += 1
         for param in self.params:
             if param.grad is None:
