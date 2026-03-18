@@ -6,10 +6,11 @@ authors = [
     {name = "Imad Dabbura", email = "imad.dabbura@hotmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.15"
 dependencies = [
     "numpy (>=2.2.3,<3.0.0)",
     "setuptools (>=61.0)",
+    "torch (>=2.10.0,<3.0.0)",
 ]
 
 [tool.poetry.group.build.dependencies]
@@ -27,7 +28,6 @@ pytest = "^8.3"
 isort = "^6.0"
 flake8 = "^7.1"
 pre-commit = "^4.1"
-torch = "^2.7"
 cibuildwheel = "^3.1.1"
 
 
