@@ -390,30 +390,30 @@ class NDArray:
         Data type of the array (currently only "float32" is supported).
     """
 
-    def __init__(self, other, device=None):
+    def __init__(self, data, device=None):
         """Create NDArray by copying another NDArray/Numpy array OR use Numpy as
         a bridge for all other types of iterables.
 
         Parameters
         ----------
-        other : NDArray or numpy.ndarray or array_like
+        data : NDArray or numpy.ndarray or array_like
             Source data to create the NDArray from.
         device : BackendDevice, optional
             Device to place the array on. If None, uses default device.
         """
-        if isinstance(other, NDArray):
+        if isinstance(data, NDArray):
             if device is None:
-                device = other.device
+                device = data.device
             # Creates a copy because any ops will create new array
-            self._init(other.to(device) + 0.0)
-        elif isinstance(other, np.ndarray):
+            self._init(data.to(device) + 0.0)
+        elif isinstance(data, np.ndarray):
             device = device if device is not None else default_device()
-            array = NDArray.make(other.shape, device=device)
-            array.device.from_numpy(np.ascontiguousarray(other), array._handle)
+            array = NDArray.make(data.shape, device=device)
+            array.device.from_numpy(np.ascontiguousarray(data), array._handle)
             self._init(array)
         else:
             # Check if we can create a numpy array from input
-            array = NDArray(np.array(other), device=device)
+            array = NDArray(np.array(data), device=device)
             self._init(array)
 
     def _init(self, other: "NDArray"):
