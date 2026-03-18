@@ -231,9 +231,9 @@ class Tensor:
             device = data.device if not device else device
             dtype = data.dtype if not dtype else dtype
             if device == data.device and dtype == data.dtype:
-                cached_data = data.realize_cached_data()
+                cached_data = data.realize_cached_data() + 0.0
             else:
-                # Use numpy as brige
+                # Use numpy as bridge
                 cached_data = self._from_numpy_array(
                     data.numpy(), device=device, dtype=dtype
                 )
