@@ -368,7 +368,7 @@ class Tensor:
         graph). The returned Tensor will share the same data with the
         original one.
         """
-        return Tensor.from_constant(self)
+        return type(self).from_constant(self)
 
     def is_leaf(self):
         """
