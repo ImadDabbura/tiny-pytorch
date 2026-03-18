@@ -14,7 +14,7 @@ Key Features
 -----------
 - Pure Python implementation using NumPy
 - Device abstraction for tensor operations
-- Standard tensor creation methods (zeros, ones, randn, rand)
+- Standard tensor creation methods (randn, rand, full)
 - One-hot encoding support
 - Uniform interface with other backends
 - No external dependencies beyond NumPy
@@ -67,8 +67,6 @@ Examples
 >>> device = tp.backend_numpy.cpu()
 >>>
 >>> # Create tensors on the device
->>> x = device.zeros((3, 4), dtype="float32")
->>> y = device.ones((3, 4), dtype="float32")
 >>> z = device.randn(3, 4)  # Random normal distribution
 >>> w = device.rand(3, 4)   # Random uniform distribution
 >>>
@@ -107,51 +105,15 @@ class CPUDevice(Device):
 
     Methods
     -------
-    zeros(shape, dtype)
-        Create a tensor filled with zeros.
-    ones(shape, dtype)
-        Create a tensor filled with ones.
     randn(*shape)
         Create a tensor with random values from standard normal distribution.
     rand(*shape)
         Create a tensor with random values from uniform distribution.
     one_hot(n, i, dtype)
         Create a one-hot encoded tensor.
+    full(shape, fill_value, dtype)
+        Create a tensor filled with a constant value.
     """
-
-    def zeros(self, shape: int | Sequence[int], dtype="float32"):
-        """Create a tensor filled with zeros.
-
-        Parameters
-        ----------
-        shape : int or Sequence[int]
-            The shape of the tensor to create.
-        dtype : str, optional
-            The data type of the tensor. Default is "float32".
-
-        Returns
-        -------
-        numpy.ndarray
-            A tensor filled with zeros.
-        """
-        return np.zeros(shape, dtype=dtype)
-
-    def ones(self, shape: int | Sequence[int], dtype="float32"):
-        """Create a tensor filled with ones.
-
-        Parameters
-        ----------
-        shape : int or Sequence[int]
-            The shape of the tensor to create.
-        dtype : str, optional
-            The data type of the tensor. Default is "float32".
-
-        Returns
-        -------
-        numpy.ndarray
-            A tensor filled with ones.
-        """
-        return np.ones(shape, dtype=dtype)
 
     def randn(self, *shape):
         """Create a tensor with random values from standard normal distribution.
