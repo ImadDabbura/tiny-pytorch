@@ -207,19 +207,19 @@ class Tensor:
 
     def __init__(
         self,
-        array,
+        data,
         *,
         device: Device | None = None,
         dtype: str | None = None,
         requires_grad: bool = True,
     ) -> None:
         """
-        Construct a Tensor by copying `array`.
+        Construct a Tensor by copying `data`.
 
         Parameters
         ----------
-        array : object
-            The array to be copied.
+        data : object
+            The data to be copied. Can be a scalar, list, numpy array, or Tensor.
         device : Device, optional
             The device on which to place the tensor. Default is None.
         dtype : str, optional
@@ -227,20 +227,20 @@ class Tensor:
         requires_grad : bool, optional
             If True, the tensor will track gradients. Default is True.
         """
-        if isinstance(array, Tensor):
-            device = array.device if not device else device
-            dtype = array.dtype if not dtype else dtype
-            if device == array.device and dtype == array.dtype:
-                cached_data = array.realize_cached_data()
+        if isinstance(data, Tensor):
+            device = data.device if not device else device
+            dtype = data.dtype if not dtype else dtype
+            if device == data.device and dtype == data.dtype:
+                cached_data = data.realize_cached_data()
             else:
                 # Use numpy as brige
                 cached_data = self._from_numpy_array(
-                    array.numpy(), device=device, dtype=dtype
+                    data.numpy(), device=device, dtype=dtype
                 )
         else:
             device = default_device() if not device else device
             cached_data = self._from_numpy_array(
-                array, device=device, dtype=dtype
+                data, device=device, dtype=dtype
             )
         self._init(cached_data=cached_data, requires_grad=requires_grad)
 
