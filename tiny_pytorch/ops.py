@@ -153,11 +153,11 @@ from typing import Optional, Sequence
 
 from . import init
 from .backend_selection import NDArray, array_api
-from .tensor import Tensor, TensorOp, TensorTuple, TensorTupleOp
+from .tensor import Tensor, TensorOp, TensorTuple
 from .utils import tuplify
 
 
-class MakeTensorTuple(TensorTupleOp):
+class MakeTensorTuple(TensorOp):
     def compute(self, *args) -> tuple:
         return tuple(args)
 
@@ -1084,7 +1084,7 @@ def stack(arrays: Sequence[Tensor], axis: int) -> Tensor:
     return Stack(axis)(*arrays)
 
 
-class Split(TensorTupleOp):
+class Split(TensorOp):
     """Split a tensor along an axis into a tuple of tensors.
 
     This operation is the inverse of Stack. It splits a tensor along a specified axis

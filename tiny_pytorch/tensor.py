@@ -26,8 +26,6 @@ Op
     that can be applied to tensors to create new tensors in the computation graph.
 TensorOp : Op
     Base class for operations that produce single tensors.
-TensorTupleOp : Op
-    Base class for operations that produce tuples of tensors.
 Tensor
     Multi-dimensional tensor with automatic differentiation support.
     The core data structure for representing inputs, outputs, and intermediate
@@ -177,13 +175,6 @@ class Op:
 
 class TensorOp(Op):
     """Op class specialized to output tensors, will be alterate subclasses for other structures"""
-
-
-class TensorTupleOp(Op):
-    """Op class specialized to output TensorTuple"""
-
-    def __call__(self, *args):
-        return TensorTuple.from_operation(self, args)
 
 
 class Tensor:
