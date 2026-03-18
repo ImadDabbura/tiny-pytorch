@@ -178,9 +178,6 @@ class Op:
 class TensorOp(Op):
     """Op class specialized to output tensors, will be alterate subclasses for other structures"""
 
-    def __call__(self, *args):
-        return Tensor.from_operation(self, args)
-
 
 class TensorTupleOp(Op):
     """Op class specialized to output TensorTuple"""
