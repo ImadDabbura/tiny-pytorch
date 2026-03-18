@@ -630,10 +630,6 @@ class TensorTuple(Tensor):
             *[self[i] + other[i] for i in range(len(self))]
         )
 
-    def detach(self):
-        """Create a new tensor that shares the data but detaches from the graph."""
-        return TensorTuple.make_const(self.realize_cached_data())
-
 
 def compute_gradients(out_tensor, out_grad):
     """Compute gradients for all nodes in the computation graph.
