@@ -607,9 +607,6 @@ class Tensor:
         )
         compute_gradients(self, out_grad)
 
-    def _compute_gradients(self, out_grad):
-        pass
-
     __radd__ = __add__
     __rsub__ = __sub__
     __rmul__ = __mul__
