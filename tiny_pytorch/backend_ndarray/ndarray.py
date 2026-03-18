@@ -1136,6 +1136,8 @@ def empty(shape, dtype="float32", device=None):
     NDArray
         Empty NDArray with the specified shape.
     """
+    dtype = "float32" if dtype is None else dtype
+    assert dtype == "float32"
     return NDArray.make(shape, device=device)
 
 
@@ -1158,6 +1160,8 @@ def full(shape, fill_value, dtype="float32", device=None):
     NDArray
         NDArray filled with the specified value.
     """
+    dtype = "float32" if dtype is None else dtype
+    assert dtype == "float32"
     arr = empty(shape, dtype, device)
     arr.fill(fill_value)
     return arr
