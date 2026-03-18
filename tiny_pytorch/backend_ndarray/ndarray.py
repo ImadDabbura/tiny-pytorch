@@ -888,6 +888,7 @@ class NDArray:
         ):
 
             def tile(a, tile):
+                m, n = a.shape
                 return a.as_strided(
                     (m // tile, n // tile, tile, tile),
                     (n * tile, tile, n, 1),
