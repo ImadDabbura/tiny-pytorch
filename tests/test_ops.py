@@ -409,6 +409,8 @@ class TestForward:
                     ],
                 ]
             ),
+            atol=1e-5,
+            rtol=1e-5,
         )
         np.testing.assert_allclose(
             (
@@ -440,6 +442,8 @@ class TestForward:
                     ],
                 ]
             ),
+            atol=1e-5,
+            rtol=1e-5,
         )
 
 

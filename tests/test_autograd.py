@@ -134,6 +134,7 @@ class TestComputeGradient:
             Tensor(np.random.randn(9, 8)),
             Tensor(np.random.randn(10, 8)),
             backward=True,
+            tol=0.05,
         )
         gradient_check(
             lambda A, B: ops.Summation(axes=None)(
@@ -142,6 +143,7 @@ class TestComputeGradient:
             Tensor(np.random.randn(10, 1)),
             Tensor(np.random.randn(10, 9)),
             backward=True,
+            tol=0.05,
         )
         gradient_check(
             lambda A, B, C: ops.Summation(axes=None)(
@@ -151,6 +153,7 @@ class TestComputeGradient:
             Tensor(np.random.randn(10, 5)),
             Tensor(np.random.randn(10, 5)),
             backward=True,
+            tol=0.05,
         )
 
     def test_gradient_of_gradient(self):

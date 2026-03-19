@@ -1671,8 +1671,8 @@ def test_op_conv(Z_shape, W_shape, stride, padding, backward, device):
     Wtch = torch.Tensor(_W).float()
     Wtch.requires_grad = True
     out = torch.nn.functional.conv2d(
-        Ztch.permute(0, 3, 1, 2),
-        Wtch.permute(3, 2, 0, 1),
+        Ztch.permute(0, 3, 1, 2).contiguous(),
+        Wtch.permute(3, 2, 0, 1).contiguous(),
         padding=padding,
         stride=stride,
     )
