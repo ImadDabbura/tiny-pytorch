@@ -160,6 +160,9 @@ from .utils import tuplify
 class MakeTensorTuple(TensorOp):
     """Pack multiple tensors into a TensorTuple."""
 
+    def __call__(self, *args) -> TensorTuple:
+        return TensorTuple.from_operation(self, list(args))
+
     def compute(self, *args) -> tuple:
         """Pack input arrays into a Python tuple.
 
@@ -1188,6 +1191,9 @@ class Split(TensorOp):
 
     def __init__(self, axis: int) -> None:
         self.axis = axis
+
+    def __call__(self, a: Tensor) -> TensorTuple:
+        return TensorTuple.from_operation(self, [a])
 
     def compute(self, A: NDArray) -> tuple[NDArray, ...]:
         n = A.shape[self.axis]
