@@ -29,6 +29,7 @@ isort = "^6.0"
 flake8 = "^7.1"
 pre-commit = "^4.1"
 cibuildwheel = "^3.1.1"
+pytest-cov = "^7.0.0"
 
 
 [tool.poetry.group.docs.dependencies]
