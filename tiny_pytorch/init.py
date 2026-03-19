@@ -249,8 +249,10 @@ def randb(*shape, p=0.5, device=None, dtype="bool", requires_grad=False):
     """
     device = tiny_pytorch.default_device() if device is None else device
     array = device.rand(*shape) <= p
+    # NDArray only supports float32; store booleans as 0.0/1.0
+    actual_dtype = "float32" if dtype == "bool" else dtype
     return Tensor(
-        array, device=device, dtype=dtype, requires_grad=requires_grad
+        array, device=device, dtype=actual_dtype, requires_grad=requires_grad
     )
 
 
