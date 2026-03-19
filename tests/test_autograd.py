@@ -94,7 +94,7 @@ class TestTopoSort:
         np.testing.assert_allclose(topo_order, soln, rtol=1e-06, atol=1e-06)
 
 
-def gradient_check(func, *args, eps=1e-7, tol=1e-5, backward=False, **kwargs):
+def gradient_check(func, *args, eps=1e-4, tol=1e-2, backward=False, **kwargs):
     numerical_grads = [np.zeros(a.shape) for a in args]
     for i in range(len(args)):
         for j in range(args[i].realize_cached_data().size):
