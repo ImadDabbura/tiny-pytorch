@@ -1024,25 +1024,39 @@ class LogSumExp(TensorOp):
     def __init__(self, axes: tuple | None = None):
         self.axes = axes
 
+    @staticmethod
+    def _reduce(arr, axes, func):
+        """Reduce array along multiple axes one at a time."""
+        if isinstance(axes, (tuple, list)) and len(axes) > 1:
+            for axis in reversed(sorted(axes)):
+                arr = func(arr, axis)
+            return arr
+        return func(arr, axes)
+
     def compute(self, Z):
         if self.axes is None:
             axes = tuple(range(len(Z.shape)))
         else:
             axes = self.axes
-        # Compute max with keepdims for broadcasting
-        max_val = Z.max(axis=self.axes, keepdims=True)
+        # Compute max with keepdims — iterate one axis at a time for multi-axis
+        max_val = self._reduce(
+            Z, axes, lambda a, ax: a.max(axis=ax, keepdims=True)
+        )
         if self.axes is None:
             max_val = array_api.array([max_val], dtype=Z.dtype)
         self.tmp_shape = [1 if i in axes else x for i, x in enumerate(Z.shape)]
         tmp_max = array_api.reshape(max_val, tuple(self.tmp_shape))
         self.broadcasted_max = array_api.broadcast_to(tmp_max, Z.shape)
-        log_part = array_api.log(
-            array_api.summation(
-                array_api.exp(Z - self.broadcasted_max), self.axes
-            )
+        exp_sum = self._reduce(
+            array_api.exp(Z - self.broadcasted_max),
+            axes,
+            lambda a, ax: a.sum(axis=ax),
         )
+        log_part = array_api.log(exp_sum)
         # Squeeze max to match summation output shape (axes removed)
-        max_squeezed = array_api.summation(tmp_max, axes)
+        max_squeezed = self._reduce(
+            tmp_max, axes, lambda a, ax: a.sum(axis=ax)
+        )
         return log_part + max_squeezed
 
     def gradient(self, out_grad, node):
