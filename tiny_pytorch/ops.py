@@ -1148,9 +1148,11 @@ class Stack(TensorOp):
             out[tuple(slices)] = arr
         return out
 
-    def gradient(self, out_grad: Tensor, node: Tensor) -> Tensor:
-        # Gradient of stack is split and vice versa
-        return split(out_grad, self.axis)
+    def gradient(self, out_grad: Tensor, node: Tensor) -> tuple:
+        # Gradient of stack is split — unpack TensorTuple into Python tuple
+        # so tuplify correctly maps gradients to each stacked input
+        split_result = split(out_grad, self.axis)
+        return tuple(split_result[i] for i in range(len(split_result)))
 
 
 def stack(arrays: Sequence[Tensor], axis: int) -> Tensor:
