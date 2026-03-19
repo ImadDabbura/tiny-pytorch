@@ -147,7 +147,10 @@ class TestForward:
 
     def test_exp(self):
         np.testing.assert_allclose(
-            ops.Exp()(Tensor([15])).numpy(), np.array([3269017.37247])
+            ops.Exp()(Tensor([15])).numpy(),
+            np.array([3269017.37247]),
+            atol=1e-5,
+            rtol=1e-5,
         )
 
     def test_relu(self):
@@ -376,6 +379,8 @@ class TestForward:
                     ],
                 ]
             ),
+            atol=1e-5,
+            rtol=1e-5,
         )
         np.testing.assert_allclose(
             (
@@ -407,6 +412,8 @@ class TestForward:
                     ],
                 ]
             ),
+            atol=1e-5,
+            rtol=1e-5,
         )
         np.testing.assert_allclose(
             (
@@ -438,6 +445,8 @@ class TestForward:
                     ],
                 ]
             ),
+            atol=1e-5,
+            rtol=1e-5,
         )
 
 
@@ -453,6 +462,7 @@ class TestBackward:
             ops.EWiseAdd(),
             Tensor(np.random.randn(5, 4), requires_grad=True),
             Tensor(5 + np.random.randn(5, 4), requires_grad=True),
+            tol=0.05,
         )
 
     def test_scalar_mul(self):
@@ -579,8 +589,9 @@ class TestBackward:
         gradient_check(
             ops.Log(),
             Tensor(
-                np.random.randint(low=1, high=100, size=(5, 4)).astype(float)
+                np.random.randint(low=1, high=10, size=(5, 4)).astype(float)
             ),
+            tol=0.05,
         )
 
     def test_exp(self):

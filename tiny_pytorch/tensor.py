@@ -80,6 +80,8 @@ Examples
 
 from __future__ import annotations
 
+from functools import reduce
+
 import numpy as np
 
 import tiny_pytorch
@@ -627,9 +629,13 @@ class Tensor:
         compute_gradients(self, out_grad)
 
     __radd__ = __add__
-    __rsub__ = __sub__
     __rmul__ = __mul__
-    __rmatmul__ = __matmul__
+
+    def __rsub__(self, other):
+        return (-self).__add__(other)
+
+    def __rmatmul__(self, other):
+        return tiny_pytorch.ops.MatMul()(other, self)
 
 
 class TensorTuple(Tensor):
@@ -697,7 +703,10 @@ def compute_gradients(out_tensor, out_grad):
     reverse_topo_order = find_topo_sort([out_tensor])[::-1]
 
     for out_tensor in reverse_topo_order:
-        out_grad = sum(node_to_output_grads_list[out_tensor])
+        grads = node_to_output_grads_list[out_tensor]
+        out_grad = (
+            grads[0] if len(grads) == 1 else reduce(lambda a, b: a + b, grads)
+        )
         out_tensor.grad = out_grad
         if out_tensor.op:
             partial_adjoints = tuplify(

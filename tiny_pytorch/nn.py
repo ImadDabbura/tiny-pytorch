@@ -533,7 +533,7 @@ class SoftmaxLoss(Module):
             Scalar mean cross-entropy loss over the batch.
         """
         m, k = logits.shape
-        y_one_hot = init.one_hot(k, y.numpy().tolist())
+        y_one_hot = init.one_hot(k, [int(i) for i in y.numpy().tolist()])
         log_sum_exp = ops.BroadcastTo((m, k))(
             ops.Reshape((m, 1))(ops.LogSumExp((1,))(logits))
         )

@@ -160,6 +160,9 @@ from .utils import tuplify
 class MakeTensorTuple(TensorOp):
     """Pack multiple tensors into a TensorTuple."""
 
+    def __call__(self, *args) -> TensorTuple:
+        return TensorTuple.from_operation(self, list(args))
+
     def compute(self, *args) -> tuple:
         """Pack input arrays into a Python tuple.
 
@@ -767,6 +770,10 @@ class BroadcastTo(TensorOp):
     def compute(self, a):
         if a.shape == self.shape:
             return a
+        # NDArray.broadcast_to requires same ndim — prepend 1-dims if needed
+        if len(a.shape) < len(self.shape):
+            padded_shape = (1,) * (len(self.shape) - len(a.shape)) + a.shape
+            a = a.reshape(padded_shape)
         return a.broadcast_to(self.shape).compact()
 
     def gradient(self, out_grad, node):
@@ -865,7 +872,56 @@ class MatMul(TensorOp):
     """
 
     def compute(self, x: NDArray, y: NDArray):
+        # NDArray.__matmul__ only supports 2D — handle batched matmul
+        if x.ndim > 2 or y.ndim > 2:
+            return self._batched_matmul(x, y)
         return x @ y
+
+    def _batched_matmul(self, x, y):
+        """Handle batched matmul by slicing batch dim, computing 2D matmul, and reassembling."""
+        x_batch = x.shape[:-2] if x.ndim > 2 else ()
+        y_batch = y.shape[:-2] if y.ndim > 2 else ()
+        m, k = x.shape[-2], x.shape[-1]
+        k2, n = y.shape[-2], y.shape[-1]
+        assert k == k2
+
+        if x_batch and y_batch:
+            assert x_batch == y_batch, "Batch dimensions must match"
+            batch = x_batch
+        else:
+            batch = x_batch or y_batch
+
+        if not batch:
+            return x @ y
+
+        batch_size = 1
+        for b in batch:
+            batch_size *= b
+
+        out = array_api.empty((*batch, m, n), device=x.device)
+        x_flat = (
+            x.compact().reshape((batch_size, m, k)) if x.ndim > 2 else None
+        )
+        y_flat = (
+            y.compact().reshape((batch_size, k, n)) if y.ndim > 2 else None
+        )
+        out_flat = out.compact().reshape((batch_size, m, n))
+
+        for i in range(batch_size):
+            # Use slice indexing since NDArray requires full-dim indices
+            sl = (slice(i, i + 1), slice(None), slice(None))
+            xi = (
+                x_flat[sl].compact().reshape((m, k))
+                if x_flat is not None
+                else x
+            )
+            yi = (
+                y_flat[sl].compact().reshape((k, n))
+                if y_flat is not None
+                else y
+            )
+            out_flat[sl] = (xi @ yi).compact().reshape((1, m, n))
+        return out
 
     def gradient(self, out_grad: Tensor, out_node: Tensor):
         x, y = out_node.inputs
@@ -1021,24 +1077,40 @@ class LogSumExp(TensorOp):
     def __init__(self, axes: tuple | None = None):
         self.axes = axes
 
+    @staticmethod
+    def _reduce(arr, axes, func):
+        """Reduce array along multiple axes one at a time."""
+        if isinstance(axes, (tuple, list)) and len(axes) > 1:
+            for axis in reversed(sorted(axes)):
+                arr = func(arr, axis)
+            return arr
+        return func(arr, axes)
+
     def compute(self, Z):
-        self.max = Z.max(axis=self.axes, keepdims=True)
         if self.axes is None:
             axes = tuple(range(len(Z.shape)))
-            self.max = array_api.array([self.max], dtype=Z.dtype)
         else:
             axes = self.axes
-        self.tmp_shape = [1 if i in axes else x for i, x in enumerate(Z.shape)]
-        tmp_max = array_api.reshape(self.max, tuple(self.tmp_shape))
-        self.broadcasted_max = array_api.broadcast_to(tmp_max, Z.shape)
-        return (
-            array_api.log(
-                array_api.summation(
-                    array_api.exp(Z - self.broadcasted_max), self.axes
-                )
-            )
-            + self.max
+        # Compute max with keepdims — iterate one axis at a time for multi-axis
+        max_val = self._reduce(
+            Z, axes, lambda a, ax: a.max(axis=ax, keepdims=True)
         )
+        if self.axes is None:
+            max_val = array_api.array([max_val], dtype=Z.dtype)
+        self.tmp_shape = [1 if i in axes else x for i, x in enumerate(Z.shape)]
+        tmp_max = array_api.reshape(max_val, tuple(self.tmp_shape))
+        self.broadcasted_max = array_api.broadcast_to(tmp_max, Z.shape)
+        exp_sum = self._reduce(
+            array_api.exp(Z - self.broadcasted_max),
+            axes,
+            lambda a, ax: a.sum(axis=ax),
+        )
+        log_part = array_api.log(exp_sum)
+        # Squeeze max to match summation output shape (axes removed)
+        max_squeezed = self._reduce(
+            tmp_max, axes, lambda a, ax: a.sum(axis=ax)
+        )
+        return log_part + max_squeezed
 
     def gradient(self, out_grad, node):
         Z = node.inputs[0] - Tensor(self.broadcasted_max)
@@ -1084,7 +1156,7 @@ class Tanh(TensorOp):
         return array_api.tanh(a)
 
     def gradient(self, out_grad: Tensor, node: Tensor) -> Tensor:
-        return out_grad * (1 - tanh(node.inputs[0] ** 2))
+        return out_grad * (1 - tanh(node.inputs[0]) ** 2)
 
 
 def tanh(a: Tensor) -> Tensor:
@@ -1143,9 +1215,11 @@ class Stack(TensorOp):
             out[tuple(slices)] = arr
         return out
 
-    def gradient(self, out_grad: Tensor, node: Tensor) -> Tensor:
-        # Gradient of stack is split and vice versa
-        return split(out_grad, self.axis)
+    def gradient(self, out_grad: Tensor, node: Tensor) -> tuple:
+        # Gradient of stack is split — unpack TensorTuple into Python tuple
+        # so tuplify correctly maps gradients to each stacked input
+        split_result = split(out_grad, self.axis)
+        return tuple(split_result[i] for i in range(len(split_result)))
 
 
 def stack(arrays: Sequence[Tensor], axis: int) -> Tensor:
@@ -1188,6 +1262,9 @@ class Split(TensorOp):
 
     def __init__(self, axis: int) -> None:
         self.axis = axis
+
+    def __call__(self, a: Tensor) -> TensorTuple:
+        return TensorTuple.from_operation(self, [a])
 
     def compute(self, A: NDArray) -> tuple[NDArray, ...]:
         n = A.shape[self.axis]

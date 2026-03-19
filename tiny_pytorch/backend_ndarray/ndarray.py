@@ -463,6 +463,15 @@ class NDArray:
             self._handle, self.shape, self.strides, self._offset
         )
 
+    def __array__(self, dtype=None):
+        return self.numpy() if dtype is None else self.numpy().astype(dtype)
+
+    def __abs__(self):
+        return self.maximum(0) + (-self).maximum(0)
+
+    def astype(self, dtype):
+        return self.numpy().astype(dtype)
+
     @staticmethod
     def compact_strides(shape):
         """

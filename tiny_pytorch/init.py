@@ -75,7 +75,7 @@ def rand(
     >>> rand(4, low=-1, high=1)  # 4-element tensor with values in [-1,1]
     >>> rand(2, 2, device=gpu(), dtype="float64")  # 2x2 tensor on GPU
     """
-    device = tiny_pytorch.cpu() if device is None else device
+    device = tiny_pytorch.default_device() if device is None else device
     array = device.rand(*shape) * (high - low) + low
     return Tensor(
         array, device=device, dtype=dtype, requires_grad=requires_grad
@@ -118,7 +118,7 @@ def randn(
     >>> randn(4, mean=5, std=0.1)  # 4-element tensor with mean 5, std 0.1
     >>> randn(2, 2, device=gpu(), dtype="float64")  # 2x2 tensor on GPU
     """
-    device = tiny_pytorch.cpu() if device is None else device
+    device = tiny_pytorch.default_device() if device is None else device
     array = device.randn(*shape) * std + mean
     return Tensor(
         array, device=device, dtype=dtype, requires_grad=requires_grad
@@ -152,7 +152,7 @@ def constant(*shape, c=1.0, device=None, dtype="float32", requires_grad=False):
     >>> constant(4, c=3.14)  # 4-element tensor filled with pi
     >>> constant(2, 2, device=gpu(), c=2.0)  # 2x2 tensor on GPU filled with 2
     """
-    device = tiny_pytorch.cpu() if device is None else device
+    device = tiny_pytorch.default_device() if device is None else device
     array = device.full(shape, c, dtype=dtype)
     return Tensor(
         array, device=device, dtype=dtype, requires_grad=requires_grad
@@ -247,10 +247,12 @@ def randb(*shape, p=0.5, device=None, dtype="bool", requires_grad=False):
     >>> randb(4, p=0.8)  # 4-element tensor, 80% chance of 1s
     >>> randb(2, 2, device=gpu())  # 2x2 binary tensor on GPU
     """
-    device = tiny_pytorch.cpu() if device is None else device
+    device = tiny_pytorch.default_device() if device is None else device
     array = device.rand(*shape) <= p
+    # NDArray only supports float32; store booleans as 0.0/1.0
+    actual_dtype = "float32" if dtype == "bool" else dtype
     return Tensor(
-        array, device=device, dtype=dtype, requires_grad=requires_grad
+        array, device=device, dtype=actual_dtype, requires_grad=requires_grad
     )
 
 
@@ -283,7 +285,7 @@ def one_hot(k, n, device=None, dtype="float32", requires_grad=False):
     >>> one_hot(2, 5, device=gpu())  # 5x2 one-hot tensor on GPU
     """
     n = listify(n) if isinstance(n, Iterable) else n
-    device = tiny_pytorch.cpu() if device is None else device
+    device = tiny_pytorch.default_device() if device is None else device
     return Tensor(
         device.one_hot(k, n, dtype=dtype),
         device=device,
