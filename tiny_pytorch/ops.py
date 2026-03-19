@@ -1025,23 +1025,25 @@ class LogSumExp(TensorOp):
         self.axes = axes
 
     def compute(self, Z):
-        self.max = Z.max(axis=self.axes, keepdims=True)
         if self.axes is None:
             axes = tuple(range(len(Z.shape)))
-            self.max = array_api.array([self.max], dtype=Z.dtype)
         else:
             axes = self.axes
+        # Compute max with keepdims for broadcasting
+        max_val = Z.max(axis=self.axes, keepdims=True)
+        if self.axes is None:
+            max_val = array_api.array([max_val], dtype=Z.dtype)
         self.tmp_shape = [1 if i in axes else x for i, x in enumerate(Z.shape)]
-        tmp_max = array_api.reshape(self.max, tuple(self.tmp_shape))
+        tmp_max = array_api.reshape(max_val, tuple(self.tmp_shape))
         self.broadcasted_max = array_api.broadcast_to(tmp_max, Z.shape)
-        return (
-            array_api.log(
-                array_api.summation(
-                    array_api.exp(Z - self.broadcasted_max), self.axes
-                )
+        log_part = array_api.log(
+            array_api.summation(
+                array_api.exp(Z - self.broadcasted_max), self.axes
             )
-            + self.max
         )
+        # Squeeze max to match summation output shape (axes removed)
+        max_squeezed = array_api.summation(tmp_max, axes)
+        return log_part + max_squeezed
 
     def gradient(self, out_grad, node):
         Z = node.inputs[0] - Tensor(self.broadcasted_max)
