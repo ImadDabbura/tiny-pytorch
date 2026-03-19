@@ -344,19 +344,7 @@ class Linear(Module):
 
 
 class ReLU(Module):
-    """
-    Applies the rectified linear unit (ReLU) activation function element-wise.
-
-    Parameters
-    ----------
-    x : Tensor
-        Input tensor.
-
-    Returns
-    -------
-    Tensor
-        Output tensor with ReLU activation applied element-wise.
-    """
+    """Applies the rectified linear unit (ReLU) activation function element-wise."""
 
     def forward(self, x: Tensor) -> Tensor:
         """Apply ReLU activation element-wise.
@@ -501,21 +489,7 @@ class Sequential(Module):
 
 
 class SoftmaxLoss(Module):
-    """
-    Computes the softmax loss between logits and labels.
-
-    Parameters
-    ----------
-    logits : Tensor
-        Input logits tensor.
-    y : Tensor
-        Ground truth labels tensor.
-
-    Returns
-    -------
-    Tensor
-        The softmax loss between logits and labels.
-    """
+    """Computes the softmax cross-entropy loss between logits and labels."""
 
     def forward(self, logits: Tensor, y: Tensor):
         """Compute softmax cross-entropy loss.
@@ -547,8 +521,6 @@ class LayerNorm1d(Module):
 
     Parameters
     ----------
-    x : Tensor
-        Input tensor to apply layer normalization.
     dim : int
         Dimension to normalize.
     eps : float, optional
@@ -557,11 +529,6 @@ class LayerNorm1d(Module):
         Device on which to place the tensor. Default is CPU.
     dtype : str, optional
         Data type of the tensor. Default is "float32".
-
-    Returns
-    -------
-    Tensor
-        Normalized tensor.
     """
 
     def __init__(self, dim, eps=1e-5, device=None, dtype="float32"):
@@ -603,19 +570,7 @@ class LayerNorm1d(Module):
 
 
 class Flatten(Module):
-    """
-    Flattens the input tensor into a 2D tensor.
-
-    Parameters
-    ----------
-    X : Tensor
-        Input tensor to be flattened.
-
-    Returns
-    -------
-    Tensor
-        Flattened tensor.
-    """
+    """Flattens the input tensor into a 2D tensor, preserving the batch dimension."""
 
     def forward(self, X):
         """Flatten all dimensions except the batch dimension.
