@@ -627,9 +627,13 @@ class Tensor:
         compute_gradients(self, out_grad)
 
     __radd__ = __add__
-    __rsub__ = __sub__
     __rmul__ = __mul__
-    __rmatmul__ = __matmul__
+
+    def __rsub__(self, other):
+        return (-self).__add__(other)
+
+    def __rmatmul__(self, other):
+        return tiny_pytorch.ops.MatMul()(other, self)
 
 
 class TensorTuple(Tensor):
