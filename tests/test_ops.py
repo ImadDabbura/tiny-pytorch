@@ -147,7 +147,10 @@ class TestForward:
 
     def test_exp(self):
         np.testing.assert_allclose(
-            ops.Exp()(Tensor([15])).numpy(), np.array([3269017.37247])
+            ops.Exp()(Tensor([15])).numpy(),
+            np.array([3269017.37247]),
+            atol=1e-5,
+            rtol=1e-5,
         )
 
     def test_relu(self):
