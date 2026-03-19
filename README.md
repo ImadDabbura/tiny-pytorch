@@ -184,6 +184,16 @@ As an educational project, Tiny-PyTorch has some intentional simplifications:
 
 ---
 
+## 🙏 Acknowledgements
+
+This project was inspired by and built upon ideas from the following resources:
+
+- [Deep Learning Systems](https://dlsyscourse.org/) by J. Zico Kolter and Tianqi Chen
+- [micrograd](https://github.com/karpathy/micrograd) by Andrej Karpathy
+- [Machine Learning Systems](https://mlsyscourse.org/) by Tianqi Chen and Zhihao Jia
+
+---
+
 ## License
 
 Tiny-PyTorch is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
