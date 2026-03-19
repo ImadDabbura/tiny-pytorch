@@ -470,6 +470,18 @@ class NDArray:
         return self.maximum(0) + (-self).maximum(0)
 
     def astype(self, dtype):
+        """Convert array to a numpy array with the specified dtype.
+
+        Parameters
+        ----------
+        dtype : str or numpy dtype
+            Target data type.
+
+        Returns
+        -------
+        numpy.ndarray
+            Array converted to the specified dtype.
+        """
         return self.numpy().astype(dtype)
 
     @staticmethod
