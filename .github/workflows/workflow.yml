@@ -60,4 +60,12 @@ jobs:
       - name: Test with NDArray backend
         run: |
           export TINY_PYTORCH_BACKEND=nd
-          poetry run pytest
+          poetry run pytest --cov=tiny_pytorch --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
