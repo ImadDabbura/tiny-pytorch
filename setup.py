@@ -6,6 +6,7 @@ Setup script for tiny-pytorch with C++ and CUDA extensions.
 import os
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import pybind11
@@ -210,6 +211,11 @@ def read_readme():
         return fh.read()
 
 
+def _read_version():
+    with Path("pyproject.toml").open("rb") as fh:
+        return tomllib.load(fh)["project"]["version"]
+
+
 # Find CUDA installation
 cuda_home, cuda_include, cuda_lib = find_cuda()
 
@@ -257,7 +263,7 @@ else:
 if __name__ == "__main__":
     setup(
         name="tiny-pytorch",
-        version="0.0.4",
+        version=_read_version(),
         author="Imad Dabbura",
         author_email="imad.dabbura@hotmail.com",
         description="Mini Deep Learning framework similar to PyTorch",
