@@ -136,6 +136,17 @@ def test_reduce_max(params, device):
     )
 
 
+@pytest.mark.parametrize("device", _DEVICES, ids=["cpu", "cuda"])
+def test_single_axis_reductions_do_not_write_stdout(capsys, device):
+    A = nd.array(np.random.randn(2, 3, 4).astype("float32"), device=device)
+
+    A.sum(axis=1)
+    A.max(axis=2)
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+
+
 class _ShapeAndSlices(nd.NDArray):
     def __getitem__(self, idxs):
         idxs = tuple(

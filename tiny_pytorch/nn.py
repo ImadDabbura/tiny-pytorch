@@ -883,8 +883,10 @@ class BatchNorm2d(BatchNorm1d):
         # It is more efficient to use channel-last in the case
         # of batchnorm (similar to pytorch)
         b, c_in, h, w = x.shape
-        new_x = x.transpose((1, 2)).transpose((2, 3)).reshape((b, c_in, h, w))
-        y = super().forward(new_x).reshape((b, c_in, h, w))
+        new_x = (
+            x.transpose((1, 2)).transpose((2, 3)).reshape((b * h * w, c_in))
+        )
+        y = super().forward(new_x).reshape((b, h, w, c_in))
         return y.transpose((2, 3)).transpose((1, 2))
 
 

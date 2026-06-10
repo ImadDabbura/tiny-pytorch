@@ -6,6 +6,7 @@ import tiny_pytorch.backend_ndarray.ndarray as nd
 import tiny_pytorch.nn as nn
 import tiny_pytorch.ops as ops
 from tiny_pytorch.tensor import Tensor
+from tiny_pytorch.vision.models import ResNet9
 
 np.random.seed(3)
 
@@ -1687,3 +1688,132 @@ def test_op_conv(Z_shape, W_shape, stride, padding, backward, device):
         assert err1 < 1e-2, "input grads match"
         assert err2 < 1e-2, "weight grads match"
     assert err3 < 1e-1, f"outputs match {y2}, {out2}"
+
+
+@pytest.mark.parametrize("stride", [1, 2])
+@pytest.mark.parametrize("bias", [True, False])
+@pytest.mark.parametrize("device", _DEVICES, ids=["cpu", "cuda"])
+def test_nn_module_conv_forward_matches_torch(stride, bias, device):
+    np.random.seed(10 + stride + int(bias))
+
+    batch_size, in_channels, height, width = 2, 3, 8, 8
+    out_channels, kernel_size = 4, 3
+    x_data = np.random.randn(batch_size, in_channels, height, width).astype(
+        "float32"
+    )
+    weight_data = np.random.randn(
+        kernel_size, kernel_size, in_channels, out_channels
+    ).astype("float32")
+    bias_data = np.random.randn(out_channels).astype("float32")
+
+    conv = nn.Conv(
+        in_channels,
+        out_channels,
+        kernel_size,
+        stride=stride,
+        bias=bias,
+        device=device,
+    )
+    conv.weight.data = Tensor(weight_data, device=device)
+    if bias:
+        conv.bias.data = Tensor(bias_data, device=device)
+
+    x = Tensor(x_data, device=device)
+    out = conv(x)
+
+    torch_conv = torch.nn.Conv2d(
+        in_channels,
+        out_channels,
+        kernel_size,
+        stride=stride,
+        padding=(kernel_size - 1) // 2,
+        bias=bias,
+    )
+    with torch.no_grad():
+        torch_conv.weight.copy_(torch.tensor(weight_data).permute(3, 2, 0, 1))
+        if bias:
+            torch_conv.bias.copy_(torch.tensor(bias_data))
+    torch_out = torch_conv(torch.tensor(x_data))
+
+    assert conv.weight.shape == weight_data.shape
+    np.testing.assert_allclose(
+        out.numpy(), torch_out.detach().numpy(), rtol=1e-4, atol=1e-4
+    )
+
+
+@pytest.mark.parametrize("stride", [1, 2])
+@pytest.mark.parametrize("bias", [True, False])
+@pytest.mark.parametrize("device", _DEVICES, ids=["cpu", "cuda"])
+def test_nn_module_conv_backward_matches_torch(stride, bias, device):
+    np.random.seed(100 + stride + int(bias))
+
+    batch_size, in_channels, height, width = 2, 2, 8, 8
+    out_channels, kernel_size = 3, 3
+    x_data = np.random.randn(batch_size, in_channels, height, width).astype(
+        "float32"
+    )
+    weight_data = np.random.randn(
+        kernel_size, kernel_size, in_channels, out_channels
+    ).astype("float32")
+    bias_data = np.random.randn(out_channels).astype("float32")
+
+    conv = nn.Conv(
+        in_channels,
+        out_channels,
+        kernel_size,
+        stride=stride,
+        bias=bias,
+        device=device,
+    )
+    conv.weight.data = Tensor(weight_data, device=device)
+    if bias:
+        conv.bias.data = Tensor(bias_data, device=device)
+
+    x = Tensor(x_data, device=device)
+    loss = conv(x).sum()
+    loss.backward()
+
+    torch_x = torch.tensor(x_data, requires_grad=True)
+    torch_conv = torch.nn.Conv2d(
+        in_channels,
+        out_channels,
+        kernel_size,
+        stride=stride,
+        padding=(kernel_size - 1) // 2,
+        bias=bias,
+    )
+    with torch.no_grad():
+        torch_conv.weight.copy_(torch.tensor(weight_data).permute(3, 2, 0, 1))
+        if bias:
+            torch_conv.bias.copy_(torch.tensor(bias_data))
+    torch_conv(torch_x).sum().backward()
+
+    np.testing.assert_allclose(
+        x.grad.numpy(), torch_x.grad.numpy(), rtol=1e-4, atol=1e-4
+    )
+    np.testing.assert_allclose(
+        conv.weight.grad.numpy(),
+        torch_conv.weight.grad.permute(2, 3, 1, 0).numpy(),
+        rtol=1e-4,
+        atol=1e-4,
+    )
+    if bias:
+        np.testing.assert_allclose(
+            conv.bias.grad.numpy(),
+            torch_conv.bias.grad.numpy(),
+            rtol=1e-4,
+            atol=1e-4,
+        )
+
+
+@pytest.mark.parametrize("device", _DEVICES, ids=["cpu", "cuda"])
+def test_resnet9_forward_backward_smoke(device):
+    np.random.seed(0)
+
+    model = ResNet9(device=device)
+    x = Tensor(np.random.randn(2, 3, 32, 32).astype("float32"), device=device)
+    out = model(x)
+
+    assert out.shape == (2, 10)
+    out.sum().backward()
+    assert x.grad is not None
