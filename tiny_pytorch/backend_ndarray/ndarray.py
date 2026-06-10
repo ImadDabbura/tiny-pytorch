@@ -1074,7 +1074,6 @@ class NDArray:
                     f"Dimension out of range (expected to be in range of [-{self.ndim}, {self.ndim - 1}], but got {axis})"
                 )
             axis = axis + self.ndim if axis < 0 else axis
-            print(axis)
             view = self.permute(
                 tuple([a for a in range(self.ndim) if a != axis]) + (axis,)
             )

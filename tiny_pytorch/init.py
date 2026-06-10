@@ -441,7 +441,9 @@ def xavier_normal(fan_in, fan_out, gain=1.0, **kwargs):
     return randn(fan_in, fan_out, std=std, **kwargs)
 
 
-def kaiming_uniform(fan_in, fan_out, nonlinearity="relu", **kwargs):
+def kaiming_uniform(
+    fan_in, fan_out, shape=None, nonlinearity="relu", **kwargs
+):
     """Initialize weights using Kaiming/He uniform initialization.
 
     Parameters
@@ -450,6 +452,8 @@ def kaiming_uniform(fan_in, fan_out, nonlinearity="relu", **kwargs):
         Number of input features.
     fan_out : int
         Number of output features.
+    shape : tuple[int, ...], optional
+        Shape of the initialized tensor. Defaults to ``(fan_in, fan_out)``.
     nonlinearity : str, optional
         The non-linear function (or activation function) used in the model.
         Default is "relu".
@@ -481,7 +485,9 @@ def kaiming_uniform(fan_in, fan_out, nonlinearity="relu", **kwargs):
     """
     assert nonlinearity == "relu", "Only relu supported currently"
     bound = (6 / fan_in) ** 0.5
-    return rand(fan_in, fan_out, low=-bound, high=bound, **kwargs)
+    if shape is None:
+        shape = (fan_in, fan_out)
+    return rand(*shape, low=-bound, high=bound, **kwargs)
 
 
 def kaiming_normal(fan_in, fan_out, nonlinearity="relu", **kwargs):
