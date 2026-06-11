@@ -104,16 +104,21 @@ To get the very latest development version or if you plan to contribute, you can
 Here's a simple example of defining a model and running a forward/backward pass.
 
 ```python
+import numpy as np
+
 import tiny_pytorch as tp
 import tiny_pytorch.nn as nn
+import tiny_pytorch.optim as optim
+from tiny_pytorch import init
 
 
-# 1. Define a simple model
+# 1. Define a simple classifier
 class SimpleNet(nn.Module):
-    def __init__(self, in_features, out_features):
+    def __init__(self, in_features, num_classes):
+        super().__init__()
         self.fc1 = nn.Linear(in_features, 64)
         self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(64, out_features)
+        self.fc2 = nn.Linear(64, num_classes)
 
     def forward(self, x):
         x = self.fc1(x)
@@ -122,22 +127,22 @@ class SimpleNet(nn.Module):
 
 
 # 2. Initialize model, optimizer, and loss function
-model = SimpleNet(in_features=10, out_features=1)
-optimizer = tp.optim.Adam(model.parameters(), lr=0.001)
-loss_fn = nn.MSELoss()
+model = SimpleNet(in_features=10, num_classes=3)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+loss_fn = nn.SoftmaxLoss()
 
 # 3. Create dummy data
-x_train = tp.randn(32, 10, requires_grad=True)
-y_true = tp.randn(32, 1)
+x_train = init.randn(32, 10)
+y_true = tp.Tensor(np.random.randint(0, 3, size=(32,)))
 
 # 4. Perform a single training step
-optimizer.zero_grad()  # Reset gradients
-y_pred = model(x_train)  # Forward pass
-loss = loss_fn(y_pred, y_true)  # Compute loss
+optimizer.reset_grad()  # Reset gradients
+logits = model(x_train)  # Forward pass
+loss = loss_fn(logits, y_true)  # Compute loss
 loss.backward()  # Backward pass (autograd)
 optimizer.step()  # Update weights
 
-print(f"Loss: {loss.item():.4f}")
+print(f"Loss: {loss.numpy().item():.4f}")
 ```
 
 ---

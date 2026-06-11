@@ -85,30 +85,31 @@ containers provide convenient ways to combine multiple modules.
 
 Examples
 --------
->>> import tiny_pytorch as tp
+>>> import tiny_pytorch.nn as nn
+>>> from tiny_pytorch import init
 >>>
 >>> # Create a simple feedforward network
->>> model = tp.nn.Sequential(
-...     tp.nn.Linear(784, 128),
-...     tp.nn.ReLU(),
-...     tp.nn.Dropout(0.5),
-...     tp.nn.Linear(128, 10)
+>>> model = nn.Sequential(
+...     nn.Linear(784, 128),
+...     nn.ReLU(),
+...     nn.Dropout(0.5),
+...     nn.Linear(128, 10)
 ... )
 >>>
 >>> # Create a convolutional network
->>> conv_model = tp.nn.Sequential(
-...     tp.nn.Conv(3, 64, kernel_size=3),
-...     tp.nn.BatchNorm2d(64),
-...     tp.nn.ReLU(),
-...     tp.nn.Flatten(),
-...     tp.nn.Linear(64 * 28 * 28, 10)
+>>> conv_model = nn.Sequential(
+...     nn.Conv(3, 64, kernel_size=3),
+...     nn.BatchNorm2d(64),
+...     nn.ReLU(),
+...     nn.Flatten(),
+...     nn.Linear(64 * 28 * 28, 10)
 ... )
 >>>
 >>> # Create an RNN for sequence processing
->>> rnn = tp.nn.RNN(input_size=100, hidden_size=64, num_layers=2)
+>>> rnn = nn.RNN(input_size=100, hidden_size=64, num_layers=2)
 >>>
 >>> # Use the model
->>> x = tp.Tensor.randn(32, 784)  # batch_size=32, features=784
+>>> x = init.randn(32, 784)  # batch_size=32, features=784
 >>> output = model(x)  # Forward pass
 """
 
@@ -836,7 +837,8 @@ class BatchNorm2d(BatchNorm1d):
     Examples
     --------
     >>> bn = BatchNorm2d(64)
-    >>> x = Tensor.randn(32, 64, 28, 28)  # batch_size=32, channels=64, height=28, width=28
+    >>> from tiny_pytorch import init
+    >>> x = init.randn(32, 64, 28, 28)  # batch_size=32, channels=64, height=28, width=28
     >>> output = bn(x)  # shape: (32, 64, 28, 28)
     """
 
@@ -939,7 +941,8 @@ class ConvBN(Module):
     Examples
     --------
     >>> convbn = ConvBN(3, 64, kernel_size=3, stride=1)
-    >>> x = Tensor.randn(32, 3, 28, 28)  # batch_size=32, channels=3, height=28, width=28
+    >>> from tiny_pytorch import init
+    >>> x = init.randn(32, 3, 28, 28)  # batch_size=32, channels=3, height=28, width=28
     >>> output = convbn(x)  # shape: (32, 64, 28, 28)
     """
 
@@ -1834,7 +1837,8 @@ class Conv(Module):
     Examples
     --------
     >>> conv = Conv(3, 64, kernel_size=3, stride=1)
-    >>> x = Tensor.randn(1, 3, 32, 32)  # batch_size=1, channels=3, height=32, width=32
+    >>> from tiny_pytorch import init
+    >>> x = init.randn(1, 3, 32, 32)  # batch_size=1, channels=3, height=32, width=32
     >>> output = conv(x)  # shape: (1, 64, 32, 32)
     """
 

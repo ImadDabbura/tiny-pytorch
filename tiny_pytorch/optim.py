@@ -51,17 +51,18 @@ making them easy to use in training loops.
 
 Examples
 --------
->>> import tiny_pytorch as tp
+>>> import tiny_pytorch.nn as nn
+>>> import tiny_pytorch.optim as optim
 >>>
 >>> # Create a simple model
->>> model = tp.nn.Sequential(
-...     tp.nn.Linear(784, 128),
-...     tp.nn.ReLU(),
-...     tp.nn.Linear(128, 10)
+>>> model = nn.Sequential(
+...     nn.Linear(784, 128),
+...     nn.ReLU(),
+...     nn.Linear(128, 10)
 ... )
 >>>
 >>> # Create an optimizer
->>> optimizer = tp.optim.SGD(
+>>> optimizer = optim.SGD(
 ...     model.parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4
 ... )
 >>>
@@ -70,7 +71,7 @@ Examples
 ...     for batch_x, batch_y in dataloader:
 ...         # Forward pass
 ...         output = model(batch_x)
-...         loss = tp.nn.SoftmaxLoss()(output, batch_y)
+...         loss = nn.SoftmaxLoss()(output, batch_y)
 ...
 ...         # Backward pass
 ...         loss.backward()
@@ -80,7 +81,7 @@ Examples
 ...         optimizer.reset_grad()
 >>>
 >>> # Using Adam optimizer
->>> adam_optimizer = tp.optim.Adam(
+>>> adam_optimizer = optim.Adam(
 ...     model.parameters(), lr=0.001, beta1=0.9, beta2=0.999
 ... )
 
