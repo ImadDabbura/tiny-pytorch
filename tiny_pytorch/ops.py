@@ -1706,8 +1706,9 @@ def conv(a: Tensor, b: Tensor, stride: int = 1, padding: int = 1) -> Tensor:
 
     Examples
     --------
-    >>> x = Tensor.randn(1, 32, 32, 3)  # 1 batch, 32x32 image, 3 channels
-    >>> kernel = Tensor.randn(3, 3, 3, 16)  # 3x3 kernel, 3 input channels, 16 output channels
+    >>> from tiny_pytorch import init
+    >>> x = init.randn(1, 32, 32, 3)  # 1 batch, 32x32 image, 3 channels
+    >>> kernel = init.randn(3, 3, 3, 16)  # 3x3 kernel, 3 input channels, 16 output channels
     >>> result = conv(x, kernel, stride=1, padding=1)
     >>> result.shape  # (1, 32, 32, 16)
     (1, 32, 32, 16)
