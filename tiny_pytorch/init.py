@@ -357,7 +357,7 @@ def ones_like(array, *, device=None, requires_grad=False):
     )
 
 
-def xavier_uniform(fan_in, fan_out, gain=1.0, **kwargs):
+def xavier_uniform(fan_in, fan_out, gain=1.0, *, shape=None, **kwargs):
     """Initialize weights using Xavier/Glorot uniform initialization.
 
     Parameters
@@ -369,6 +369,8 @@ def xavier_uniform(fan_in, fan_out, gain=1.0, **kwargs):
     gain : float, optional
         Scaling factor for the bounds of the uniform distribution.
         Default is 1.0.
+    shape : tuple[int, ...], optional
+        Shape of the initialized tensor. Defaults to ``(fan_in, fan_out)``.
     **kwargs
         Additional arguments passed to rand().
 
@@ -393,13 +395,16 @@ def xavier_uniform(fan_in, fan_out, gain=1.0, **kwargs):
     --------
     >>> xavier_uniform(10, 5)  # 10x5 tensor with Xavier initialization
     >>> xavier_uniform(20, 10, gain=2.0)  # Scaled initialization
+    >>> xavier_uniform(9, 16, shape=(3, 3, 1, 16))  # Conv-shaped weights
     >>> xavier_uniform(5, 5, device=gpu())  # Initialize on GPU
     """
     a = gain * ((6 / (fan_in + fan_out)) ** 0.5)
-    return rand(fan_in, fan_out, low=-a, high=a, **kwargs)
+    if shape is None:
+        shape = (fan_in, fan_out)
+    return rand(*shape, low=-a, high=a, **kwargs)
 
 
-def xavier_normal(fan_in, fan_out, gain=1.0, **kwargs):
+def xavier_normal(fan_in, fan_out, gain=1.0, *, shape=None, **kwargs):
     """Initialize weights using Xavier/Glorot normal initialization.
 
     Parameters
@@ -411,6 +416,8 @@ def xavier_normal(fan_in, fan_out, gain=1.0, **kwargs):
     gain : float, optional
         Scaling factor for the standard deviation of the normal distribution.
         Default is 1.0.
+    shape : tuple[int, ...], optional
+        Shape of the initialized tensor. Defaults to ``(fan_in, fan_out)``.
     **kwargs
         Additional arguments passed to randn().
 
@@ -435,14 +442,17 @@ def xavier_normal(fan_in, fan_out, gain=1.0, **kwargs):
     --------
     >>> xavier_normal(10, 5)  # 10x5 tensor with Xavier initialization
     >>> xavier_normal(20, 10, gain=2.0)  # Scaled initialization
+    >>> xavier_normal(9, 16, shape=(3, 3, 1, 16))  # Conv-shaped weights
     >>> xavier_normal(5, 5, device=gpu())  # Initialize on GPU
     """
     std = gain * ((2 / (fan_in + fan_out)) ** 0.5)
-    return randn(fan_in, fan_out, std=std, **kwargs)
+    if shape is None:
+        shape = (fan_in, fan_out)
+    return randn(*shape, std=std, **kwargs)
 
 
 def kaiming_uniform(
-    fan_in, fan_out, shape=None, nonlinearity="relu", **kwargs
+    fan_in, fan_out, nonlinearity="relu", *, shape=None, **kwargs
 ):
     """Initialize weights using Kaiming/He uniform initialization.
 
@@ -452,11 +462,11 @@ def kaiming_uniform(
         Number of input features.
     fan_out : int
         Number of output features.
-    shape : tuple[int, ...], optional
-        Shape of the initialized tensor. Defaults to ``(fan_in, fan_out)``.
     nonlinearity : str, optional
         The non-linear function (or activation function) used in the model.
         Default is "relu".
+    shape : tuple[int, ...], optional
+        Shape of the initialized tensor. Defaults to ``(fan_in, fan_out)``.
     **kwargs
         Additional arguments passed to rand().
 
@@ -480,7 +490,8 @@ def kaiming_uniform(
     Examples
     --------
     >>> kaiming_uniform(10, 5)  # 10x5 tensor with Kaiming initialization
-    >>> kaiming_uniform(20, 10, nonlinearity="tanh")  # Initialize for tanh
+    >>> kaiming_uniform(20, 10, nonlinearity="relu")  # Explicit ReLU initialization
+    >>> kaiming_uniform(9, 16, shape=(3, 3, 1, 16))  # Conv-shaped weights
     >>> kaiming_uniform(5, 5, device=gpu())  # Initialize on GPU
     """
     assert nonlinearity == "relu", "Only relu supported currently"
@@ -490,7 +501,9 @@ def kaiming_uniform(
     return rand(*shape, low=-bound, high=bound, **kwargs)
 
 
-def kaiming_normal(fan_in, fan_out, nonlinearity="relu", **kwargs):
+def kaiming_normal(
+    fan_in, fan_out, nonlinearity="relu", *, shape=None, **kwargs
+):
     """
     Initialize weights using Kaiming/He normal initialization.
 
@@ -503,6 +516,8 @@ def kaiming_normal(fan_in, fan_out, nonlinearity="relu", **kwargs):
     nonlinearity : str, optional
         The non-linear function (or activation function) used in the model.
         Default is "relu".
+    shape : tuple[int, ...], optional
+        Shape of the initialized tensor. Defaults to ``(fan_in, fan_out)``.
     **kwargs
         Additional arguments passed to randn().
 
@@ -525,4 +540,6 @@ def kaiming_normal(fan_in, fan_out, nonlinearity="relu", **kwargs):
     """
     assert nonlinearity == "relu", "Only relu supported currently"
     std = (2 / fan_in) ** 0.5
-    return randn(fan_in, fan_out, std=std, **kwargs)
+    if shape is None:
+        shape = (fan_in, fan_out)
+    return randn(*shape, std=std, **kwargs)

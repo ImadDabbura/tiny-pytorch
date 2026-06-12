@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from tiny_pytorch import init
 
@@ -81,3 +82,28 @@ def test_init_xavier_normal():
         rtol=1e-4,
         atol=1e-4,
     )
+
+
+@pytest.mark.parametrize(
+    "initializer",
+    [
+        init.xavier_uniform,
+        init.xavier_normal,
+        init.kaiming_uniform,
+        init.kaiming_normal,
+    ],
+)
+def test_fan_initializers_accept_explicit_shape(initializer):
+    np.random.seed(42)
+
+    tensor = initializer(6, 12, shape=(2, 3, 4))
+
+    assert tensor.shape == (2, 3, 4)
+
+
+def test_kaiming_uniform_preserves_positional_nonlinearity():
+    np.random.seed(42)
+
+    tensor = init.kaiming_uniform(6, 12, "relu")
+
+    assert tensor.shape == (6, 12)
