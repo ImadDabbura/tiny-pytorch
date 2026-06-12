@@ -739,11 +739,10 @@ def find_topo_sort(node_list: list[Tensor]) -> list[Tensor]:
     list[Tensor]
         Topologically sorted list of tensors.
     """
-    visited = []
+    visited = set()
     topo_list = []
     for output_node in node_list:
-        for input_node in _topo_sort_dfs(output_node, visited, topo_list):
-            topo_list.append(input_node)
+        _topo_sort_dfs(output_node, visited, topo_list)
     return topo_list
 
 
@@ -754,19 +753,14 @@ def _topo_sort_dfs(node, visited, topo_list):
     ----------
     node : Tensor
         Current node in the DFS traversal.
-    visited : list[Tensor]
-        List of already visited nodes.
+    visited : set[Tensor]
+        Set of already visited nodes.
     topo_list : list[Tensor]
         List to collect nodes in topological order.
-
-    Yields
-    ------
-    Tensor
-        Nodes in post-order DFS traversal.
     """
+    if node in visited:
+        return
+    visited.add(node)
     for input_node in node.inputs:
-        if input_node not in visited:
-            yield from _topo_sort_dfs(input_node, visited, topo_list)
-    visited.append(node)
-    if node not in topo_list:
-        yield node
+        _topo_sort_dfs(input_node, visited, topo_list)
+    topo_list.append(node)
